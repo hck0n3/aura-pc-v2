@@ -20,7 +20,7 @@ name: Checks
 
 on:
   push:
-    branches: [master, dev]
+    branches: [main]
   pull_request:
 
 # A second push to the same PR makes the earlier run irrelevant.
@@ -61,6 +61,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Aura: no trace of Discord, the removed services, or the previous brand.
+      - name: Brand guard
+        run: bash scripts/check-aura-brand.sh all
 
       # pnpm 10 because `ui/package.json` has no `packageManager` field to pin it. If one is ever
       # added, this must match it or action-setup fails on the mismatch.
