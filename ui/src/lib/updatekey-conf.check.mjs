@@ -12,7 +12,7 @@ const ok = (cond, what) => {
 };
 
 const ts = readFileSync(join(here, 'updatekey.ts'), 'utf8');
-const ui = ts.match(/export const UPDATE_PUBKEY = '([^']*)';/)?.[1];
+const ui = ts.match(/export const UPDATE_PUBKEY =\s*'([^']*)';/)?.[1];
 ok(ui !== undefined, 'updatekey.ts declares UPDATE_PUBKEY as a plain string');
 
 const conf = JSON.parse(readFileSync(join(here, '../../../src-tauri/tauri.conf.json'), 'utf8'));
