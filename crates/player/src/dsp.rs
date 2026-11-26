@@ -354,7 +354,7 @@ fn chain(stages: &[String]) -> String {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
 
     fn on() -> DspSettings {
