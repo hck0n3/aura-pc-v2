@@ -20,7 +20,6 @@ use tokio::sync::Mutex;
 
 use crate::db::{now_secs, Db, StoredAccount};
 use crate::devicelink::{LinkCommand, LinkSession, Publish, RemoteView};
-use crate::discord::DiscordHandle;
 use crate::listentogether::{LtSession, SyncCommand};
 use crate::media::MediaHandle;
 use crate::orchestrator::{Orchestrator, PlaybackData, PlaybackPing, ResolveError};
@@ -80,9 +79,6 @@ pub struct AppState {
     cache_dir: std::path::PathBuf,
     /// OS media integration (MPRIS/SMTC/NowPlaying). `None` if it failed to init. context/16.
     media: Option<MediaHandle>,
-    /// Discord rich presence. Fed the same track/playback changes as `media`; gated on the
-    /// `discord_rpc` setting inside its own thread.
-    discord: Option<DiscordHandle>,
     /// Last.fm + ListenBrainz scrobbler. Same feed again; each half parks until its own
     /// credential is set (session key via the titlebar button, user token via Scrobbling settings).
     pub lastfm: crate::lastfm::LastfmHandle,
@@ -558,7 +554,6 @@ impl AppState {
         link: Arc<LinkSession>,
         cache_dir: std::path::PathBuf,
         media: Option<MediaHandle>,
-        discord: Option<DiscordHandle>,
         lastfm: crate::lastfm::LastfmHandle,
     ) -> Self {
         AppState {
@@ -572,7 +567,6 @@ impl AppState {
             link,
             cache_dir,
             media,
-            discord,
             lastfm,
             queue: Mutex::new(QueueState::default()),
             playback_effects: Mutex::new(()),
@@ -1499,7 +1493,7 @@ impl AppState {
                         have.library = have.library.take().or(item.library);
                     }
                 }
-                // The seed is already playing and Last.fm, Discord and the OS media widget were
+                // The seed is already playing and Last.fm and the OS media widget were
                 // told it has no album. Sent under the queue lock, so it can't overtake the next
                 // track's `set_track` / `set_metadata`.
                 if let Some(album) = q
@@ -1510,9 +1504,6 @@ impl AppState {
                 {
                     if let Some(m) = &self.media {
                         m.set_album(album);
-                    }
-                    if let Some(d) = &self.discord {
-                        d.set_album(&video_id, album);
                     }
                     self.lastfm.set_album(&video_id, album);
                 }
@@ -2105,7 +2096,7 @@ impl AppState {
             // extended it; this is the fallback when that didn't land in time). Off the pump:
             // spawn, and let the task either continue playback or do the pause bookkeeping —
             // pausing here and un-pausing a second later would flicker every consumer (UI,
-            // MPRIS, Discord).
+            // MPRIS).
             let me = self.clone();
             tauri::async_runtime::spawn(async move {
                 let gen = me.generation.fetch_add(1, Ordering::SeqCst) + 1;
@@ -2123,7 +2114,7 @@ impl AppState {
                     tracing::info!("queue exhausted");
                     me.emit_own("playback-state", "paused");
                     // mpv goes idle without flipping its pause flag, so no Paused event will fire
-                    // — tell the OS widget + Discord ourselves or they show "playing" forever
+                    // — tell the OS widget ourselves or they show "playing" forever
                     // past the last song.
                     me.media_set_playing(false);
                     // Same for a Listen Together room: running out isn't a pause press, so no
@@ -2523,8 +2514,8 @@ impl AppState {
         // or a radio track is nothing at all (issue #93). Ask.
         self.refresh_from_next(&item.video_id, gen);
         // We just told mpv to play, but its `pause` flag was already `false`, so no property event
-        // will announce it (see `Player::is_playing`). Say so ourselves — otherwise MPRIS and
-        // Discord never learn the track started. After `emit_now_playing`, so the new track is the
+        // will announce it (see `Player::is_playing`). Say so ourselves — otherwise MPRIS never
+        // learns the track started. After `emit_now_playing`, so the new track is the
         // current one before anything renders it as playing.
         self.media_set_playing(true);
         self.emit_queue().await;
@@ -3545,14 +3536,11 @@ impl AppState {
     fn emit_now_playing(&self, item: &SongItem, stream_client: &str, live: bool) {
         self.emit_own("now-playing", Self::now_playing_json(item, stream_client, live));
         self.emit_own("playback-state", "playing");
-        // Push the same metadata to the OS media widget (context/16) and Discord. The widget keeps
+        // Push the same metadata to the OS media widget (context/16). The widget keeps
         // showing a linked device's song while the windows do.
         if !self.showing_remote() {
             self.media_show(item);
             crate::windowtitle::apply(&self.app, Some(item));
-        }
-        if let Some(d) = &self.discord {
-            d.set_track(item);
         }
         // A restored queue is paused at launch: nothing started, so nothing to announce.
         if stream_client != "restored"
@@ -3642,7 +3630,7 @@ impl AppState {
         Ok(())
     }
 
-    /// Tempo changes do not emit a new mpv duration; refresh OS and Discord timelines immediately.
+    /// Tempo changes do not emit a new mpv duration; refresh the OS timeline immediately.
     pub async fn media_refresh_timing(&self) {
         let secs = self.queue.lock().await.duration;
         let speed = self.player.speed();
@@ -3652,19 +3640,10 @@ impl AppState {
             }
             self.media_set_playing(self.is_playing.load(Ordering::Relaxed));
         }
-        if let Some(d) = &self.discord {
-            if secs > 0.0 {
-                d.set_duration(secs, speed);
-            }
-            d.set_position(self.current_position(), speed);
-        }
     }
 
-    /// Push play/pause state + the current position to the OS media controls (context/16) and
-    /// Discord. The single choke point for play/pause, so both stay in step with mpv. Discord gets
-    /// the flag only — its position flows exclusively through the ticks, so a stale
-    /// `current_position()` here (the last tick can predate a track change) can't poison its
-    /// timeline.
+    /// Push play/pause state + the current position to the OS media controls (context/16). The
+    /// single choke point for play/pause, so they stay in step with mpv.
     pub fn media_set_playing(&self, playing: bool) {
         // Any play, the user's or ours, ends our claim on the pause, so a manual resume followed
         // by a manual pause is never undone by the watcher.
@@ -3682,17 +3661,6 @@ impl AppState {
         crate::taskbar::set_playing(&self.app, playing);
         #[cfg(target_os = "linux")]
         crate::inhibit::set_playing(playing);
-        if let Some(d) = &self.discord {
-            d.set_playing(playing);
-        }
-    }
-
-    /// Toggle Discord presence at runtime (the `discord_rpc` setting). Turning it off clears the
-    /// presence and closes the socket; turning it on re-pushes the current track.
-    pub fn set_discord_enabled(&self, on: bool) {
-        if let Some(d) = &self.discord {
-            d.set_enabled(on);
-        }
     }
 
     /// Turn auto-pause on or off at runtime (the `auto_pause_other_audio` setting). Turning it on
@@ -3761,14 +3729,6 @@ impl AppState {
             let _ = self.player.pause();
         } else if self.auto_paused.swap(false, Ordering::Relaxed) && self.player.is_paused() {
             let _ = self.player.play();
-        }
-    }
-
-    /// Apply the card layout from the settings tab (the `discord_rpc_config` blob). The presence
-    /// thread re-pushes at once, so the tab's preview and the real card stay in step.
-    pub fn set_discord_config(&self, json: &str) {
-        if let Some(d) = &self.discord {
-            d.set_config(crate::discord::RpcConfig::parse(Some(json)));
         }
     }
 
@@ -4164,9 +4124,6 @@ impl AppState {
             if let Some(m) = &self.media {
                 m.set_duration(secs, speed);
             }
-            if let Some(d) = &self.discord {
-                d.set_duration(secs, speed);
-            }
             self.lastfm.set_duration(secs);
         }
     }
@@ -4518,9 +4475,7 @@ impl AppState {
             self.last_pos_persist.store(now, Ordering::Relaxed);
             self.db.set_setting("queue_position", &pos.to_string());
         }
-        // Update the OS scrubber (~1s), throttled separately from the DB write. Discord rides the
-        // same tick — not to redraw its bar (it runs its own clock off the timestamps we pushed)
-        // but so it can notice a seek and re-push. A tick is NOT proof of playback (mpv also fires
+        // Update the OS scrubber (~1s), throttled separately from the DB write. A tick is NOT proof of playback (mpv also fires
         // `time-pos` on seeks while paused), so ask mpv for the play state rather than assuming it.
         if now.saturating_sub(self.last_media_push.load(Ordering::Relaxed)) >= 1 {
             self.last_media_push.store(now, Ordering::Relaxed);
@@ -4544,9 +4499,6 @@ impl AppState {
                     drop(last);
                     m.set_playback(playing, pos, speed);
                 }
-            }
-            if let Some(d) = &self.discord {
-                d.set_position(pos, speed);
             }
             self.lastfm.set_position(pos);
         }

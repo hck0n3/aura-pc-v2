@@ -279,15 +279,13 @@ pub async fn get_queue(state: St<'_>) -> Result<serde_json::Value, String> {
 /// `visitor_data`) and internal blobs (`queue_json`, `queue_index`, `queue_position`) never cross
 /// into the webview: they'd otherwise ship the login credential to the renderer on every open, and
 /// the webview can't overwrite them either.
-const UI_SETTINGS: [&str; 34] = [
+const UI_SETTINGS: [&str; 32] = [
     "volume",
     "proxy",
     "quality",
     "normalize_volume",
     "enable_history",
     "disabled_stream_clients",
-    "discord_rpc",
-    "discord_rpc_config",
     "close_to_tray",
     "track_notifications",
     "track_notifications_focused",
@@ -498,16 +496,6 @@ pub async fn set_setting(
     #[cfg(target_os = "linux")]
     if key == "ambient_light" {
         crate::set_webgl(&app, value == "true");
-    }
-    // Presence connects/clears the moment it's toggled — the user shouldn't have to skip a track
-    // to see it take effect.
-    if key == "discord_rpc" {
-        state.set_discord_enabled(value == "true");
-    }
-    // Same reasoning for the card layout: the settings tab previews it live, so the real card has
-    // to follow without waiting for the next track.
-    if key == "discord_rpc_config" {
-        state.set_discord_config(&value);
     }
     // Takes effect at once: if other media is already playing, the music pauses without waiting.
     if key == "auto_pause_other_audio" {

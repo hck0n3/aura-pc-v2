@@ -1,5 +1,5 @@
-//! Last.fm + ListenBrainz scrobbling. One consumer of the same track/duration/position stream
-//! that feeds `discord.rs` — but simpler: neither service cares about live position, only two
+//! Last.fm + ListenBrainz scrobbling. A consumer of the track/duration/position stream that
+//! feeds the OS media widget — but simpler: neither service cares about live position, only two
 //! moments per track. A now-playing ping when a track starts, and one scrobble once the track
 //! has played half its length or 4 minutes, whichever comes first (Last.fm's official rule;
 //! tracks under 30s never scrobble). Both numbers are the user's to change in the Scrobbling
@@ -11,7 +11,7 @@
 //! `submit-listens` calls in [`crate::listenbrainz`]. A fix to when a play counts (repeat-one,
 //! real played time) lands once, not in two tasks.
 //!
-//! Everything is best-effort (context/16 fail-soft, same as Discord/media): a failed scrobble is
+//! Everything is best-effort (context/16 fail-soft, same as media): a failed scrobble is
 //! a `debug!` line, never a user-facing error. No offline queue — Last.fm accepts scrobbles up to
 //! two weeks late, but a queue is complexity we add only if dropped scrobbles ever show up.
 //! ponytail: no offline queue; add one if scrobbles visibly go missing.
@@ -63,7 +63,7 @@ const ERR_TOKEN_PENDING: i64 = 14;
 const ERR_TEMP_UNAVAILABLE: i64 = 16;
 
 /// How scrobbling behaves, from the Scrobbling settings tab (#327, #404). One JSON blob in the
-/// `lastfm_config` setting, the same pattern as `discord_rpc_config`: a new knob is a field here,
+/// `lastfm_config` setting, a new knob is a field here,
 /// a field in `ui/src/lib/scrobble.ts`, and a control in the tab. Missing or unparseable fields
 /// fall back to [`Default`], which is exactly how Limusic scrobbled before the tab existed.
 #[derive(Clone, serde::Deserialize)]

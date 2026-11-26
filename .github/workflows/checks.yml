@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Aura: no trace of Discord, the removed services, or the previous brand.
+      # Aura: no trace of removed integrations, services or the previous brand.
       - name: Brand guard
         run: bash scripts/check-aura-brand.sh all
 

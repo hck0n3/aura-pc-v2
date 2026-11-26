@@ -1668,7 +1668,7 @@ mod tests {
     // that is not a length and not a count — and that guess only holds while the count opens with
     // a digit. It does not: `hl` follows the UI language (#274), and Portuguese leads with the
     // verb ("Tocou 93 mi vezes"), so `play_count` declines it, `album_column` swallows it, and the
-    // count ships as the album to Discord, MPRIS and the scrobbler while the real album sits in
+    // count ships as the album to MPRIS and the scrobbler while the real album sits in
     // the next column, linked and unread. Reading the link before the guess makes the locale stop
     // mattering. Lifted from a live artist page, hl=pt.
     #[test]
@@ -1728,7 +1728,7 @@ mod tests {
     }
 
     // A music video row has no third column to put an album in, so the count in its subtitle lands in
-    // `album` and rides out to Discord, MPRIS and the scrobble as if it named a release. The shape
+    // `album` and rides out to MPRIS and the scrobble as if it named a release. The shape
     // is lifted verbatim from a live `FILTER_VIDEO` row.
     #[test]
     fn a_video_row_view_count_is_not_the_album() {

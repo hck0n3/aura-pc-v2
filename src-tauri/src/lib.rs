@@ -9,7 +9,6 @@ mod commands;
 mod db;
 mod devicelink;
 mod diagnostics;
-mod discord;
 mod hotkeys;
 mod http;
 mod import;
@@ -1106,12 +1105,6 @@ pub fn run() {
             #[cfg(target_os = "windows")]
             taskbar::init(&handle);
 
-            // Discord rich presence — off unless the user opted in; parks on its channel until then.
-            let discord = discord::spawn(
-                db.get_setting("discord_rpc").as_deref() == Some("true"),
-                discord::RpcConfig::parse(db.get_setting("discord_rpc_config").as_deref()),
-            );
-
             // Scrobbler — one task, one clock for Last.fm + ListenBrainz. Each half parks until
             // its own credential exists (session key via the titlebar flow, user token via settings).
             let lastfm = lastfm::spawn(
@@ -1143,7 +1136,6 @@ pub fn run() {
                 link,
                 cache_dir.clone(),
                 media,
-                discord,
                 lastfm,
             ));
             app.manage(app_state.clone());

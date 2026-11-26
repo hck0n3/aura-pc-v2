@@ -277,7 +277,7 @@ async fn playlist_sort_params_still_order_the_server_side_list() {
 }
 
 /// Every surface has to hand the queue an artist that is a *name*. That string is the player bar,
-/// the OS media widget, Discord, and the Last.fm scrobble, so the two bad shapes are: nothing at all
+/// the OS media widget and the Last.fm scrobble, so the two bad shapes are: nothing at all
 /// (YouTube ships the per-track artist column empty on single-artist albums, `"text": {}`, because
 /// the header names the artist) and a whole display subtitle ("Aqua • 1.7B views" off a song card).
 /// The unit tests pin how we parse a fixture; this pins the shape YouTube actually sends, which is
