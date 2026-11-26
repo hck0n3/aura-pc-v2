@@ -41,7 +41,9 @@ export const GAIN_LIMIT = 15;
 export const PREAMP_MIN = -20;
 export const PREAMP_MAX = 6;
 
-export const clone = (d: DspSettings): DspSettings => structuredClone(d);
+/** A plain copy. Through JSON rather than `structuredClone`, which throws on the Proxy that Svelte
+ *  state is (the settings are plain JSON anyway). */
+export const clone = (d: DspSettings): DspSettings => JSON.parse(JSON.stringify(d));
 
 export interface AuraPreset {
 	id: string;

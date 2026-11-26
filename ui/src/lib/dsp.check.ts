@@ -5,6 +5,7 @@
 import {
 	AURA_PRESETS,
 	DSP_DEFAULTS,
+	clone,
 	PARAMETRIC_PRESETS,
 	SPATIAL_PROFILES,
 	parseAutoEq,
@@ -78,5 +79,12 @@ ok(readProfiles(JSON.stringify([{ name: 'Mío', dsp: DSP_DEFAULTS }]))[0].name =
 	clock = 400;
 	send(11);
 	ok(sent.length === 3 && sent[2] === 11, 'a move after a quiet spell goes out at once');
+}
+// Svelte state is a Proxy; structuredClone refuses those (DataCloneError on the first toggle).
+{
+	const live = new Proxy(structuredClone(DSP_DEFAULTS), {});
+	const copy = clone(live);
+	copy.enabled = true;
+	ok(copy.enabled && !live.enabled, 'clone copies a reactive (Proxy) settings object');
 }
 console.log('ok');
