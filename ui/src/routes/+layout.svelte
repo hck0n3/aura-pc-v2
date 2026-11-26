@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.png';
 	import { ModeWatcher, mode } from 'mode-watcher';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import {
@@ -24,7 +24,6 @@
 		initTheme
 	} from '$lib/theme.svelte';
 	import { loadAppIcon } from '$lib/appicon.svelte';
-	import { watchLimusic } from '$lib/limusic.svelte';
 	import { thumb } from '$lib/thumb';
 	import { t } from '$lib/i18n.svelte';
 	import { blockForeignDrag, dragScroll } from '$lib/dnd';
@@ -42,7 +41,6 @@
 	import TempoPitchDialog from '$lib/components/TempoPitchDialog.svelte';
 	import ShareDialog from '$lib/components/ShareDialog.svelte';
 	import ChannelPicker from '$lib/components/ChannelPicker.svelte';
-	import ListenTogether from '$lib/components/ListenTogether.svelte';
 	import LinkDialog from '$lib/components/LinkDialog.svelte';
 	import ImportDialog from '$lib/components/ImportDialog.svelte';
 	import KaraokeSetupDialog from '$lib/components/KaraokeSetupDialog.svelte';
@@ -210,14 +208,12 @@
 		// mounted for days and a mount-only check would never see a release published in between.
 		const updateTimer = setInterval(checkForUpdatesQuiet, QUIET_INTERVAL_MS);
 		const teardownApp = initApp();
-		const teardownLimusic = watchLimusic();
 		const teardownZoom = initZoom();
 		const teardownShortcuts = initShortcuts();
 		initImport();
 		return () => {
 			clearInterval(updateTimer);
 			teardownApp();
-			teardownLimusic();
 			teardownWin();
 			teardownZoom();
 			teardownShortcuts();
@@ -353,7 +349,6 @@
 	<SettingsDialog />
 	<TempoPitchDialog bind:open={ui.tempoPitchOpen} />
 	<ChannelPicker />
-	<ListenTogether />
 	<LinkDialog />
 	<ImportDialog />
 	<KaraokeSetupDialog />

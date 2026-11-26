@@ -165,7 +165,7 @@ pub async fn fetch(
     }
 
     if have < src.size {
-        let mut request = client.get(url).header(reqwest::header::USER_AGENT, "Limusic");
+        let mut request = client.get(url).header(reqwest::header::USER_AGENT, "Aura");
         if have > 0 {
             request = request.header(reqwest::header::RANGE, format!("bytes={have}-"));
         }
@@ -294,7 +294,7 @@ async fn fetch_slice(
 
     let request = client
         .get(url)
-        .header(reqwest::header::USER_AGENT, "Limusic")
+        .header(reqwest::header::USER_AGENT, "Aura")
         .header(reqwest::header::RANGE, range);
     let response = tokio::select! {
         _ = cancel.cancelled() => return Err(Error::Cancelled),
@@ -572,7 +572,7 @@ mod tests {
     }
 
     fn paths(name: &str) -> (std::path::PathBuf, std::path::PathBuf) {
-        let dir = std::env::temp_dir().join(format!("limusic_download_{name}"));
+        let dir = std::env::temp_dir().join(format!("aura_download_{name}"));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         (dir.join("file.part"), dir.join("file"))

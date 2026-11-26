@@ -48,9 +48,7 @@ pub enum PlayerEvent {
     /// alone never hears that a track began, and only recovers on a manual pause/unpause.
     Playing(bool),
     /// mpv's `pause` flag changed: someone pressed pause or play. Unlike [`PlayerEvent::Playing`]
-    /// this says nothing when the playlist runs dry or a new file starts, which is what a Listen
-    /// Together host has to broadcast: a track change is announced on its own, and a "stopped"
-    /// from the gap between two tracks reaches the room after the next one has started.
+    /// this says nothing when the playlist runs dry or a new file starts.
     Paused(bool),
     /// One track finished normally (EOF) — orchestrator advances the queue.
     TrackEnded,
@@ -296,8 +294,8 @@ fn new_mpv(cache_dir: &str) -> Result<Mpv, Error> {
     // What the system mixer calls the stream. mpv's own names are "mpv" and `<media title> - mpv`,
     // and the media title of a proxied stream is the last segment of its loopback URL, so KDE's
     // mixer listed "e09087d13ce71f6d - mpv" (issue #409).
-    mpv.set_property("audio-client-name", "Limusic")?;
-    mpv.set_property("title", "Limusic")?;
+    mpv.set_property("audio-client-name", "Aura")?;
+    mpv.set_property("title", "Aura")?;
     mpv.set_property("gapless-audio", "yes")?;
     // mpv's native Matroska demuxer floors WebM DiscardPadding nanoseconds to Opus samples. For
     // values one nanosecond below a sample boundary (YouTube emits 6,833,333 ns), that leaves one
@@ -561,8 +559,8 @@ impl Player {
             .set_property("stream-lavf-o", if live { LAVF_LIVE_OPTS } else { LAVF_FILE_OPTS })?;
         self.mpv().set_property("demuxer-lavf-o", if live { LAVF_LIVE_DEMUX_OPTS } else { "" })?;
         *self.decks.live_url.lock().unwrap() = live.then(|| url.to_owned());
-        // A broadcast always starts at its live edge: a resume point or a host's position is a
-        // track position, and as an offset into the DVR window it lands hours behind (#424).
+        // A broadcast always starts at its live edge: a resume point is a track position, and as
+        // an offset into the DVR window it lands hours behind (#424).
         let start = start.filter(|_| !live);
         let args = loadfile_args(url, start, file_opts, loadfile_has_index(self.mpv()));
         let refs: Vec<&str> = args.iter().map(String::as_str).collect();
@@ -727,7 +725,7 @@ impl Player {
 
     pub fn seek(&self, position_secs: f64) -> Result<(), Error> {
         // A broadcast's timeline is its DVR window, not a track (#424): a position from the UI,
-        // a media key or a Listen Together host means nothing in it.
+        // or a media key means nothing in it.
         if self.on_air() {
             return Ok(());
         }
@@ -736,7 +734,7 @@ impl Player {
         self.cancel_fade();
         // `demuxer-cache-time` is the *end* of the cached range, so this only catches a forward
         // seek past it. A backward seek can need the network too (mpv prunes behind the reader);
-        // the mpv log is what says which, when `LIMUSIC_MPV_LOG` is on.
+        // the mpv log is what says which, when `AURA_MPV_LOG` is on.
         let cached_to = self.mpv().get_property::<f64>("demuxer-cache-time").ok();
         let past_cache_end = cached_to.map_or(true, |c| position_secs > c);
         tracing::info!(to = position_secs, cached_to, past_cache_end, "seek");
@@ -776,7 +774,7 @@ impl Player {
     /// tls.c), so an https proxy is dropped without a word.
     ///
     /// Only the scheme is logged: a proxy URI can carry credentials in its userinfo and the warning
-    /// lands in `limusic.log`, which is what users attach to bug reports.
+    /// lands in `aura.log`, which is what users attach to bug reports.
     pub fn set_http_proxy(&self, proxy: Option<&str>) -> Result<(), Error> {
         let p = proxy.unwrap_or("").trim();
         let usable = p.is_empty() || p.starts_with("http://");
@@ -1156,7 +1154,7 @@ fn pitch_filter() -> &'static str {
 
 /// The env var that turns mpv's own log on, and the level it is given. mpv's names, so: `no`,
 /// `fatal`, `error`, `warn`, `info`, `v`, `debug`, `trace`.
-const MPV_LOG_ENV: &str = "LIMUSIC_MPV_LOG";
+const MPV_LOG_ENV: &str = "AURA_MPV_LOG";
 
 /// Ask mpv for its own log messages, which arrive as [`Event::LogMessage`] and are forwarded into
 /// `tracing` by [`event_loop`].
@@ -1269,7 +1267,7 @@ fn event_loop(mut ev: EventContext, deck: usize, decks: Arc<Decks>) {
                         let text = text.trim_end();
                         // Everything below `warn` lands at `info`, not `debug`: the app's default
                         // filter is `info`, so a `debug!` here would be silently dropped and
-                        // setting `LIMUSIC_MPV_LOG` would appear to do nothing. mpv only sends
+                        // setting `AURA_MPV_LOG` would appear to do nothing. mpv only sends
                         // these levels when that variable asked for them, so they are never noise.
                         match level {
                             "fatal" | "error" => {
@@ -1786,7 +1784,7 @@ mod tests {
     fn mpv_keeps_the_gain_through_pitch_changes_and_failures() {
         use super::{Error, Player, NO_RUBBERBAND};
 
-        let dir = std::env::temp_dir().join("limusic-af-test");
+        let dir = std::env::temp_dir().join("aura-af-test");
         std::fs::create_dir_all(&dir).unwrap();
         let p = Player::new(dir.to_str().unwrap()).expect("libmpv");
         let af = || p.mpv().get_property::<String>("af").unwrap();
@@ -1966,7 +1964,7 @@ mod tests {
         use super::Player;
         use std::time::{Duration, Instant};
 
-        let dir = std::env::temp_dir().join("limusic-reverb-clock-test");
+        let dir = std::env::temp_dir().join("aura-reverb-clock-test");
         std::fs::create_dir_all(&dir).unwrap();
         let track = dir.join("tone.wav");
         // A seekable stereo/48 kHz fixture; the lavfi source demuxer cannot seek.
@@ -2037,7 +2035,7 @@ mod tests {
             .finish();
         tracing::subscriber::set_global_default(subscriber).unwrap();
         // Exercise BOTH escaping levels and mpv's byte-length quoting, including non-ASCII.
-        let dir = std::env::temp_dir().join("limusic-reverb é ' [room],; test");
+        let dir = std::env::temp_dir().join("aura-reverb é ' [room],; test");
         std::fs::create_dir_all(&dir).unwrap();
         let p = Player::new(dir.to_str().unwrap()).unwrap();
         p.mpv().set_property("ao", "pcm").unwrap();
@@ -2257,7 +2255,7 @@ mod tests {
         use std::collections::HashMap;
         use std::time::{Duration, Instant};
 
-        let dir = std::env::temp_dir().join("limusic-load-test");
+        let dir = std::env::temp_dir().join("aura-load-test");
         std::fs::create_dir_all(&dir).unwrap();
         let p = Player::new(dir.to_str().unwrap()).expect("libmpv");
         p.mpv().set_property("ao", "null").unwrap(); // no audio device needed
@@ -2444,15 +2442,14 @@ mod tests {
         assert!(!is_ao_init_failed(&Error::Raw(mpv_error::NothingToPlay)));
     }
 
-    /// A Listen Together host broadcasts `Paused`, so a track running out must not produce one:
-    /// it reached the room after the next track had started, with the old track's end as the
-    /// position, and guests seeked the new track past its own end.
+    /// `Paused` is the pause flag the user flips, so a track running out must not produce one: it
+    /// would arrive after the next track had started, with the old track's end as the position.
     #[test]
     fn running_out_is_not_a_pause() {
         use super::{Player, PlayerEvent};
         use std::time::{Duration, Instant};
 
-        let dir = std::env::temp_dir().join("limusic-pause-test");
+        let dir = std::env::temp_dir().join("aura-pause-test");
         std::fs::create_dir_all(&dir).unwrap();
         let mut p = Player::new(dir.to_str().unwrap()).expect("libmpv");
         p.mpv().set_property("ao", "null").unwrap();
@@ -2495,7 +2492,7 @@ mod tests {
         use super::Player;
         use std::time::{Duration, Instant};
 
-        let dir = std::env::temp_dir().join("limusic-start-test");
+        let dir = std::env::temp_dir().join("aura-start-test");
         std::fs::create_dir_all(&dir).unwrap();
         let p = Player::new(dir.to_str().unwrap()).expect("libmpv");
         p.mpv().set_property("ao", "null").unwrap();
@@ -2523,7 +2520,7 @@ mod tests {
         use super::Player;
         use std::time::{Duration, Instant};
 
-        let dir = std::env::temp_dir().join("limusic-live-seek-test");
+        let dir = std::env::temp_dir().join("aura-live-seek-test");
         std::fs::create_dir_all(&dir).unwrap();
         let p = Player::new(dir.to_str().unwrap()).expect("libmpv");
         p.mpv().set_property("ao", "null").unwrap();

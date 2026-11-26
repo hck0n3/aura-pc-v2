@@ -11,7 +11,7 @@ name: Windows release binaries
 #   Actions ▸ Windows release binaries ▸ Run workflow ▸ tag = v0.1.4
 #
 # Requires repo secrets (Settings ▸ Secrets and variables ▸ Actions):
-#   TAURI_SIGNING_PRIVATE_KEY           contents of ~/.tauri/limusic.key
+#   TAURI_SIGNING_PRIVATE_KEY           contents of ~/.tauri/aura.key
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  empty string (the key has no password)
 #   LASTFM_API_KEY / LASTFM_API_SECRET  Last.fm credentials (optional — warn-only if absent)
 # Without the signing pair the bundler emits no .sig and this job fails loudly rather than
@@ -21,7 +21,7 @@ name: Windows release binaries
 # and a release-triggered run executes on the *tag* ref, so it can never read the cache any previous
 # release wrote. This job was recompiling all of Rust from scratch every single time, 11m25s of a
 # 15m run, while dutifully saving a 0.55 GB cache nothing would ever read. A dispatched run executes
-# on master, so the cache is shared release to release; the checkout below still pins the build to
+# on main, so the cache is shared release to release; the checkout below still pins the build to
 # the tag. scripts/release.sh dispatches both workflows.
 # Consequence: publishing a release from the GitHub UI builds nothing. Use the script.
 on:
@@ -57,7 +57,9 @@ env:
   # API 2.x). Bump deliberately, a new mpv is a new 117 MB DLL in the installer: a 7z with
   # libmpv-2.dll at its root (a shinchiro `mpv-dev-x86_64-*.7z` works as is), uploaded with
   # `gh release upload deps <file>`, then update both lines below.
-  MPV_DEV_URL: https://github.com/SimoHypers/limusic/releases/download/deps/libmpv-2-x86_64-20260610-git-304426c.7z
+  # The release asset of this repo (tag `deps`). Fetched with the job's token, since a private
+  # repo answers an anonymous download with a 404.
+  MPV_DEV_ASSET: libmpv-2-x86_64-20260610-git-304426c.7z
   MPV_DEV_SHA256: af708edcdf6ed12ac7b2bb31b4cbeba0bf7d4eef345a715ef5de782c0ddd6671
   MPV_DIR: ${{ github.workspace }}\.libmpv
 
@@ -175,7 +177,7 @@ jobs:
       #                         ships pregenerated bindings and just emits `cargo:rustc-link-lib`)
       #   rust-lld              LLD instead of MSVC's link.exe. Cargo is the bulk of this job, and
       #                         with `codegen-units = 1` + thin LTO most of that is the codegen and
-      #                         link of limusic-app itself. The Linux job took its release build
+      #                         link of aura-app itself. The Linux job took its release build
       #                         from 6m56 to 3m33 by moving to mold; this is the same lever on the
       #                         platform that has no mold. rust-lld ships inside the toolchain, so
       #                         there is nothing to install and nothing to pin.
@@ -220,13 +222,16 @@ jobs:
       # just emits `cargo:rustc-link-lib=mpv` (pregenerated bindings, no headers needed).
       - name: Build the libmpv import library
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = "Stop"
           New-Item -ItemType Directory -Force -Path "$env:MPV_DIR" | Out-Null
-          curl.exe -fsSL -o "$env:MPV_DIR\mpv-dev.7z" "$env:MPV_DEV_URL"
+          gh release download deps --repo "$env:GITHUB_REPOSITORY" --pattern "$env:MPV_DEV_ASSET" --output "$env:MPV_DIR\mpv-dev.7z" --clobber
+          if ($LASTEXITCODE -ne 0) { throw "could not download $env:MPV_DEV_ASSET from the deps release" }
           if ((Get-FileHash "$env:MPV_DIR\mpv-dev.7z" -Algorithm SHA256).Hash -ne $env:MPV_DEV_SHA256) { throw "mpv-dev.7z does not match MPV_DEV_SHA256" }
           7z x "$env:MPV_DIR\mpv-dev.7z" -o"$env:MPV_DIR" -y | Out-Null
-          if (-not (Test-Path "$env:MPV_DIR\libmpv-2.dll")) { throw "libmpv-2.dll not found in the dev package — did MPV_DEV_URL change shape?" }
+          if (-not (Test-Path "$env:MPV_DIR\libmpv-2.dll")) { throw "libmpv-2.dll not found in the dev package — did MPV_DEV_ASSET change shape?" }
 
           # dumpbin/lib live in the MSVC toolchain. (cargo itself finds MSVC on its own; this is
           # only so we can run the two tools.)
@@ -320,7 +325,7 @@ jobs:
           LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
         run: |
           if [ -n "$LASTFM_API_KEY" ] && [ -n "$LASTFM_API_SECRET" ]; then
-            printf 'LIMUSIC_LASTFM_API_KEY=%s\nLIMUSIC_LASTFM_API_SECRET=%s\n' \
+            printf 'AURA_LASTFM_API_KEY=%s\nAURA_LASTFM_API_SECRET=%s\n' \
               "$LASTFM_API_KEY" "$LASTFM_API_SECRET" > src-tauri/lastfm.keys
             echo "lastfm.keys written"
           else
@@ -357,7 +362,7 @@ jobs:
       # 1.3.0-rc.4 set): the karaoke runtime is loaded by full path only when karaoke is turned on.
       - name: Import table check
         shell: pwsh
-        run: ./scripts/check-windows-imports.ps1 -Exe target/release/limusic-app.exe
+        run: ./scripts/check-windows-imports.ps1 -Exe target/release/aura-app.exe
 
       - name: Dry run — built and signed, attaching nothing
         if: ${{ inputs.dry_run }}
@@ -373,7 +378,7 @@ jobs:
         if: ${{ inputs.dry_run }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: limusic-dry-run-${{ steps.rel.outputs.tag }}
+          name: aura-dry-run-${{ steps.rel.outputs.tag }}
           path: |
             target/release/bundle/nsis/*-setup.exe
             target/release/bundle/nsis/*.sig
@@ -464,9 +469,9 @@ jobs:
           RELEASE_ID="$(retry 3 gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq .id)"
           [ -n "$RELEASE_ID" ] || { echo "::error::no release found for $TAG"; exit 1; }
 
-          EXE="target/release/bundle/nsis/limusic_${VERSION}_x64-setup.exe"
+          EXE="target/release/bundle/nsis/aura_${VERSION}_x64-setup.exe"
           SIG="$EXE.sig"
-          MSI="$(ls target/release/bundle/msi/limusic_${VERSION}_*.msi 2>/dev/null | head -1 || true)"
+          MSI="$(ls target/release/bundle/msi/aura_${VERSION}_*.msi 2>/dev/null | head -1 || true)"
 
           if [ ! -f "$EXE" ]; then
             echo "::error::expected installer not found: $EXE"; find target/release/bundle -maxdepth 2; exit 1
@@ -523,7 +528,7 @@ jobs:
           # manifest with no entry for its platform, and the release sitting un-Latest is visible.
           #
           # Duplicated verbatim in linux-release.yml, windows-release.yml and macos-release.yml on
-          # purpose: a dispatched run takes the workflow from master but checks out the tag, so a
+          # purpose: a dispatched run takes the workflow from main but checks out the tag, so a
           # shared script or composite action would come from the tag and a re-dispatch against an
           # older one would not pick this up. Keep the three copies byte-identical.
           #

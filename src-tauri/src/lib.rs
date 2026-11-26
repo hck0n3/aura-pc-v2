@@ -1,4 +1,4 @@
-//! Limusic Tauri app. Wires transport + player + db + orchestrator behind the command boundary.
+//! Aura Tauri app. Wires transport + player + db + orchestrator behind the command boundary.
 
 mod appicon;
 mod audioproxy;
@@ -7,9 +7,7 @@ mod blocked;
 mod cipher;
 mod commands;
 mod db;
-mod devicelink;
 mod diagnostics;
-mod discord;
 mod hotkeys;
 mod http;
 mod import;
@@ -19,9 +17,7 @@ mod karaoke;
 mod karaoke_model;
 mod karaoke_runtime;
 mod lastfm;
-mod limusic;
 mod listenbrainz;
-mod listentogether;
 mod local;
 mod lyrics;
 mod matugen;
@@ -359,13 +355,13 @@ fn gtk_has_gl() -> bool {
 /// Starts this process again on XWayland, where GTK makes its GL context with GLX instead of EGL
 /// (#728). Mesa 26.3.1 gives GTK no EGL config on Wayland (mesa#16934), and without GL in GTK,
 /// WebKit paints every frame on the CPU: hovers and animations crawl at full HD. A reporter on that
-/// Mesa: laggy on Wayland, smooth with `LIMUSIC_GDK_BACKEND=x11`. The price is XWayland's: a blurry
+/// Mesa: laggy on Wayland, smooth with `AURA_GDK_BACKEND=x11`. The price is XWayland's: a blurry
 /// window at a fractional scale, and a little more per frame to present.
 ///
 /// `exec`, so it stays one process: an AppImage keeps its mount, and nothing holds the
 /// single-instance name yet. It gets the environment it was launched with plus that one variable,
-/// so `run` reads argv and LIMUSIC_RESTARTED afresh and sets the NVIDIA switches for X11, and the
-/// diagnostics show `LIMUSIC_GDK_BACKEND=x11`. Returns only if the exec fails, which leaves the app
+/// so `run` reads argv and AURA_RESTARTED afresh and sets the NVIDIA switches for X11, and the
+/// diagnostics show `AURA_GDK_BACKEND=x11`. Returns only if the exec fails, which leaves the app
 /// on Wayland and [`opaque_without_gl`] keeping the window visible.
 ///
 /// ponytail: drop it once Mesa fixes #16934 and its fix has been out a while.
@@ -375,15 +371,15 @@ fn relaunch_on_x11(env: Vec<(std::ffi::OsString, std::ffi::OsString)>) {
 
     let Ok(exe) = std::env::current_exe() else { return };
     let mut args = std::env::args_os();
-    eprintln!("limusic: GTK has no GL on Wayland, starting again on XWayland (#728)");
+    eprintln!("aura: GTK has no GL on Wayland, starting again on XWayland (#728)");
     let err = std::process::Command::new(exe)
         .arg0(args.next().unwrap_or_default())
         .args(args)
         .env_clear()
         .envs(env)
-        .env("LIMUSIC_GDK_BACKEND", "x11")
+        .env("AURA_GDK_BACKEND", "x11")
         .exec();
-    eprintln!("limusic: could not start again ({err}), staying on Wayland");
+    eprintln!("aura: could not start again ({err}), staying on Wayland");
 }
 
 /// Builds the page again so a setting the web process reads once, when it creates the page, takes
@@ -479,11 +475,11 @@ fn keep_on_screen(w: &tauri::WebviewWindow) {
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-/// Logs to stdout **and** to `<app data>/limusic.log`, truncated each launch (the previous run is
-/// kept as `limusic.log.1`).
+/// Logs to stdout **and** to `<app data>/aura.log`, truncated each launch (the previous run is
+/// kept as `aura.log.1`).
 ///
 /// The filter names `app_lib`, the `[lib]` name, because that is what every tracing target in this
-/// crate carries (`app_lib::orchestrator`). It said `limusic_app` until 2026-08-29, which only ever
+/// crate carries (`app_lib::orchestrator`). It said `aura_app` until 2026-08-29, which only ever
 /// matched `main.rs`, so every `debug!` in the app was dropped.
 ///
 /// The file is the only way a Windows or macOS user can produce a log at all: `main.rs` sets
@@ -499,8 +495,8 @@ fn init_logging(dir: &std::path::Path) {
         tracing_subscriber::EnvFilter::try_from_default_env()
             .unwrap_or_else(|_| "info,app_lib=debug,ort=warn,flacenc=warn".into())
     };
-    let path = dir.join("limusic.log");
-    let _ = std::fs::rename(&path, dir.join("limusic.log.1"));
+    let path = dir.join("aura.log");
+    let _ = std::fs::rename(&path, dir.join("aura.log.1"));
     // ponytail: one file per launch, no size cap. A run long enough to matter is a run whose log
     // someone wants anyway; add rotation if that stops being true.
     let file = std::fs::File::create(&path).ok().map(std::sync::Mutex::new);
@@ -657,7 +653,7 @@ fn x11_reachable() -> bool {
 /// `main.rs` sets `windows_subsystem = "windows"` in release, so a panic here writes to a stderr
 /// that is not connected to anything: the user sees a process start and disappear, with no window,
 /// no console and no log line. `init_logging` has already run by the time any caller gets here, so
-/// this reaches limusic.log (the writer is unbuffered, so the line lands before the exit).
+/// this reaches aura.log (the writer is unbuffered, so the line lands before the exit).
 ///
 /// There is deliberately no dialog, although the dialog plugin is registered. `setup` runs on the
 /// main thread inside the event loop's `Ready` handler, and the plugin shows a message box by
@@ -678,9 +674,9 @@ fn fatal(what: &str, detail: &str) -> ! {
 /// which `run` sets once it has read this. Windows keeps it too: the updater starts the per-user
 /// NSIS installer with a plain ShellExecute, and the installer starts the new version the same way.
 static AUTOSTARTED: AtomicBool = AtomicBool::new(false);
-const RESTARTED_ENV: &str = "LIMUSIC_RESTARTED";
+const RESTARTED_ENV: &str = "AURA_RESTARTED";
 
-/// What a cold launch was given, so `limusic-app 'https://music.youtube.com/watch?v=…'` opens the
+/// What a cold launch was given, so `aura-app 'https://music.youtube.com/watch?v=…'` opens the
 /// link once the SPA has mounted (#348). Taken once by `take_launch_args`. A launch while we are
 /// already running reaches the single-instance callback instead, which emits `open-link`. Raw
 /// strings either way: `parseYtLink` in the UI decides what is a link, so there is one parser.
@@ -735,12 +731,12 @@ pub fn run() {
         // so the AppImage picks its backend the way GTK does: Wayland on a Wayland session. Through
         // XWayland a frame costs more to present: `ui/perf/framecost.py`, one small animation at
         // 1300x720, CPU per frame across the UI process, the web compositor and Xwayland, 6.5 ms on
-        // X11 with SHM against 3.6 ms on Wayland. `LIMUSIC_GDK_BACKEND` wins over the user's
-        // GDK_BACKEND and any hook, because it is read here, last: `LIMUSIC_GDK_BACKEND=x11` is the
+        // X11 with SHM against 3.6 ms on Wayland. `AURA_GDK_BACKEND` wins over the user's
+        // GDK_BACKEND and any hook, because it is read here, last: `AURA_GDK_BACKEND=x11` is the
         // way back for a desktop where the Wayland backend misbehaves.
         //
         // ponytail: an escape hatch, not a setting.
-        if let Some(backend) = std::env::var_os("LIMUSIC_GDK_BACKEND") {
+        if let Some(backend) = std::env::var_os("AURA_GDK_BACKEND") {
             std::env::set_var("GDK_BACKEND", backend);
         }
         // Without this the window dies at startup with "Gdk-Message: Error 71 (Protocol error)
@@ -750,7 +746,7 @@ pub fn run() {
         }
         // On XWayland the proprietary driver cannot back the DMABUF renderer at all: "Failed to
         // create GBM buffer of size WxH: Invalid argument", zero frames, the window never paints.
-        // Any build lands there on an X11 session or with `LIMUSIC_GDK_BACKEND=x11`, except where
+        // Any build lands there on an X11 session or with `AURA_GDK_BACKEND=x11`, except where
         // WebKit has switched acceleration off by itself (the AppImage's does on X11, see
         // WEBKIT_FORCE_DMABUF_RENDERER below), which makes this a no-op.
         // `WEBKIT_DMABUF_RENDERER_FORCE_SHM=1` keeps the renderer, and the GPU, while
@@ -865,16 +861,16 @@ pub fn run() {
     // e.g. clicking the app icon while we're hidden in the tray — re-shows this instance
     // instead of spawning a second one (which would fight over SQLite and mpv).
     //
-    // `LIMUSIC_MULTI=1` lifts the guard, because the guard is exactly what makes Listen Together
-    // impossible to test on one machine. Pair it with `XDG_DATA_HOME` (Linux) or `APPDATA`
-    // (Windows) pointing somewhere else, or the second copy opens the first one's SQLite file and
-    // the two fight over it, which is what the guard exists to prevent:
+    // `AURA_MULTI=1` lifts the guard, for running two copies side by side on one machine. Pair
+    // it with `XDG_DATA_HOME` (Linux) or `APPDATA` (Windows) pointing somewhere else, or the
+    // second copy opens the first one's SQLite file and the two fight over it, which is what the
+    // guard exists to prevent:
     //
-    //     LIMUSIC_MULTI=1 XDG_DATA_HOME=/tmp/limusic-b ./target/debug/limusic-app
-    if std::env::var_os("LIMUSIC_MULTI").is_none() {
+    //     AURA_MULTI=1 XDG_DATA_HOME=/tmp/aura-b ./target/debug/aura-app
+    if std::env::var_os("AURA_MULTI").is_none() {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
             tray::show_main(app);
-            // `limusic-app <link>` against this instance (#348). argv[0] leads on every platform.
+            // `aura-app <link>` against this instance (#348). argv[0] leads on every platform.
             if args.len() > 1 {
                 let _ = app.emit_to("main", "open-link", &args[1..]);
             }
@@ -966,10 +962,10 @@ pub fn run() {
 
             // Shared: the PoToken generator persists its session token through the same file,
             // and it is built before AppState takes ownership of everything else.
-            let (db, quarantined) = match Db::open_or_quarantine(&data_dir.join("limusic.sqlite")) {
+            let (db, quarantined) = match Db::open_or_quarantine(&data_dir.join("aura.sqlite")) {
                 Ok(v) => v,
                 Err(e) => fatal(
-                    "Limusic could not open or create its database",
+                    "Aura could not open or create its database",
                     &format!("{}: {e}", data_dir.display()),
                 ),
             };
@@ -986,9 +982,9 @@ pub fn run() {
             // Session bootstrap (context/15 startup ordering): load the persisted login session
             // (cookie/dataSyncId/visitorData) from settings; fetch visitorData anonymously
             // (context/04 §A) only if we've never stored one.
-            // `LIMUSIC_PROXY` overrides the stored setting, so a region-locked surface can be
+            // `AURA_PROXY` overrides the stored setting, so a region-locked surface can be
             // tested for one run without a system-wide VPN (CLAUDE.md).
-            let proxy = std::env::var("LIMUSIC_PROXY")
+            let proxy = std::env::var("AURA_PROXY")
                 .ok()
                 .filter(|p| !p.trim().is_empty())
                 .or_else(|| db.get_setting("proxy").filter(|p| !p.trim().is_empty()))
@@ -1035,7 +1031,7 @@ pub fn run() {
             };
             let it = match InnerTube::new(session, proxy.as_deref()) {
                 Ok(it) => it,
-                Err(e) => fatal("Limusic could not start its network client", &e.to_string()),
+                Err(e) => fatal("Aura could not start its network client", &e.to_string()),
             };
             // Shelf titles, mood chips and playlist subtitles are YouTube's text, so the UI's
             // language has to go out with the request (#274). Persisted rather than pushed from the
@@ -1055,7 +1051,7 @@ pub fn run() {
             let mut player = match Player::new(&cache_dir.to_string_lossy()) {
                 Ok(p) => p,
                 Err(e) => fatal(
-                    "Limusic could not load libmpv, which it uses to play audio",
+                    "Aura could not load libmpv, which it uses to play audio",
                     &format!(
                         "{e}. On Linux, install your distribution's mpv library \
                          (Fedora: mpv-libs, Debian/Ubuntu: libmpv2)."
@@ -1078,7 +1074,7 @@ pub fn run() {
             let events = match player.take_events() {
                 Some(ev) => ev,
                 None => fatal(
-                    "Limusic could not start its audio event loop",
+                    "Aura could not start its audio event loop",
                     "the player's event channel was already taken, which is a bug",
                 ),
             };
@@ -1106,12 +1102,6 @@ pub fn run() {
             #[cfg(target_os = "windows")]
             taskbar::init(&handle);
 
-            // Discord rich presence — off unless the user opted in; parks on its channel until then.
-            let discord = discord::spawn(
-                db.get_setting("discord_rpc").as_deref() == Some("true"),
-                discord::RpcConfig::parse(db.get_setting("discord_rpc_config").as_deref()),
-            );
-
             // Scrobbler — one task, one clock for Last.fm + ListenBrainz. Each half parks until
             // its own credential exists (session key via the titlebar flow, user token via settings).
             let lastfm = lastfm::spawn(
@@ -1123,15 +1113,6 @@ pub fn run() {
                 lastfm::ScrobbleConfig::load(&db),
             );
 
-            // Listen Together session (context/19). Server URL is a DB setting so "home PC → VPS" is
-            // config, not a rebuild. The sync channel feeds the guest-playback bridge below.
-            // Empty means the built-in default, which `LtSession` resolves when it connects. The
-            // URL does not live here so that nothing ever has to hand it to the UI.
-            let lt_url = db.get_setting("lt_server_url").unwrap_or_default();
-            let (lt, lt_sync_rx) = listentogether::LtSession::new(handle.clone(), lt_url);
-            // Device link: opens a socket only once the user has linked a device.
-            let (link, link_rx) = devicelink::LinkSession::new(handle.clone(), db.clone());
-
             let app_state = Arc::new(AppState::new(
                 it,
                 clients,
@@ -1139,11 +1120,8 @@ pub fn run() {
                 db.clone(),
                 handle.clone(),
                 orchestrator,
-                lt,
-                link,
                 cache_dir.clone(),
                 media,
-                discord,
                 lastfm,
             ));
             app.manage(app_state.clone());
@@ -1216,28 +1194,6 @@ pub fn run() {
                 appicon::apply(&handle);
             }
 
-            // Bridge: apply Listen Together sync commands (guest playback / host seed) to AppState.
-            {
-                let st = app_state.clone();
-                let mut rx = lt_sync_rx;
-                tauri::async_runtime::spawn(async move {
-                    while let Some(cmd) = rx.recv().await {
-                        st.apply_sync(cmd).await;
-                    }
-                });
-            }
-
-            // Bridge: apply what the device link asks of the player (remote controls, pause on a
-            // takeover by another device).
-            {
-                let st = app_state.clone();
-                let mut rx = link_rx;
-                tauri::async_runtime::spawn(async move {
-                    while let Some(cmd) = rx.recv().await {
-                        st.apply_link(cmd).await;
-                    }
-                });
-            }
 
             // Restore the last session's queue, then optionally start playback.
             {
@@ -1555,58 +1511,10 @@ pub fn run() {
             commands::import_set_auto,
             commands::import_update,
             commands::import_resolve,
-            commands::lt_get_state,
-            commands::lt_set_server_url,
-            commands::lt_create_room,
-            commands::lt_join_room,
-            commands::lt_leave,
-            commands::lt_approve_join,
-            commands::lt_reject_join,
-            commands::lt_kick,
-            commands::lt_transfer_host,
-            commands::lt_suggest,
-            commands::lt_approve_suggestion,
-            commands::lt_reject_suggestion,
-            commands::lt_request_sync,
-            commands::link_state,
-            commands::link_start_pairing,
-            commands::link_cancel_pairing,
-            commands::link_unlink,
-            commands::link_forget,
-            commands::link_continue_here,
-            commands::link_play_on,
             commands::get_lyrics,
             commands::choose_lyrics_source,
             commands::set_lyrics_offset,
             commands::lyrics_providers,
-            commands::lyrics_editor_start,
-            commands::lyrics_editor_source,
-            commands::lyrics_word_readings,
-            commands::lyrics_romanize,
-            commands::limusic_providers,
-            commands::limusic_status,
-            commands::limusic_sign_in,
-            commands::limusic_cancel,
-            commands::limusic_sign_out,
-            commands::limusic_me,
-            commands::limusic_rename,
-            commands::limusic_submit,
-            commands::limusic_live_revision,
-            commands::limusic_lyric_state,
-            commands::limusic_vote,
-            commands::limusic_report,
-            commands::limusic_review_queue,
-            commands::limusic_review_claim,
-            commands::limusic_review_revision,
-            commands::limusic_live_lyrics,
-            commands::limusic_review,
-            commands::limusic_my_rejection,
-            commands::limusic_admin_accounts,
-            commands::limusic_admin_update,
-            commands::limusic_notes,
-            commands::limusic_notes_seen,
-            commands::limusic_revert,
-            commands::lyrics_parse,
             commands::lastfm_connect,
             commands::lastfm_disconnect,
             commands::lastfm_status,
@@ -1692,7 +1600,7 @@ pub fn run() {
 
 /// Let app commands answer only the UI's own windows. Tauri checks capabilities for plugin
 /// commands, but without an app ACL manifest an app command is open to any webview on a local
-/// origin, and the hidden cipher webview is one: its `limusicharness://` document runs YouTube's
+/// origin, and the hidden cipher webview is one: its `auraharness://` document runs YouTube's
 /// player.js. It needs no IPC, the bridge drives it through eval callbacks (`webview.rs`). The
 /// login windows load remote pages, which Tauri refuses on its own.
 fn only_ui<R: tauri::Runtime>(
@@ -1755,46 +1663,32 @@ fn spawn_event_pump(
         while let Some(ev) = events.recv().await {
             match ev {
                 PlayerEvent::Position(p) => {
-                    // Quiet while the windows show another linked device's playback.
-                    if throttle.should_emit(p, std::time::Instant::now()) && !state.showing_remote()
-                    {
+                    if throttle.should_emit(p, std::time::Instant::now()) {
                         let _ = app.emit("position", serde_json::json!({ "position": p }));
                     }
                     state.on_position(p).await;
                 }
                 PlayerEvent::Duration(d) => {
-                    if !state.showing_remote() {
-                        let _ = app.emit("duration", serde_json::json!({ "duration": d }));
-                    }
+                    let _ = app.emit("duration", serde_json::json!({ "duration": d }));
                     state.on_duration(d).await;
                 }
                 PlayerEvent::Playing(playing) => {
-                    let remote = state.showing_remote();
-                    if !remote {
-                        let _ =
-                            app.emit("playback-state", if playing { "playing" } else { "paused" });
-                    }
+                    let _ = app.emit("playback-state", if playing { "playing" } else { "paused" });
                     if !playing {
                         state.flush_position(); // persist exact resume position on pause
-                        if !remote {
-                            let _ = app.emit(
-                                "position",
-                                serde_json::json!({ "position": state.current_position() }),
-                            );
-                        }
+                        let _ = app.emit(
+                            "position",
+                            serde_json::json!({ "position": state.current_position() }),
+                        );
                     }
                     state.media_set_playing(playing);
-                    // Playing here ends showing another linked device; pausing may start it.
-                    state.link_remote_refresh().await;
                     // Keep the tray's toggle label honest — this arm is the same chokepoint
                     // MPRIS uses, so tray state can't drift from media-key state.
                     tray::set_playing(&app, playing);
                 }
-                // Listen Together host: broadcast a pause/resume. Not from `Playing`, which also
-                // flips when a track runs out, and that arrives here after the next track was
-                // announced (`on_track_ended` loads it on this pump), with the old track's end as
-                // the position. Guests then seek the new track to it, past the end of a shorter one.
-                PlayerEvent::Paused(paused) => state.lt_on_play_state(!paused).await,
+                // The bare pause flag has no consumer here: `Playing` above drives the UI, the OS
+                // widget and the tray.
+                PlayerEvent::Paused(_) => {}
                 PlayerEvent::TrackEnded => {
                     state.on_track_ended().await;
                 }

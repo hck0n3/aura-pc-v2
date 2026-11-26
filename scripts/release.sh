@@ -23,12 +23,12 @@
 # Bump "version" in src-tauri/tauri.conf.json AND Cargo.toml BEFORE running (tauri.conf.json is the
 # app version the updater compares against; the preflight below refuses to run if they disagree).
 #
-# Requires: the private signing key at ~/.tauri/limusic.key, `gh` authed, jq, curl.
+# Requires: the private signing key at ~/.tauri/aura.key, `gh` authed, jq, curl.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-REPO="SimoHypers/limusic"
-KEY="${TAURI_SIGNING_PRIVATE_KEY_FILE:-$HOME/.tauri/limusic.key}"
+REPO="hck0n3/aura-pc-v2"
+KEY="${TAURI_SIGNING_PRIVATE_KEY_FILE:-$HOME/.tauri/aura.key}"
 NOTES="${1:-See the commit history for changes.}"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
@@ -73,16 +73,16 @@ CARGO_VERSION="$(sed -n 's/^version *= *"\(.*\)"/\1/p' Cargo.toml | head -1)"
 [ "$CARGO_VERSION" = "$VERSION" ] \
   || die "Cargo.toml says $CARGO_VERSION but src-tauri/tauri.conf.json says $VERSION. Bump both"
 
-# The rpm is built from this working tree; the tag is cut from remote master. Anything uncommitted
+# The rpm is built from this working tree; the tag is cut from remote main. Anything uncommitted
 # means the shipped rpm and the source the tag names are different code.
 git diff --quiet && git diff --cached --quiet \
   || die "uncommitted changes to tracked files. Commit or stash them first"
 
-# THE rule. `gh release create` creates the tag from whatever the REMOTE master points at, so
+# THE rule. `gh release create` creates the tag from whatever the REMOTE main points at, so
 # releasing without pushing tags code the binaries were not built from.
-git fetch --quiet origin master
-[ "$(git rev-parse HEAD)" = "$(git rev-parse origin/master)" ] \
-  || die "HEAD ($(git rev-parse --short HEAD)) is not origin/master ($(git rev-parse --short origin/master)). Run: git push origin master"
+git fetch --quiet origin main
+[ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] \
+  || die "HEAD ($(git rev-parse --short HEAD)) is not origin/main ($(git rev-parse --short origin/main)). Run: git push origin main"
 
 ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1 \
   || die "$TAG is already published. Bump the version"
@@ -183,17 +183,17 @@ BEFORE_LINUX="$(latest_run "Linux release binaries")"
 BEFORE_WIN="$(latest_run "Windows release binaries")"
 BEFORE_MAC="$(latest_run "macOS release binaries")"
 
-# Dispatched from master rather than fired by the `release: published` event, and that ref matters:
+# Dispatched from main rather than fired by the `release: published` event, and that ref matters:
 # Actions caches are readable only from the ref that wrote them plus the default branch. A
 # release-triggered run executes on the tag ref, so it could never reuse the previous release's
 # cache — Windows recompiled all of Rust from scratch every time, 11m25s of a 15m run. Dispatching
-# from master shares one cache across releases. All three workflows check out $TAG regardless, so
+# from main shares one cache across releases. All three workflows check out $TAG regardless, so
 # the binaries still come from the tagged source. They also run in parallel with each other, and now
 # with the local rpm build below as well.
 echo "==> Dispatching the build workflows…"
-gh workflow run "Linux release binaries"   --repo "$REPO" --ref master -f tag="$TAG"
-gh workflow run "Windows release binaries" --repo "$REPO" --ref master -f tag="$TAG"
-gh workflow run "macOS release binaries"   --repo "$REPO" --ref master -f tag="$TAG"
+gh workflow run "Linux release binaries"   --repo "$REPO" --ref main -f tag="$TAG"
+gh workflow run "Windows release binaries" --repo "$REPO" --ref main -f tag="$TAG"
+gh workflow run "macOS release binaries"   --repo "$REPO" --ref main -f tag="$TAG"
 
 RUN_LINUX="$(wait_for_run "Linux release binaries" "$BEFORE_LINUX" || true)"
 RUN_WIN="$(wait_for_run "Windows release binaries" "$BEFORE_WIN" || true)"
@@ -211,19 +211,19 @@ else
     echo "ERROR: the rpm build failed, but $TAG is already published and CI is building the rest." >&2
     echo "       Fix it, then attach the rpm by hand:" >&2
     echo "         cargo tauri build --bundles rpm" >&2
-    echo "         gh release upload $TAG target/release/bundle/rpm/limusic-$VERSION-*.rpm --clobber --repo $REPO" >&2
+    echo "         gh release upload $TAG target/release/bundle/rpm/aura-$VERSION-*.rpm --clobber --repo $REPO" >&2
     exit 1
   fi
 
   # Pin to $VERSION — a stale bundle from a previous build otherwise sorts first and gets shipped
   # (e.g. an old 0.1.1 rpm uploaded to the 0.1.2 release).
-  RPM="$(ls target/release/bundle/rpm/limusic-${VERSION}-*.rpm 2>/dev/null | head -1)"
+  RPM="$(ls target/release/bundle/rpm/aura-${VERSION}-*.rpm 2>/dev/null | head -1)"
   [ -n "$RPM" ] || die "no rpm for $VERSION in target/release/bundle/rpm"
   # The rpm requires only what tauri.conf.json lists, and the binary links OpenSSL by soname (reqwest's
   # native-tls, switched on by rustypipe-botguard). Fedora 45 moved libssl.so.3 out of the default
   # install, so an rpm that doesn't ask for it installs and then can't start (#707). A build host on
   # OpenSSL 4 links .so.4 and makes the list in tauri.conf.json wrong: stop before that ships.
-  for so in $(readelf -d target/release/limusic-app | sed -n 's/.*\[\(lib\(ssl\|crypto\)\.so\.[0-9]*\)\]/\1/p'); do
+  for so in $(readelf -d target/release/aura-app | sed -n 's/.*\[\(lib\(ssl\|crypto\)\.so\.[0-9]*\)\]/\1/p'); do
     rpm -qpR "$RPM" | grep -qxF "$so()(64bit)" || die "the binary links $so but $(basename "$RPM") \
 doesn't require it. Fix bundle.linux.rpm.depends in src-tauri/tauri.conf.json, rebuild with
   cargo tauri build --bundles rpm
@@ -279,13 +279,11 @@ else
   echo >&2
   echo "==> $TAG IS PUBLISHED BUT INCOMPLETE. Check what failed, then re-dispatch that workflow:" >&2
   echo "      gh run list --repo $REPO --limit 5" >&2
-  echo "      gh workflow run \"Linux release binaries\"   --repo $REPO --ref master -f tag=$TAG" >&2
-  echo "      gh workflow run \"Windows release binaries\" --repo $REPO --ref master -f tag=$TAG" >&2
-  echo "      gh workflow run \"macOS release binaries\"   --repo $REPO --ref master -f tag=$TAG" >&2
+  echo "      gh workflow run \"Linux release binaries\"   --repo $REPO --ref main -f tag=$TAG" >&2
+  echo "      gh workflow run \"Windows release binaries\" --repo $REPO --ref main -f tag=$TAG" >&2
+  echo "      gh workflow run \"macOS release binaries\"   --repo $REPO --ref main -f tag=$TAG" >&2
   echo "    Only fixes to .github/workflows/ take effect on a re-dispatch; anything in scripts/," >&2
   echo "    src/ or ui/ needs a new version, since the run checks out the tag." >&2
   exit 1
 fi
 
-# Complete either way, so tell the Discord: #announcements for a release, #betas for an RC.
-scripts/announce.sh "$TAG" || echo "    WARNING: the Discord post failed. Retry: scripts/announce.sh $TAG"

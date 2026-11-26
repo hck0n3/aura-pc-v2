@@ -8,7 +8,7 @@ use std::{
 };
 use tauri::{path::BaseDirectory, AppHandle, Emitter, Manager};
 
-const THEME_PATH: &str = "limusic/matugen.css";
+const THEME_PATH: &str = "aura/matugen.css";
 
 fn path(app: &AppHandle) -> Result<PathBuf, String> {
     app.path().resolve(THEME_PATH, BaseDirectory::Config).map_err(|e| e.to_string())
@@ -102,11 +102,11 @@ mod tests {
 
     #[test]
     fn follows_writes_behind_a_symlink() {
-        let root = std::env::temp_dir().join(format!("limusic-matugen-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("aura-matugen-{}", std::process::id()));
         let (config, cache) = (root.join("config"), root.join("cache"));
         fs::create_dir_all(&config).unwrap();
         fs::create_dir_all(&cache).unwrap();
-        let real = cache.join("limusic.css");
+        let real = cache.join("aura.css");
         fs::write(&real, "old").unwrap();
         let link = config.join("matugen.css");
         std::os::unix::fs::symlink(&real, &link).unwrap();

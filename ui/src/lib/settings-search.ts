@@ -13,11 +13,8 @@ export type SettingsTab =
 	| 'general'
 	| 'themes'
 	| 'playback'
-	| 'contributing'
 	| 'hotkeys'
-	| 'discord'
 	| 'scrobbling'
-	| 'devices'
 	| 'data'
 	| 'about';
 
@@ -39,11 +36,8 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 	['general', null, [['settings.tabs.general', 'settings.tabs.general_hint']]],
 	['themes', null, [['settings.tabs.themes', 'settings.tabs.themes_hint']]],
 	['playback', null, [['settings.tabs.playback', 'settings.tabs.playback_hint']]],
-	['contributing', null, [['settings.tabs.contributing', 'settings.tabs.contributing_hint']]],
 	['hotkeys', null, [['settings.tabs.hotkeys', 'settings.tabs.hotkeys_hint']]],
-	['discord', null, [['settings.tabs.discord', 'settings.tabs.discord_hint']]],
 	['scrobbling', null, [['settings.tabs.scrobbling', 'settings.tabs.scrobbling_hint']]],
-	['devices', null, [['settings.tabs.devices', 'settings.tabs.devices_hint']]],
 	['data', null, [['settings.tabs.data', 'settings.tabs.data_hint']]],
 	['about', null, [['settings.tabs.about', 'settings.tabs.about_hint']]],
 
@@ -180,52 +174,6 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 	['hotkeys', null, [['settings.hotkeys.enable', 'settings.hotkeys.description']]],
 
 	[
-		'discord',
-		null,
-		[
-			['settings.discord.enable', 'settings.discord.enable_hint'],
-			['settings.discord.show_paused', 'settings.discord.show_paused_hint'],
-			['settings.discord.hide_details', 'settings.discord.hide_details_hint']
-		]
-	],
-	// Everything below is gone under "Hide details": no `under`, since the hint would have to say
-	// "off". The search lands on the tab, where that switch is the third row.
-	[
-		'discord',
-		'settings.sections.discord_status',
-		[
-			['settings.discord.status_line', 'settings.discord.status_line_hint'],
-			['settings.discord.app_name', 'settings.discord.app_name_hint']
-		]
-	],
-	[
-		'discord',
-		'settings.sections.discord_card',
-		[
-			['settings.discord.line1', 'settings.discord.line1_hint'],
-			['settings.discord.line2', 'settings.discord.line2_hint'],
-			['settings.discord.cover', 'settings.discord.cover_hint'],
-			['settings.discord.badge', 'settings.discord.badge_hint', 'settings.discord.cover'],
-			['settings.discord.line3', 'settings.discord.line3_hint', 'settings.discord.cover'],
-			['settings.discord.timestamps', 'settings.discord.timestamps_hint']
-		]
-	],
-	[
-		'discord',
-		'settings.sections.discord_links',
-		[
-			['settings.discord.link_line1'],
-			['settings.discord.link_line2'],
-			['settings.discord.link_cover', undefined, 'settings.discord.cover']
-		]
-	],
-	[
-		'discord',
-		'settings.sections.discord_buttons',
-		[['settings.discord.button1'], ['settings.discord.button2']]
-	],
-
-	[
 		'scrobbling',
 		null,
 		[
@@ -281,14 +229,6 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 		]
 	],
 
-	[
-		'about',
-		'settings.sections.support',
-		[
-			['settings.about.discord', 'settings.about.discord_hint'],
-			['settings.about.kofi', 'settings.about.kofi_hint']
-		]
-	],
 	[
 		'about',
 		'settings.sections.updates',

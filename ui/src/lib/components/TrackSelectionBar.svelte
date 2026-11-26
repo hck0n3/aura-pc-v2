@@ -14,7 +14,6 @@
 	import { enqueue, openAddManyToPlaylist, openPlayer, toast, ui } from '$lib/player.svelte';
 	import * as api from '$lib/api';
 	import type { SongItem } from '$lib/api';
-	import { lt } from '$lib/lt.svelte';
 	import { t } from '$lib/i18n.svelte';
 	import type { TrackSelection } from '$lib/selection.svelte';
 
@@ -150,14 +149,11 @@
 							</Button>
 						{/if}
 					{/if}
-					<!-- A guest cannot replace the session's queue, only add to it. -->
-					{#if lt.role !== 'guest'}
-						<Button variant="ghost" size="icon" disabled={blocked} onkeydown={onKey}
-							title={t('selection.play_on_repeat')} aria-label={t('selection.play_on_repeat')}
-							onclick={loop}>
-							<HugeiconsIcon icon={RepeatIcon} class="h-4 w-4" />
-						</Button>
-					{/if}
+					<Button variant="ghost" size="icon" disabled={blocked} onkeydown={onKey}
+						title={t('selection.play_on_repeat')} aria-label={t('selection.play_on_repeat')}
+						onclick={loop}>
+						<HugeiconsIcon icon={RepeatIcon} class="h-4 w-4" />
+					</Button>
 				{/if}
 
 				<span class="mx-1 h-5 w-px shrink-0 bg-border"></span>

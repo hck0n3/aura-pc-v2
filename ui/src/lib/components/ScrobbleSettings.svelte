@@ -1,11 +1,11 @@
 <script lang="ts">
 	// The Scrobbling tab (#327, #404): when a play counts, what it is sent as, rules that rewrite
-	// every track, and fixes for single tracks. Built like the Discord tab, options on the left and a
+	// every track, and fixes for single tracks. Options on the left and a
 	// live preview on the right, because "find (?i)vevo$ in the artist" means nothing until you see
 	// the track it changes.
 	//
 	// The preview is computed by Rust (`lastfm_preview`) from this tab's unsaved state, with the same
-	// function the scrobbler sends from. Saving is debounced like the Discord tab, and the scrobbler
+	// function the scrobbler sends from. Saving is debounced, and the scrobbler
 	// picks the new config up at once (`set_setting`), so a rule saved mid-track already applies to
 	// that track's scrobble.
 	import { HugeiconsIcon } from '@hugeicons/svelte';
@@ -19,7 +19,7 @@
 		MusicNote01Icon,
 		PencilEdit02Icon
 	} from '@hugeicons/core-free-icons';
-	import LimusicLoader from './LimusicLoader.svelte';
+	import AuraLoader from './AuraLoader.svelte';
 	import LogoMark from './LogoMark.svelte';
 	import { untrack, type Snippet } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -62,7 +62,7 @@
 	const CARD = 'divide-y divide-border/60 overflow-hidden rounded-xl border bg-card';
 	const HINT = 'mb-2 px-1 max-w-prose text-xs leading-relaxed text-muted-foreground';
 
-	// Seeded once, then owned here (see DiscordSettings for why not a $derived).
+	// Seeded once, then owned here (not a $derived: a derived copy would reset the user's edits).
 	let cfg = $state<ScrobbleConfig>(untrack(() => parseScrobbleConfig(settings.lastfm_config)));
 
 	let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -541,7 +541,7 @@
 								onclick={connectLb}
 							>
 								{#if listenbrainz.connecting}
-									<LimusicLoader class="size-4 text-current" />
+									<AuraLoader class="size-4 text-current" />
 								{:else}
 									{t('settings.scrobbling.connect')}
 								{/if}
@@ -800,14 +800,14 @@
 	>
 		<div class="mb-2.5 flex items-center gap-2">
 			<h3 class="text-[11px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-				{t('settings.discord.preview')}
+				{t('settings.scrobbling.preview')}
 			</h3>
 			<span class="rounded-full bg-primary/12 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
 				{source === 'picked'
 					? t('settings.scrobbling.preview_picked')
 					: source === 'live'
-						? t('settings.discord.preview_live')
-						: t('settings.discord.preview_sample')}
+						? t('settings.scrobbling.preview_live')
+						: t('settings.scrobbling.preview_sample')}
 			</span>
 			{#if source === 'picked'}
 				<button
@@ -907,7 +907,7 @@
 								<div class="truncate text-xs text-muted-foreground">{preview.album}</div>
 							{/if}
 						{:else}
-							<LimusicLoader class="size-5" />
+							<AuraLoader class="size-5" />
 						{/if}
 					</div>
 				</div>
@@ -946,7 +946,7 @@
 	{:else if lastfm.connecting}
 		<!-- Cancels the browser authorization, same as a second click on the titlebar button. -->
 		<Button variant="ghost" size="sm" class="gap-1.5" onclick={disconnectLastfm}>
-			<LimusicLoader class="size-4" />
+			<AuraLoader class="size-4" />
 			{t('common.cancel')}
 		</Button>
 	{:else}

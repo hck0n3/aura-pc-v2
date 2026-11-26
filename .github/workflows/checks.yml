@@ -10,17 +10,17 @@ name: Checks
 # the contributor had no way to know. `rustfmt.toml` is committed now and the tree was normalised
 # to it, which means the drift is detectable mechanically instead of during review.
 #
-# WHY THE rustfmt JOB DOES NOT BUILD OR TEST: `limusic-app` links libmpv and webkit2gtk, so testing
+# WHY THE rustfmt JOB DOES NOT BUILD OR TEST: `aura-app` links libmpv and webkit2gtk, so testing
 # it needs the full Tauri system-dependency install and a cold Rust compile. That job needs
 # neither: rustfmt parses the source and never builds it, so it finishes in seconds on a bare
 # runner and stays cheap enough to run on every push. The tests live in the `test` job below for
 # exactly that reason. Note for anyone trimming the `test` job: `crates/player` depends on libmpv2,
-# so it is NOT free of the system setup. `-p innertube -p listen-protocol` is the subset that
+# so it is NOT free of the system setup. `-p innertube` is the subset that
 # builds on a bare runner.
 
 on:
   push:
-    branches: [master, dev]
+    branches: [main]
   pull_request:
 
 # A second push to the same PR makes the earlier run irrelevant.
@@ -62,6 +62,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Aura: no trace of removed integrations, services or the previous brand.
+      - name: Brand guard
+        run: bash scripts/check-aura-brand.sh all
+
       # pnpm 10 because `ui/package.json` has no `packageManager` field to pin it. If one is ever
       # added, this must match it or action-setup fails on the mismatch.
       - uses: pnpm/action-setup@v4
@@ -93,13 +97,13 @@ jobs:
         working-directory: ui
         run: pnpm test
 
-  # The Rust half. `limusic-app` links libmpv and webkit2gtk, so this job pays for an apt install
+  # The Rust half. `aura-app` links libmpv and webkit2gtk, so this job pays for an apt install
   # and a cold compile that the rustfmt job deliberately avoids. That is why it is a separate job:
   # rustfmt still answers in seconds while this one runs.
   #
   # `cargo test --all` and not a pure-Rust subset: `crates/player` depends on libmpv2, so it
-  # needs the same system libraries `limusic-app` does. The subset that builds bare is
-  # `-p innertube -p listen-protocol`, which is not worth a second job.
+  # needs the same system libraries `aura-app` does. The subset that builds bare is
+  # `-p innertube`, which is not worth a second job.
   #
   # This is also the only place `macos_window_config_mirrors_the_base_window` runs. Nobody here
   # can build for macOS, so that test is the one guard on the macOS window config.
@@ -150,7 +154,9 @@ jobs:
     timeout-minutes: 45
     env:
       # Same pinned libmpv as windows-release.yml; keep the two in sync.
-      MPV_DEV_URL: https://github.com/SimoHypers/limusic/releases/download/deps/libmpv-2-x86_64-20260610-git-304426c.7z
+      # The release asset of this repo (tag `deps`). Fetched with the job's token, since a private
+      # repo answers an anonymous download with a 404.
+      MPV_DEV_ASSET: libmpv-2-x86_64-20260610-git-304426c.7z
       MPV_DEV_SHA256: af708edcdf6ed12ac7b2bb31b4cbeba0bf7d4eef345a715ef5de782c0ddd6671
       MPV_DIR: ${{ github.workspace }}\.libmpv
       # What the tauri CLI exports for release builds (static VC runtime). A plain `cargo build`
@@ -193,10 +199,13 @@ jobs:
       # resource fails the build.
       - name: libmpv import library
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = "Stop"
           New-Item -ItemType Directory -Force -Path "$env:MPV_DIR" | Out-Null
-          curl.exe -fsSL -o "$env:MPV_DIR\mpv-dev.7z" "$env:MPV_DEV_URL"
+          gh release download deps --repo "$env:GITHUB_REPOSITORY" --pattern "$env:MPV_DEV_ASSET" --output "$env:MPV_DIR\mpv-dev.7z" --clobber
+          if ($LASTEXITCODE -ne 0) { throw "could not download $env:MPV_DEV_ASSET from the deps release" }
           if ((Get-FileHash "$env:MPV_DIR\mpv-dev.7z" -Algorithm SHA256).Hash -ne $env:MPV_DEV_SHA256) { throw "mpv-dev.7z does not match MPV_DEV_SHA256" }
           7z x "$env:MPV_DIR\mpv-dev.7z" -o"$env:MPV_DIR" -y | Out-Null
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -213,23 +222,23 @@ jobs:
           if (-not (Test-Path "$env:MPV_DIR\mpv.lib")) { throw "lib.exe did not produce mpv.lib" }
           Copy-Item "$env:MPV_DIR\libmpv-2.dll" "$env:GITHUB_WORKSPACE\src-tauri\libmpv-2.dll" -Force
 
-      - name: cargo build -p limusic-app
-        run: cargo build -p limusic-app
+      - name: cargo build -p aura-app
+        run: cargo build -p aura-app
 
       # The lib test binary links on its own, so it only gets the manifest build.rs adds.
       # MPV_DIR goes on PATH because the test binary imports libmpv-2.dll at load.
-      - name: cargo test -p limusic-app --lib
+      - name: cargo test -p aura-app --lib
         shell: pwsh
         run: |
           $env:PATH = "$env:MPV_DIR;$env:PATH"
-          cargo test -p limusic-app --lib
+          cargo test -p aura-app --lib
 
       - name: cargo test -p karaoke
         run: cargo test -p karaoke
 
       - name: Import table check
         shell: pwsh
-        run: ./scripts/check-windows-imports.ps1 -Exe target/debug/limusic-app.exe
+        run: ./scripts/check-windows-imports.ps1 -Exe target/debug/aura-app.exe
 
   # Nobody here can run a Mac, so this job is the only check of the macOS-only karaoke code (the
   # CoreML backend) and of the macOS runtime download.

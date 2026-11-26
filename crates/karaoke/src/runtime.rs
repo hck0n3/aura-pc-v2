@@ -133,7 +133,7 @@ pub fn init_from_with_plugin(
     }
     let builder = ort::init_from(path).map_err(|e| anyhow::anyhow!("{e}"))?;
     // `false` only means an environment was committed before; the library is the same one.
-    let _ = builder.with_name("limusic-karaoke").commit();
+    let _ = builder.with_name("aura-karaoke").commit();
     if let Some(plugin) = webgpu_plugin.filter(|p| plugin_usable(p)) {
         let _ = WEBGPU_PLUGIN_PATH.set(plugin);
     }
@@ -417,7 +417,7 @@ mod tests {
 
     #[cfg(windows)]
     fn scratch_dir(name: &str) -> std::path::PathBuf {
-        let dir = std::env::temp_dir().join(format!("limusic_runtime_{name}"));
+        let dir = std::env::temp_dir().join(format!("aura_runtime_{name}"));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         dir
@@ -457,13 +457,13 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn the_fetched_runtime_loads() {
-        let Some(dir_str) = std::env::var_os("LIMUSIC_TEST_RUNTIME_DIR") else {
-            eprintln!("skipped: set LIMUSIC_TEST_RUNTIME_DIR");
+        let Some(dir_str) = std::env::var_os("AURA_TEST_RUNTIME_DIR") else {
+            eprintln!("skipped: set AURA_TEST_RUNTIME_DIR");
             return;
         };
         let dir = std::path::Path::new(&dir_str);
         if !dir.join("onnxruntime.dll").is_file() {
-            eprintln!("skipped: set LIMUSIC_TEST_RUNTIME_DIR");
+            eprintln!("skipped: set AURA_TEST_RUNTIME_DIR");
             return;
         }
         let dir = std::fs::canonicalize(dir).unwrap();
@@ -477,7 +477,7 @@ mod tests {
     #[test]
     fn relative_or_missing_plugin_path_is_not_usable() {
         assert!(!plugin_usable(std::path::Path::new("libonnxruntime_providers_webgpu.so")));
-        let missing = std::env::temp_dir().join("limusic-no-such-plugin.so");
+        let missing = std::env::temp_dir().join("aura-no-such-plugin.so");
         assert!(!plugin_usable(&missing));
     }
 

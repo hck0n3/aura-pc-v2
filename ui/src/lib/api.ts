@@ -42,13 +42,10 @@ export interface SongItem {
 	/** The signed-in user's rating (absent when the response didn't say — same as 'indifferent'). */
 	rating?: Rating;
 	/** "Add to library" off the row's own menu, with a token for each direction. Absent on rows
-	 *  YouTube sent no menu for, and on the ones built here (local files, On Repeat, a Listen
-	 *  Together guest's queue) — the menu hides the action rather than offering a dead one.
+	 *  YouTube sent no menu for, and on the ones built here (local files, On Repeat) — the menu hides the action rather than offering a dead one.
 	 *  Library ▸ Songs is not Liked Music: this is a feedback write, not a rating. */
 	library?: { in_library: boolean; add_token?: string; remove_token?: string };
-	/** Listen Together: name of the guest who added this queue item (session adds only). */
-	queued_by?: string;
-	/** Queued to play next ("Play next", or a guest's session add) — the "Next in queue" block. */
+	/** Queued to play next ("Play next") — the "Next in queue" block. */
 	queued?: boolean;
 	/** Appended by "Add to queue" — its own block at the tail of the queue. */
 	queued_end?: boolean;
@@ -101,14 +98,13 @@ export interface QueueState {
 	/** What seeded the queue (playlist/album title, "<song> Radio") — the "Next from" header. */
 	sourceName?: string | null;
 	/** The playlist the queue was started from, when it was one. What "Remove from this playlist"
-	 *  in the player's track menu writes to; absent for radios, single songs and guest queues. */
+	 *  in the player's track menu writes to; absent for radios and single songs. */
 	sourceId?: string | null;
 	/** Title of the track a click replaced this queue mid-play, for the panel's "Back to …" line.
 	 *  Set only while `backToPrevious` would actually do something: at the head of the queue, with
 	 *  a kept one behind it. */
 	prevTrack?: string | null;
-	/** The playing device's Autoplay setting: this desktop's, or a linked phone's while the bar
-	 *  controls it. Absent from a phone that predates it. */
+	/** The Autoplay setting. */
 	autoplay?: boolean | null;
 }
 
@@ -195,7 +191,7 @@ export interface HomePage {
  * like any other playlist; the only thing the UI does differently is draw an icon cover, because
  * a playlist built from local play counts has no artwork of its own.
  */
-export const ON_REPEAT_ID = 'LIMUSIC_ON_REPEAT';
+export const ON_REPEAT_ID = 'AURA_ON_REPEAT';
 
 /**
  * Liked Music's browseId. YouTube edits this one through the rating endpoint, not `edit_playlist`,
@@ -425,8 +421,6 @@ export const setVolume = (volume: number) => invoke<void>('set_volume', { volume
 export const setKaraoke = (enabled: boolean) => invoke<void>('set_karaoke', { enabled });
 /** Microsoft's permalink for the latest x64 VC++ runtime (karaoke's ONNX Runtime needs >= 14.44). */
 export const VC_REDIST_URL = 'https://aka.ms/vc14/vc_redist.x64.exe';
-/** The permanent invite: it hands out the User role, a member's own invite doesn't. */
-export const DISCORD_URL = 'https://discord.gg/jWWydPV3FF';
 export type KaraokeDevice = 'auto' | 'cpu' | 'gpu';
 export type KaraokeModelId = 'light' | 'balanced' | 'best';
 
@@ -515,7 +509,7 @@ export const setPlaybackParams = (speed: number, semitones: number, reverb: Reve
 export const onPlaybackParams = (cb: (p: { speed: number; semitones: number; reverb: Reverb }) => void) =>
 	listen<{ speed: number; semitones: number; reverb: Reverb }>('playback-params', (e) => cb(e.payload));
 export const getQueue = () => invoke<QueueState>('get_queue');
-/** A `limusicvideo://` URL for the track's music video, or null when there isn't one. `maxHeight`
+/** A `auravideo://` URL for the track's music video, or null when there isn't one. `maxHeight`
  *  caps the picture at what the box on screen can actually show. The bytes are proxied through
  *  Rust; the webview never sees a googlevideo URL. */
 export const videoStream = (videoId: string, maxHeight: number) =>
@@ -616,7 +610,7 @@ export const openExternal = (url: string) => invoke<void>('open_external', { url
 /** Real quit (not close-to-tray). Same path as the tray's Quit item. */
 export const quitApp = () => invoke<void>('quit_app');
 
-/** Environment + the redacted tail of `limusic.log`, for pasting into a bug report. */
+/** Environment + the redacted tail of `aura.log`, for pasting into a bug report. */
 export const diagnostics = () => invoke<string>('diagnostics');
 /** Just the environment block, for prefilling the GitHub bug form. */
 export const diagnosticsSummary = () => invoke<string>('diagnostics_summary');
@@ -1213,7 +1207,7 @@ export const onQueueAppended = (cb: (q: QueueAppended) => void): Promise<Unliste
 /** Main window shown/hidden (close-to-tray, the mini player). WebKitGTK never tells the page. */
 export const onUiVisible = (cb: (v: boolean) => void): Promise<UnlistenFn> =>
 	listen<boolean>('ui-visible', (e) => cb(e.payload));
-/** `limusic-app <link>` (#348): the arguments a cold launch was given, handed over once... */
+/** `aura-app <link>` (#348): the arguments a cold launch was given, handed over once... */
 export const takeLaunchArgs = () => invoke<string[]>('take_launch_args');
 /** ...and those of a second launch while this one runs. */
 export const onOpenLink = (cb: (args: string[]) => void): Promise<UnlistenFn> =>
@@ -1299,12 +1293,6 @@ export interface Lyrics {
 	pinned: boolean;
 	/** Timing nudge in ms, positive = lyrics later. */
 	offset_ms: number;
-	/** Limusic's revision of the lyric. Absent from every other source. */
-	revision?: number;
-	/** Who synced a community lyric on Limusic, oldest first. Absent everywhere else. */
-	authors?: string[];
-	/** The provider Limusic mirrored the lyric from ("Boidu"). Absent everywhere else. */
-	via?: string;
 }
 // A type, not an interface: `invoke` takes a record, and only a type alias is assignable to one.
 export type LyricsTrack = {
@@ -1326,246 +1314,6 @@ export const chooseLyricsSource = (args: LyricsTrack & { source: string | null }
 	invoke<Lyrics | null>('choose_lyrics_source', args);
 export const setLyricsOffset = (videoId: string, offsetMs: number) =>
 	invoke<void>('set_lyrics_offset', { videoId, offsetMs });
-/** Where the lyric editor starts: the song's lyrics as their provider sent them (no romanization
- *  this app worked out), or `null` when nothing has any. */
-export interface LyricsEditorStart {
-	lyrics: Lyrics | null;
-	/** The revision the service has live for the song: what a submission is based on. */
-	base_revision: number | null;
-}
-export const lyricsEditorStart = (t: LyricsTrack) =>
-	invoke<LyricsEditorStart>('lyrics_editor_start', {
-		videoId: t.videoId,
-		title: t.title,
-		artists: t.artists,
-		album: t.album,
-		duration: t.duration
-	});
-/** One provider's lyrics for the editor to start from, as it sent them. `null`: it has none (an
- *  instrumental counts as none); rejects when it couldn't be reached. */
-export const lyricsEditorSource = (t: LyricsTrack, source: string) =>
-	invoke<Lyrics | null>('lyrics_editor_source', {
-		videoId: t.videoId,
-		title: t.title,
-		artists: t.artists,
-		album: t.album,
-		duration: t.duration,
-		source
-	});
-/** Each word's romanization, per line as the editor split it, `null` where a word needs none: the
- *  editor's hint under each word (#676), never submitted. */
-export const lyricsWordReadings = (lines: string[][]) =>
-	invoke<(string | null)[][]>('lyrics_word_readings', { lines });
-/** `lyrics` with the romanization the player would add, timed by the words where it can be: the
- *  lyric editor's preview. */
-export const lyricsRomanize = (lyrics: Lyrics) => invoke<Lyrics>('lyrics_romanize', { lyrics });
-// --- Limusic Lyrics account (`limusic.rs`) ---
-export interface LimusicAccount {
-	/** Null while the account is anonymous: it has no public name. */
-	handle: string | null;
-	anonymous: boolean;
-	avatar_url: string | null;
-	score: number;
-	joined_at: number;
-	role: 'user' | 'reviewer' | 'lead' | 'admin' | '';
-	trusted: boolean;
-	can_review: boolean;
-	/** Reviewers' notes on this account's lyrics not read yet. */
-	unread_notes: number;
-}
-export interface LimusicAccountState {
-	/** There is a session: an anonymous one counts. */
-	signed_in: boolean;
-	handle: string | null;
-	/** The session is an anonymous account (no handle). */
-	anonymous: boolean;
-	/** A code (`expired`, `banned`, `failed`, `session_ended`) when a sign-in or a session ended badly. */
-	error?: string | null;
-}
-export interface LimusicProviders {
-	/** The identities that can be linked. May be empty. */
-	providers: string[];
-	/** The service has anonymous accounts: the gate for contributing at all. False for an older
-	 *  service, a 404 or no connection. */
-	anonymous: boolean;
-}
-export const limusicProviders = () => invoke<LimusicProviders>('limusic_providers');
-export const limusicStatus = () => invoke<LimusicAccountState>('limusic_status');
-/** Opens the browser; resolves with the code to compare with the confirm page. With an anonymous
- *  session the identity is linked to it, with none a linked account is made. The outcome arrives
- *  through `onLimusicAccount`. Rejects with a code (`rate_limited`, `unavailable`, ...). */
-export const limusicSignIn = (provider: string) => invoke<string>('limusic_sign_in', { provider });
-export const limusicCancel = () => invoke<void>('limusic_cancel');
-export const limusicSignOut = () => invoke<void>('limusic_sign_out');
-export const limusicMe = () => invoke<LimusicAccount | null>('limusic_me');
-/** Rejects with the service's code: `taken`, `invalid`, `rate_limited`, `unauthorized`. */
-export const limusicRename = (handle: string) => invoke<LimusicAccount>('limusic_rename', { handle });
-/** A cached lyric was replaced behind the one on screen (a newer Limusic revision, or Limusic has
- *  the song now, or its lyric was taken down). The payload is the video id: ask again. */
-export const onLyricsUpdated = (cb: (videoId: string) => void): Promise<UnlistenFn> =>
-	listen<string>('lyrics-updated', (e) => cb(e.payload));
-/** The lyric Limusic has live for a song: its votes, mine, and whether it is my own work. */
-export interface LimusicLyricState {
-	revision: number;
-	up: number;
-	down: number;
-	my_vote: -1 | 0 | 1;
-	own: boolean;
-}
-/** `null` when the song has no live lyric. Rejects with a code when the service can't say. */
-export const limusicLyricState = (videoId: string) =>
-	invoke<LimusicLyricState | null>('limusic_lyric_state', { videoId });
-/** 1, -1, or 0 to take the vote back. The first one makes an anonymous account, silently.
- *  Rejects with the service's code: `own`, `not_found`, `rate_limited`, `banned`, `unavailable`. */
-export const limusicVote = (videoId: string, value: -1 | 0 | 1) =>
-	invoke<Pick<LimusicLyricState, 'up' | 'down' | 'my_vote'>>('limusic_vote', { videoId, value });
-export type LimusicReportReason = 'wrong_song' | 'timing' | 'text' | 'abuse';
-/** Rejects with the service's code, as a vote does. */
-export const limusicReport = (videoId: string, reason: LimusicReportReason, note?: string) =>
-	invoke<void>('limusic_report', { videoId, reason, note: note || null });
-export const onLimusicAccount = (cb: (s: LimusicAccountState) => void): Promise<UnlistenFn> =>
-	listen<LimusicAccountState>('limusic-account', (e) => cb(e.payload));
-export interface LimusicSubmission {
-	video_id: string;
-	lines: LyricLine[];
-	title: string;
-	artist: string;
-	album?: string;
-	duration?: number;
-	base_revision: number | null;
-}
-export type LimusicSubmitted =
-	| { kind: 'published'; revision: number }
-	| { kind: 'pending'; revision: number }
-	| { kind: 'failed'; code: string; detail: string | null };
-export const limusicSubmit = (submission: LimusicSubmission) =>
-	invoke<LimusicSubmitted>('limusic_submit', { submission });
-/** The song's live revision on the service now, null when it has no live lyric. Rejects when the
- *  service can't be asked. */
-export const limusicLiveRevision = (videoId: string) =>
-	invoke<number | null>('limusic_live_revision', { videoId });
-// Review (reviewers only). Every call rejects with the service's code: `forbidden`,
-// `unauthorized`, `not_found`, `not_reviewable`, `stale`, `rate_limited`, `unavailable`.
-export interface LimusicQueueItem {
-	revision: number;
-	video_id: string;
-	title: string;
-	artist: string;
-	duration: number | null;
-	/** Null when the sender is anonymous. */
-	author: string | null;
-	/** `new`, `edit`, or `reported` (a live lyric with enough open reports). */
-	kind: string;
-	created_at: number;
-	reports: number;
-	/** Another reviewer who has it open. */
-	reviewing?: string | null;
-}
-export interface LimusicQueue {
-	items: LimusicQueueItem[];
-	/** Pass as `after` for the next page, null on the last. */
-	next: number | null;
-}
-export interface LimusicRevision {
-	revision: number;
-	video_id: string;
-	status: string;
-	kind: string;
-	author: string | null;
-	title: string;
-	artist: string;
-	album: string | null;
-	duration: number | null;
-	base_revision: number | null;
-	note: string | null;
-	created_at: number;
-	/** The submitted lines, ready for `LyricsView`'s `preview`. */
-	lyrics: Lyrics | null;
-	/** The author's revisions that went live, and those a reviewer rejected. Absent for mirrored ones. */
-	author_record: { approved: number; rejected: number } | null;
-}
-/** Oldest first, 50 a page. */
-export const limusicReviewQueue = (after?: number) =>
-	invoke<LimusicQueue>('limusic_review_queue', { after: after ?? null });
-/** Mark the submission this reviewer has open, null to let go. Resolves with another reviewer who
- *  has it already (this one then holds nothing), else null. */
-export const limusicReviewClaim = (revision: number | null) =>
-	invoke<{ by: string; since: number } | null>('limusic_review_claim', { revision });
-export const limusicReviewRevision = (revision: number) =>
-	invoke<LimusicRevision>('limusic_review_revision', { revision });
-/** The song's live community lyric from the service itself (never a lyrics provider), or null. */
-export const limusicLiveLyrics = (videoId: string) =>
-	invoke<Lyrics | null>('limusic_live_lyrics', { videoId });
-/** Resolves with the service's status: `published`, `rejected`, or `reverted` (a live lyric taken
- *  down). An approval also replaces the song's cached lyric here. */
-export const limusicReview = (
-	revision: number,
-	videoId: string,
-	verdict: 'approve' | 'reject',
-	reason?: string,
-	/** With an approval of a pending revision: the reviewer's fix, live in place of what was sent. */
-	lines?: LyricLine[]
-) => invoke<string>('limusic_review', { revision, videoId, verdict, reason: reason ?? null, lines: lines ?? null });
-/** A reviewer turned down my latest version of a song, and nothing went live after it. */
-export interface LimusicRejection {
-	/** That version, which `limusicReviewRevision` still returns to its author. */
-	revision: number;
-	reason: string | null;
-	at: number | null;
-}
-export const limusicMyRejection = (videoId: string) =>
-	invoke<LimusicRejection | null>('limusic_my_rejection', { videoId });
-/** One linked account on the lyrics team page (admins only). */
-export interface LimusicMember {
-	handle: string;
-	avatar_url: string | null;
-	role: 'user' | 'reviewer' | 'lead' | 'admin';
-	banned: boolean;
-	score: number;
-	approved: number;
-	rejected: number;
-	joined_at: number;
-	/** This is the admin looking: no controls on it. */
-	you: boolean;
-	/** How this account reviews. Null from an older service. */
-	reviews: LimusicReviewStats | null;
-}
-export interface LimusicReviewStats {
-	total: number;
-	approved: number;
-	fixed: number;
-	rejected: number;
-	taken_down: number;
-	/** Its approvals that were taken down since. */
-	overturned: number;
-	last_30_days: number;
-	last_at: number | null;
-}
-/** What a reviewer decided about my lyrics, never who. */
-export interface LimusicNote {
-	id: number;
-	revision: number;
-	video_id: string;
-	title: string;
-	artist: string;
-	verdict: 'approve' | 'reject' | 'takedown';
-	fixed: boolean;
-	reason: string | null;
-	at: number;
-	unread: boolean;
-}
-export const limusicNotes = () => invoke<LimusicNote[]>('limusic_notes');
-export const limusicNotesSeen = (last: number) => invoke<void>('limusic_notes_seen', { last });
-/** Staff then contributors with points for an empty `q`, else the handles holding it. */
-export const limusicAdminAccounts = (q: string) => invoke<LimusicMember[]>('limusic_admin_accounts', { q });
-export const limusicAdminUpdate = (handle: string, change: { role?: LimusicMember['role']; banned?: boolean }) =>
-	invoke<LimusicMember>('limusic_admin_update', { handle, role: change.role ?? null, banned: change.banned ?? null });
-/** Puts an earlier revision of the song back, or `null` for no lyric. Resolves with the live one. */
-export const limusicRevert = (videoId: string, toRevision: number | null, reason?: string) =>
-	invoke<number | null>('limusic_revert', { videoId, toRevision, reason: reason ?? null });
-/** A pasted or picked lyric file (TTML, eLRC, LRC) as lines, by the parsers the providers use.
- *  Empty for plain text. Rejects with `too_large` over 1 MB. */
-export const lyricsParse = (text: string) => invoke<LyricLine[]>('lyrics_parse', { text });
 /** A position read from the player this instant and the wall-clock time (Unix ms) of the read:
  *  what the lyric editor places a tap with (`stampTap`). `null` with nothing loaded. */
 export interface PlaybackClock {
@@ -1670,108 +1418,6 @@ export interface ListenBrainzProfile {
 }
 /** `null` when not connected or ListenBrainz didn't answer. */
 export const listenbrainzProfile = () => invoke<ListenBrainzProfile | null>('listenbrainz_profile');
-
-// --- Listen Together (context/19) -----------------------------------------------------------
-export interface LtUser {
-	user_id: string;
-	username: string;
-	is_host: boolean;
-	is_connected: boolean;
-}
-export interface LtTrack {
-	id: string;
-	title: string;
-	artist: string;
-	thumbnail?: string | null;
-	duration_ms: number;
-	/** Name of the guest who added this track to the session queue. */
-	queued_by?: string | null;
-}
-export interface LtPendingJoin {
-	userId: string;
-	username: string;
-}
-export interface LtSuggestion {
-	id: string;
-	from_user_id: string;
-	from_username: string;
-	track: LtTrack;
-}
-export interface LtState {
-	status: 'disconnected' | 'connecting' | 'connected';
-	role: 'none' | 'host' | 'guest';
-	/** Asked to create/join and awaiting the room (host approval) — show a waiting state. */
-	requesting: boolean;
-	roomCode: string | null;
-	myId: string | null;
-	/** Empty means the built-in default; the backend resolves it when it connects. */
-	serverUrl: string;
-	/** What that default is. Only ever rendered inside the "change server" panel. */
-	defaultServerUrl: string;
-	users: LtUser[];
-	currentTrack: LtTrack | null;
-	queue: LtTrack[];
-	pendingJoins: LtPendingJoin[];
-	suggestions: LtSuggestion[];
-}
-
-export const ltGetState = () => invoke<LtState>('lt_get_state');
-export const ltSetServerUrl = (url: string) => invoke<void>('lt_set_server_url', { url });
-export const ltCreateRoom = (username: string) => invoke<void>('lt_create_room', { username });
-export const ltJoinRoom = (code: string, username: string) =>
-	invoke<void>('lt_join_room', { code, username });
-export const ltLeave = () => invoke<void>('lt_leave');
-export const ltApproveJoin = (userId: string) => invoke<void>('lt_approve_join', { userId });
-export const ltRejectJoin = (userId: string) => invoke<void>('lt_reject_join', { userId });
-export const ltKick = (userId: string) => invoke<void>('lt_kick', { userId });
-export const ltTransferHost = (userId: string) => invoke<void>('lt_transfer_host', { userId });
-export const ltApproveSuggestion = (id: string) => invoke<void>('lt_approve_suggestion', { id });
-export const ltRejectSuggestion = (id: string) => invoke<void>('lt_reject_suggestion', { id });
-export const ltRequestSync = () => invoke<void>('lt_request_sync');
-
-export const onLtState = (cb: (s: LtState) => void): Promise<UnlistenFn> =>
-	listen<LtState>('lt-state', (e) => cb(e.payload));
-export const onLtNotice = (cb: (msg: string) => void): Promise<UnlistenFn> =>
-	listen<string>('lt-notice', (e) => cb(e.payload));
-
-// Device link: the phone as a remote, and Continue here (src-tauri/src/devicelink.rs).
-export interface LinkDevice {
-	id: string;
-	name: string;
-	online: boolean;
-	playing: boolean;
-}
-export interface LinkState {
-	/** `off`: no link. `unsupported`: a server of the user's own predates linking and never
-	 *  answered. `unreachable`: no code came back in time, the network is in the way. */
-	status: 'off' | 'connecting' | 'connected' | 'unsupported' | 'unreachable';
-	error: string | null;
-	/** The server the link was made on; empty means the default. */
-	server: string;
-	/** This desktop's name as the other devices see it. */
-	selfName: string;
-	/** A live pairing code; `expiresAt` is unix ms on this machine's clock. */
-	pairing: { code: string; expiresAt: number } | null;
-	/** The other linked devices. */
-	devices: LinkDevice[];
-	/** Another device that is playing, or played last. */
-	player: { id: string; name: string; online: boolean } | null;
-	track: LtTrack | null;
-	isPlaying: boolean;
-	/** The player bar shows and controls the player's playback, not this desktop's. */
-	remote: boolean;
-}
-
-export const linkState = () => invoke<LinkState>('link_state');
-export const linkStartPairing = () => invoke<void>('link_start_pairing');
-export const linkCancelPairing = () => invoke<void>('link_cancel_pairing');
-export const linkUnlink = (deviceId: string) => invoke<void>('link_unlink', { deviceId });
-export const linkForget = () => invoke<void>('link_forget');
-export const linkContinueHere = () => invoke<void>('link_continue_here');
-/** The device picker: play on `deviceId`, or on this desktop when it is empty. */
-export const linkPlayOn = (deviceId: string) => invoke<void>('link_play_on', { deviceId });
-export const onLinkState = (cb: (s: LinkState) => void): Promise<UnlistenFn> =>
-	listen<LinkState>('link-state', (e) => cb(e.payload));
 
 export const getMatugenTheme = () => invoke<string | null>('get_matugen_theme');
 export const onMatugenThemeChanged = (cb: (css: string | null) => void): Promise<UnlistenFn> =>

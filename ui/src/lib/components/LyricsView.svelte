@@ -75,7 +75,6 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import LyricsSourcePicker from './LyricsSourcePicker.svelte';
 	import KaraokeButton from './KaraokeButton.svelte';
-	import { link } from '$lib/link.svelte';
 	import { voices } from '$lib/lyricvoices';
 	import { durationSecs, lyricsFor, setNowLyrics } from '$lib/nowlyrics.svelte';
 	import { SCROLL_EASE, glowing, letters, scrollMs, sweep as sweepStyle } from '$lib/lyricmotion';
@@ -153,24 +152,6 @@
 	// Shared with the line under the now-playing cover, which writes and reads the same answer.
 	const ask = (now: NonNullable<typeof playback.now>) =>
 		lyricsFor(now).then((l) => (setNowLyrics(now.videoId, l), l));
-
-	// The cache brought this song's lyrics up to date behind the ones on screen (`refresh_stale`):
-	// swap them in where they are, with no loading state and no jump.
-	$effect(() => {
-		if (preview) return;
-		const sub = api.onLyricsUpdated((id) => {
-			const now = playback.now;
-			if (!now || now.videoId !== id || requested !== id) return;
-			ask(now)
-				.then((l) => {
-					if (requested !== id) return;
-					lyrics = l;
-					missing = !l || l.instrumental;
-				})
-				.catch(() => {});
-		});
-		return () => void sub.then((u) => u());
-	});
 
 	$effect(() => {
 		if (preview) {
@@ -700,9 +681,8 @@
 				t('lyrics.romanize_hint')
 			)}
 		{/if}
-		<!-- Karaoke's switch lives here, not in the player bar (KaraokeButton.svelte). It works on
-		     this desktop's player, so it goes while the bar controls a linked device. -->
-		{#if !link.remote}<KaraokeButton />{/if}
+		<!-- Karaoke's switch lives here, not in the player bar (KaraokeButton.svelte). -->
+		<KaraokeButton />
 		<!-- One icon, because the footer is full (the side panel is 320px). The popover holds the
 		     `− 115% +` stepper; the ends go dead rather than wrapping. -->
 		{#if canResize}

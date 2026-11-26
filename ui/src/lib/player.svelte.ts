@@ -12,8 +12,6 @@ import type {
 	Rating,
 	SongItem
 } from './api';
-import { applyLtState, lt } from './lt.svelte';
-import { applyLinkState, link } from './link.svelte';
 import { clearCached, invalidateCached, LIBRARY_SONGS_KEY } from './pagecache';
 import * as pl from './personal';
 import type { Personal } from './personal';
@@ -302,9 +300,6 @@ export function openKaraokeSettings(): void {
  */
 export const prefs = $state({
 	musicVideos: false,
-	/** `discord_rpc`. Two places toggle it (the titlebar button and the Discord settings tab) and
-	 *  each drew its own indicator, so turning it off in one left the other stale. One owner. */
-	discordRpc: false,
 	/** Linux: mpv draws the music video under the page (nativevideo.rs) instead of a `<video>`
 	 *  element. Cleared if it turns out there is no GL surface, which hands the picture back. */
 	nativeVideo: false,
@@ -321,8 +316,7 @@ export const prefs = $state({
 /** Rust drops the upcoming autoplay tracks when this goes off, and tops a short queue up when it
  *  comes on, so the queue shows what will actually play. */
 export function setAutoplay(on: boolean): void {
-	// While the bar controls a linked phone, Rust sends this to the phone; ours stays as it is.
-	if (!link.remote) prefs.autoplay = on;
+	prefs.autoplay = on;
 	playback.queue.autoplay = on;
 	api.setSetting('autoplay', on ? 'true' : 'false').catch((e) => toast.error(String(e)));
 }
@@ -780,7 +774,7 @@ export async function unblockArtist(entry: api.BlockedArtist) {
 // `UI_SETTINGS` allowlist entry would buy nothing. Loaded at module scope (guarded like the layout's
 // `initTheme`) so the sidebar and home grid render sorted on the very first paint.
 // ponytail: move to db.rs if it ever needs to be account-scoped or readable outside the webview.
-const PERSONAL_KEY = 'limusic:personal';
+const PERSONAL_KEY = 'aura:personal';
 
 export const personal = $state<Personal>(pl.empty());
 
@@ -1545,7 +1539,6 @@ export async function enqueue(
 		toast.error(String(e));
 		return;
 	}
-	if (lt.role === 'guest') return;
 	const n = items.length;
 	if (next)
 		toast.success(n === 1 ? t('toasts.playing_next_one') : t('toasts.playing_next', { count: n }));
@@ -1584,9 +1577,8 @@ export const ui = $state({
 	toast: null as Toast | null,
 	settingsOpen: false, // the settings modal
 	tempoPitchOpen: false, // playback effects stay open when the current track menu is replaced
-	settingsFocus: null as 'lyrics' | 'limusic' | 'scrobbling' | 'devices' | 'karaoke' | null, // a section to open settings on, once
+	settingsFocus: null as 'lyrics' | 'scrobbling' | 'karaoke' | null, // a section to open settings on, once
 	scrobbleTrack: null as SongItem | null, // "Edit scrobble" from a track menu: the track to edit
-	ltOpen: false, // the Listen Together modal
 	linkOpen: false, // the "open a pasted link" modal
 	paletteOpen: false, // the Ctrl+K search palette
 	theaterOpen: false, // fullscreen theater view (artwork + lyrics and/or queue)
@@ -1900,8 +1892,7 @@ export function notePlaylistAdd(playlistId: string, songs: SongItem[]) {
 		autoplay: undefined,
 		queued: undefined,
 		queued_end: undefined,
-		queued_from: undefined,
-		queued_by: undefined
+		queued_from: undefined
 	}));
 	lastPlaylistAdd.epoch++;
 }
@@ -1934,7 +1925,7 @@ export function initApp(mini = false): () => void {
 		}),
 		api.onNowPlaying((n) => {
 			playback.now = n;
-			// Nothing of its own to show after a linked device's playback (devicelink).
+			// Nothing playing: nothing more to show.
 			if (!n) return;
 			playback.rating = n.rating ?? 'indifferent'; // the track's real rating when known
 			syncKaraokeStatus();
@@ -2143,12 +2134,7 @@ export function initApp(mini = false): () => void {
 		}),
 		api.onAccountSelectionRequired(() => openChannelPicker(true)),
 		api.onLoginError((msg) => toast.error(msg)),
-		api.onLoginDone(() => toast.success(t('toasts.signed_in'))),
-		// Listen Together (context/19): mirror the Rust session state; surface notices as toasts.
-		// Rust restores the shared clock before applying room playback, even with no UI open.
-		api.onLtState(applyLtState),
-		api.onLtNotice((msg) => toast(msg)),
-		api.onLinkState(applyLinkState)
+		api.onLoginDone(() => toast.success(t('toasts.signed_in')))
 	];
 	const teardown = () => subs.forEach((u) => u.then((f) => f()));
 	api.getQueue()
@@ -2184,7 +2170,6 @@ export function initApp(mini = false): () => void {
 			prefs.musicVideos = s.music_videos === 'true';
 			prefs.nativeVideo = s.native_video === 'true';
 			prefs.ambient = s.ambient_light === 'true';
-			prefs.discordRpc = s.discord_rpc === 'true';
 			prefs.autoplay = s.autoplay !== 'false';
 			prefs.scrobbling = parseScrobbleConfig(s.lastfm_config).enabled;
 			// Half of what the app shows is YouTube's own text, and Rust asks for it in the language
@@ -2221,7 +2206,5 @@ export function initApp(mini = false): () => void {
 	scanLocal();
 	loadBlocked();
 	// Seed the Listen Together state (server URL, any active room after a UI reload).
-	api.ltGetState().then(applyLtState).catch(() => {});
-	api.linkState().then(applyLinkState).catch(() => {});
 	return teardown;
 }

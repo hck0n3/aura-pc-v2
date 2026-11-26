@@ -341,12 +341,13 @@ fn japanese_run(run: &str) -> String {
     words.iter().map(|w| w.to_romaji()).collect::<Vec<_>>().join(" ")
 }
 
-// --- The lyric editor's words (#676) ------------------------------------------------------------
+// --- Word readings (#676) -----------------------------------------------------------------------
 
-/// Each word's reading, one list per line as the lyric editor split it, `None` where a word needs
-/// none. A Japanese line is read whole and each word gets its share of the reading: a kanji reads
-/// by its neighbours, 並 alone is "nami" and in 並べた "nara".
-pub fn word_readings(lines: &[Vec<String>]) -> Vec<Vec<Option<String>>> {
+/// Each word's reading, one list per line, `None` where a word needs none. Test entry point for
+/// `word_readings_in`, which `fill` uses. A Japanese line is read whole and each word gets its
+/// share of the reading: a kanji reads by its neighbours, 並 alone is "nami" and in 並べた "nara".
+#[cfg(test)]
+fn word_readings(lines: &[Vec<String>]) -> Vec<Vec<Option<String>>> {
     let all: String = lines.iter().flatten().map(String::as_str).collect();
     word_readings_in(lines, is_japanese(&all))
 }

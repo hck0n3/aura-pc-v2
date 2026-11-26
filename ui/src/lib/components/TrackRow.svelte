@@ -4,7 +4,6 @@
 	import {
 		FavouriteIcon,
 		PlayIcon,
-		PlayListAddIcon,
 		ThumbsDownIcon,
 		ThumbsUpIcon,
 		VolumeHighIcon
@@ -13,7 +12,6 @@
 	import * as api from '$lib/api';
 	import type { SongItem } from '$lib/api';
 	import { thumb } from '$lib/thumb';
-	import { lt } from '$lib/lt.svelte';
 	import { goto } from '$app/navigation';
 	import { anySaved, isLiked, openAddManyToPlaylist, ratingOf, savedPlaylists, toast, toggleRating } from '$lib/player.svelte';
 	import { addedLabel, addedTitle, CELL, END, TITLE, type TrackColumn } from '$lib/trackcolumns';
@@ -107,9 +105,6 @@
 	} = $props();
 	const selectionDescriptionId = $props.id();
 
-	// In a session as guest, clicking a song adds it to the shared queue instead of playing it —
-	// reflect that in the hover icon + label so the row doesn't lie.
-	const guestAdd = $derived(lt.role === 'guest');
 	// Only in select mode: at rest the row is a plain click-to-play row, with no checkbox and no
 	// Space/click rebinding.
 	const selectable = $derived(!!selection?.active && selectionKey !== undefined);
@@ -244,7 +239,7 @@
 	data-selection-key={selectionKey}
 	data-selected={selectable ? selected : undefined}
 	aria-describedby={selectable ? selectionDescriptionId : undefined}
-	aria-label={selectable ? t(guestAdd ? 'selection.track_guest' : 'selection.track', { title: song.title }) : guestAdd ? `Add ${song.title} to the session queue` : `Play ${song.title}`}
+	aria-label={selectable ? t('selection.track', { title: song.title }) : `Play ${song.title}`}
 	class="group flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-accent/10 {selected
 		? 'bg-primary/15'
 		: active
@@ -298,7 +293,7 @@
 						/>
 					{/if}
 					<HugeiconsIcon
-						icon={guestAdd ? PlayListAddIcon : PlayIcon}
+						icon={PlayIcon}
 						class="invisible absolute inset-0 m-auto h-3.5 w-3.5 {selectable ? '' : 'group-hover:visible'}"
 					/>
 				</span>
@@ -322,13 +317,6 @@
 				<span class="min-w-0 truncate text-sm font-medium {active ? 'text-primary' : ''}">
 					{song.title}
 				</span>
-				{#if song.queued_by}
-					<span
-						class="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
-					>
-						{song.queued_by}
-					</span>
-				{/if}
 			</div>
 			<div class="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
 				{#if columns && song.explicit}

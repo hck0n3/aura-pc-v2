@@ -204,7 +204,7 @@ pub async fn toggle_pause(state: St<'_>) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn seek(state: St<'_>, position: f64) -> Result<(), String> {
-    // Routed through AppState so a Listen Together host broadcasts the seek and a guest is blocked.
+    // Routed through AppState: with nothing loaded it moves where the restored track will start.
     state.user_seek(position).await
 }
 
@@ -279,15 +279,13 @@ pub async fn get_queue(state: St<'_>) -> Result<serde_json::Value, String> {
 /// `visitor_data`) and internal blobs (`queue_json`, `queue_index`, `queue_position`) never cross
 /// into the webview: they'd otherwise ship the login credential to the renderer on every open, and
 /// the webview can't overwrite them either.
-const UI_SETTINGS: [&str; 34] = [
+const UI_SETTINGS: [&str; 32] = [
     "volume",
     "proxy",
     "quality",
     "normalize_volume",
     "enable_history",
     "disabled_stream_clients",
-    "discord_rpc",
-    "discord_rpc_config",
     "close_to_tray",
     "track_notifications",
     "track_notifications_focused",
@@ -316,7 +314,7 @@ const UI_SETTINGS: [&str; 34] = [
     "locale",
 ];
 
-/// Resolve the music video for `video_id` and hand back a `limusicvideo://` URL the player view
+/// Resolve the music video for `video_id` and hand back a `auravideo://` URL the player view
 /// can put in a `<video src>`. `None` when YouTube has no usable video stream for it, which is the
 /// ordinary answer for a song and leaves the artwork in place. The real googlevideo URL never
 /// leaves Rust (context/11).
@@ -458,13 +456,6 @@ pub async fn set_setting(
     if !UI_SETTINGS.contains(&key.as_str()) {
         return Err(format!("unknown setting: {key}"));
     }
-    // The queue panel's switch is the playing device's: while the player bar controls a linked
-    // phone, it flips the phone's Autoplay and leaves this desktop's as it is.
-    if key == "autoplay" && state.showing_remote() {
-        let on = value != "false";
-        state.link.remote(listen_protocol::RemoteAction::SetAutoplay { on }, None);
-        return Ok(());
-    }
     // Registers/removes the login autostart entry on toggle; the OS persists it from there, and
     // startup repoints an existing entry at the running binary (lib.rs). Before the write, so a
     // failure leaves the setting as it was. A dev build would register itself, and at login its
@@ -498,16 +489,6 @@ pub async fn set_setting(
     #[cfg(target_os = "linux")]
     if key == "ambient_light" {
         crate::set_webgl(&app, value == "true");
-    }
-    // Presence connects/clears the moment it's toggled — the user shouldn't have to skip a track
-    // to see it take effect.
-    if key == "discord_rpc" {
-        state.set_discord_enabled(value == "true");
-    }
-    // Same reasoning for the card layout: the settings tab previews it live, so the real card has
-    // to follow without waiting for the next track.
-    if key == "discord_rpc_config" {
-        state.set_discord_config(&value);
     }
     // Takes effect at once: if other media is already playing, the music pauses without waiting.
     if key == "auto_pause_other_audio" {
@@ -768,9 +749,9 @@ fn tally_data_dir(dir: &std::path::Path) -> StorageUsage {
             "audio-cache" => &mut u.audio,
             "karaoke-cache" => &mut u.karaoke,
             "models" | "runtime" => &mut u.models,
-            // Also a quarantined `limusic.corrupt-<stamp>.sqlite`.
-            n if n.starts_with("limusic.") && n.contains("sqlite") => &mut u.library,
-            n if n.starts_with("limusic.") => &mut u.other,
+            // Also a quarantined `aura.corrupt-<stamp>.sqlite`.
+            n if n.starts_with("aura.") && n.contains("sqlite") => &mut u.library,
+            n if n.starts_with("aura.") => &mut u.other,
             "cipher_cache" | "covers" | "app-icon.png" => &mut u.other,
             _ => &mut u.web,
         };
@@ -891,7 +872,7 @@ pub async fn open_mini(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 /// Swap back. Same path as the tray, so the widget and the tray can't disagree about what
-/// "show Limusic" means.
+/// "show Aura" means.
 #[tauri::command]
 pub async fn close_mini(app: tauri::AppHandle) -> Result<(), String> {
     crate::tray::show_main(&app);
@@ -1399,7 +1380,7 @@ pub async fn get_library_subscriptions(state: St<'_>) -> Result<Vec<BrowseItem>,
 }
 
 /// A playlist or album page. `id` is the browseId (`VL…` / `MPRE…`); Liked Songs is `VLLM`, and
-/// `LIMUSIC_ON_REPEAT` is the local auto-playlist rather than anything YouTube knows about.
+/// `AURA_ON_REPEAT` is the local auto-playlist rather than anything YouTube knows about.
 ///
 /// `sort` asks YouTube for the tracks in a given order; `None` gets whatever order the account
 /// already has the list in, which is what a fresh visit wants (it matches YouTube Music).
@@ -1503,17 +1484,15 @@ fn on_repeat_songs(state: &Arc<AppState>) -> Vec<SongItem> {
 }
 
 /// A play record is the whole `SongItem` as it sat in the queue, so it carries that slot's queue
-/// metadata: `queued`/`queued_by` when the track was "added to queue" (in a Listen Together session,
-/// stamped with who added it), `autoplay` when radio appended it, `set_video_id` from whatever
-/// playlist it was played from. None of that describes the song, so On Repeat sheds it: otherwise
-/// the row wears a session member's name forever, and playing On Repeat drops it into "Next in
-/// queue" instead of the playlist. Strips on read so rows already stored this way are fixed too.
+/// metadata: `queued` when the track was "added to queue", `autoplay` when radio appended it,
+/// `set_video_id` from whatever playlist it was played from. None of that describes the song, so
+/// On Repeat sheds it: otherwise playing On Repeat drops it into "Next in queue" instead of the
+/// playlist. Strips on read so rows already stored this way are fixed too.
 fn shed_queue_context(s: SongItem) -> SongItem {
     SongItem {
         queued: false,
         queued_end: false,
         queued_from: None,
-        queued_by: None,
         autoplay: false,
         set_video_id: None,
         added_by: None,
@@ -2565,141 +2544,6 @@ async fn scan_local(state: &Arc<AppState>) -> Result<crate::local::LocalLibrary,
     Ok(lib)
 }
 
-// --- Device link (crate::devicelink) -------------------------------------------------------
-
-#[tauri::command]
-pub async fn link_state(state: St<'_>) -> Result<serde_json::Value, String> {
-    Ok(state.link.snapshot())
-}
-
-/// "Link a phone" / "New code": make the link if there is none and ask the server for a code.
-#[tauri::command]
-pub async fn link_start_pairing(state: St<'_>) -> Result<(), String> {
-    state.link.start_pairing();
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn link_cancel_pairing(state: St<'_>) -> Result<(), String> {
-    state.link.cancel_pairing();
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn link_unlink(state: St<'_>, device_id: String) -> Result<(), String> {
-    state.link.unlink(&device_id);
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn link_forget(state: St<'_>) -> Result<(), String> {
-    state.link.forget();
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn link_continue_here(state: St<'_>) -> Result<(), String> {
-    state.inner().clone().link_continue_here().await;
-    Ok(())
-}
-
-/// The device picker: play on a linked device, or on this desktop when `device_id` is empty.
-#[tauri::command]
-pub async fn link_play_on(state: St<'_>, device_id: String) -> Result<(), String> {
-    state.inner().clone().link_play_on(device_id).await;
-    Ok(())
-}
-
-// --- Listen Together (context/19) ----------------------------------------------------------
-
-/// Current client-side LT state (status, role, room, participants, pending joins, suggestions).
-#[tauri::command]
-pub async fn lt_get_state(state: St<'_>) -> Result<serde_json::Value, String> {
-    Ok(state.lt.snapshot().await)
-}
-
-/// Set + persist the sync server URL (e.g. the Tailscale Funnel `wss://…` address).
-#[tauri::command]
-pub async fn lt_set_server_url(state: St<'_>, url: String) -> Result<(), String> {
-    let url = url.trim().to_string();
-    state.db.set_setting("lt_server_url", &url);
-    state.lt.set_server_url(url).await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_create_room(state: St<'_>, username: String) -> Result<(), String> {
-    state.lt.create_room(username).await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_join_room(state: St<'_>, code: String, username: String) -> Result<(), String> {
-    state.lt.join_room(code, username).await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_leave(state: St<'_>) -> Result<(), String> {
-    state.lt.leave().await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_approve_join(state: St<'_>, user_id: String) -> Result<(), String> {
-    state.lt.approve_join(user_id).await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_reject_join(state: St<'_>, user_id: String) -> Result<(), String> {
-    state.lt.reject_join(user_id).await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_kick(state: St<'_>, user_id: String) -> Result<(), String> {
-    state.lt.kick(user_id).await;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_transfer_host(state: St<'_>, user_id: String) -> Result<(), String> {
-    state.lt.transfer_host(user_id).await;
-    Ok(())
-}
-
-/// Guest: send a track to the session queue (auto-approved by the host client, which stamps
-/// who added it).
-#[tauri::command]
-pub async fn lt_suggest(state: St<'_>, item: SongItem) -> Result<(), String> {
-    state.lt.suggest(crate::state::song_to_track(&item)).await;
-    Ok(())
-}
-
-/// Host: approve a suggestion — add it to the real queue and notify the suggester. (Unused since
-/// guest adds auto-approve, kept for a future "require approval" setting.)
-#[tauri::command]
-pub async fn lt_approve_suggestion(state: St<'_>, id: String) -> Result<(), String> {
-    if let Some(track) = state.lt.approve_suggestion(id).await {
-        state.inner().clone().lt_enqueue_track(track).await;
-    }
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn lt_reject_suggestion(state: St<'_>, id: String) -> Result<(), String> {
-    state.lt.reject_suggestion(id).await;
-    Ok(())
-}
-
-/// Guest: force a re-sync with the room (drift correction).
-#[tauri::command]
-pub async fn lt_request_sync(state: St<'_>) -> Result<(), String> {
-    state.lt.request_sync().await;
-    Ok(())
-}
-
 // --- lyrics ---------------------------------------------------------------------------------
 
 /// Lyrics for a track (cached). The UI passes the metadata it already has from `now-playing`;
@@ -2757,257 +2601,6 @@ pub fn lyrics_providers(state: St<'_>) -> Vec<crate::lyrics::ProviderInfo> {
     crate::lyrics::providers(state.inner())
 }
 
-/// Where the lyric editor starts for a song: the lyrics the app has for it, as the provider sent
-/// them (no romanization filled in, since what the editor holds is what gets submitted).
-#[tauri::command]
-pub async fn lyrics_editor_start(
-    state: St<'_>,
-    video_id: String,
-    title: String,
-    artists: String,
-    album: Option<String>,
-    duration: Option<f64>,
-) -> Result<crate::lyrics::EditorStart, String> {
-    let req =
-        crate::lyrics::LyricsRequest { video_id, title, artists, album, duration, searched: false };
-    Ok(crate::lyrics::editor_start(state.inner(), req).await)
-}
-
-/// One provider's lyrics for the lyric editor to start from, as it sent them. Rejects when the
-/// provider couldn't be reached.
-#[tauri::command]
-pub async fn lyrics_editor_source(
-    state: St<'_>,
-    video_id: String,
-    title: String,
-    artists: String,
-    album: Option<String>,
-    duration: Option<f64>,
-    source: String,
-) -> Result<Option<crate::lyrics::Lyrics>, String> {
-    let req =
-        crate::lyrics::LyricsRequest { video_id, title, artists, album, duration, searched: false };
-    crate::lyrics::editor_source(state.inner(), req, &source).await
-}
-
-/// The lyric editor's romanization hint (#676): each word's reading, per line as the editor split
-/// it, `None` where a word needs none. Shown under the word, never submitted.
-#[tauri::command]
-pub async fn lyrics_word_readings(lines: Vec<Vec<String>>) -> Vec<Vec<Option<String>>> {
-    crate::romanize::word_readings(&lines)
-}
-
-/// The lyric editor's preview through `romanize::fill`, as the player shows every lyric.
-#[tauri::command]
-pub fn lyrics_romanize(mut lyrics: crate::lyrics::Lyrics) -> crate::lyrics::Lyrics {
-    crate::romanize::fill(&mut lyrics);
-    lyrics
-}
-
-/// What Limusic Lyrics offers: `anonymous` gates contributing, `providers` are the identities that
-/// can be linked.
-#[tauri::command]
-pub async fn limusic_providers() -> crate::limusic::Providers {
-    crate::limusic::providers().await
-}
-
-/// The stored session: `{signed_in, handle, anonymous}`. Doesn't ask the service.
-#[tauri::command]
-pub fn limusic_status(state: St<'_>) -> serde_json::Value {
-    crate::limusic::status(state.inner())
-}
-
-/// Opens the browser for `provider` and returns the code to compare with its confirm page. The
-/// outcome arrives as the `limusic-account` event.
-#[tauri::command]
-pub async fn limusic_sign_in(state: St<'_>, provider: String) -> Result<String, String> {
-    crate::limusic::sign_in(state.inner().clone(), provider).await
-}
-
-#[tauri::command]
-pub fn limusic_cancel() {
-    crate::limusic::cancel();
-}
-
-#[tauri::command]
-pub fn limusic_sign_out(state: St<'_>) {
-    crate::limusic::sign_out(state.inner());
-}
-
-/// The signed-in account, fresh from the service. `None` when signed out.
-#[tauri::command]
-pub async fn limusic_me(state: St<'_>) -> Result<Option<crate::limusic::Account>, String> {
-    crate::limusic::me(state.inner()).await
-}
-
-/// Rejects with the service's code: `taken`, `invalid`, `rate_limited`, `unauthorized`, ...
-#[tauri::command]
-pub async fn limusic_rename(
-    state: St<'_>,
-    handle: String,
-) -> Result<crate::limusic::Account, String> {
-    crate::limusic::rename(state.inner(), handle).await
-}
-
-/// The song's live revision on the service now (`None`: no live lyric), for keeping a draft on top
-/// of a newer version.
-#[tauri::command]
-pub async fn limusic_live_revision(state: St<'_>, video_id: String) -> Result<Option<i64>, String> {
-    crate::limusic::live_revision(&crate::lyrics::filed_id(&state, &video_id)).await
-}
-
-/// The votes on the lyric Limusic has live for the song, this account's own, and whether the lyric
-/// is its own work. `None` when there is no live lyric.
-#[tauri::command]
-pub async fn limusic_lyric_state(
-    state: St<'_>,
-    video_id: String,
-) -> Result<Option<crate::limusic::LyricState>, String> {
-    let video_id = crate::lyrics::filed_id(&state, &video_id);
-    crate::limusic::lyric_state(state.inner(), &video_id).await
-}
-
-/// Vote on the live lyric: 1, -1, or 0 to take it back. The first one makes an anonymous account.
-#[tauri::command]
-pub async fn limusic_vote(
-    state: St<'_>,
-    video_id: String,
-    value: i64,
-) -> Result<crate::limusic::Votes, String> {
-    let video_id = crate::lyrics::filed_id(&state, &video_id);
-    crate::limusic::vote(state.inner(), &video_id, value).await
-}
-
-/// Report the live lyric: `wrong_song`, `timing`, `text` or `abuse`, with an optional note.
-#[tauri::command]
-pub async fn limusic_report(
-    state: St<'_>,
-    video_id: String,
-    reason: String,
-    note: Option<String>,
-) -> Result<(), String> {
-    let video_id = crate::lyrics::filed_id(&state, &video_id);
-    crate::limusic::report(state.inner(), &video_id, &reason, note).await
-}
-
-/// A page of the review queue (reviewers only), oldest first.
-#[tauri::command]
-pub async fn limusic_review_queue(
-    state: St<'_>,
-    after: Option<i64>,
-) -> Result<crate::limusic::Queue, String> {
-    crate::limusic::review_queue(state.inner(), after).await
-}
-
-/// Mark the revision this reviewer has open (`None` lets go). `Some` is another reviewer who has it.
-#[tauri::command]
-pub async fn limusic_review_claim(
-    state: St<'_>,
-    revision: Option<i64>,
-) -> Result<Option<crate::limusic::Claim>, String> {
-    crate::limusic::review_claim(state.inner(), revision).await
-}
-
-/// One revision with its lines, for a reviewer or its author (the editor reopens a rejected one).
-#[tauri::command]
-pub async fn limusic_review_revision(
-    state: St<'_>,
-    revision: i64,
-) -> Result<crate::limusic::Revision, String> {
-    crate::limusic::review_revision(state.inner(), revision).await
-}
-
-/// The song's live community lyric, for comparing an edit with what it replaces. Asks the
-/// service only, never a lyrics provider.
-#[tauri::command]
-pub async fn limusic_live_lyrics(video_id: String) -> Option<crate::lyrics::Lyrics> {
-    crate::limusic::live_lyrics(&video_id).await
-}
-
-/// `verdict` is `approve` or `reject`. Resolves with the service's status for the revision.
-/// `lines` with an approval is the reviewer's fix (Fix before approving).
-#[tauri::command]
-pub async fn limusic_review(
-    state: St<'_>,
-    revision: i64,
-    video_id: String,
-    verdict: String,
-    reason: Option<String>,
-    lines: Option<Vec<crate::lyrics::LyricLine>>,
-) -> Result<String, String> {
-    crate::limusic::review_verdict(state.inner(), revision, &video_id, &verdict, reason, lines)
-        .await
-}
-
-/// Why a reviewer rejected my latest version of the song, for the editor. `None` when there is
-/// nothing to say.
-#[tauri::command]
-pub async fn limusic_my_rejection(
-    state: St<'_>,
-    video_id: String,
-) -> Result<Option<crate::limusic::Rejection>, String> {
-    let video_id = crate::lyrics::filed_id(&state, &video_id);
-    Ok(crate::limusic::my_rejection(state.inner(), &video_id).await)
-}
-
-/// Reviewers' notes on my lyrics, newest first.
-#[tauri::command]
-pub async fn limusic_notes(state: St<'_>) -> Result<Vec<crate::limusic::Note>, String> {
-    crate::limusic::notes(state.inner()).await
-}
-
-/// The notes up to `last` are read.
-#[tauri::command]
-pub async fn limusic_notes_seen(state: St<'_>, last: i64) -> Result<(), String> {
-    crate::limusic::notes_seen(state.inner(), last).await
-}
-
-/// The lyrics team (admins and leads): staff and contributors, or the handles holding `q`.
-#[tauri::command]
-pub async fn limusic_admin_accounts(
-    state: St<'_>,
-    q: String,
-) -> Result<Vec<crate::limusic::Member>, String> {
-    crate::limusic::admin_accounts(state.inner(), &q).await
-}
-
-/// Set a role, ban or unban (admins; a lead only moves people between user and reviewer).
-#[tauri::command]
-pub async fn limusic_admin_update(
-    state: St<'_>,
-    handle: String,
-    role: Option<String>,
-    banned: Option<bool>,
-) -> Result<crate::limusic::Member, String> {
-    crate::limusic::admin_update(state.inner(), &handle, role, banned).await
-}
-
-/// Put an earlier revision back, or `null` for no lyric. Resolves with the live revision.
-#[tauri::command]
-pub async fn limusic_revert(
-    state: St<'_>,
-    video_id: String,
-    to_revision: Option<i64>,
-    reason: Option<String>,
-) -> Result<Option<i64>, String> {
-    crate::limusic::revert(state.inner(), &video_id, to_revision, reason).await
-}
-
-#[tauri::command]
-pub async fn limusic_submit(
-    state: St<'_>,
-    submission: crate::limusic::Submission,
-) -> Result<crate::limusic::Submitted, String> {
-    Ok(crate::limusic::submit(state.inner(), submission).await)
-}
-
-/// A pasted or imported lyric file (TTML, eLRC, LRC, the JSON shapes) as lines. Empty for plain
-/// text, which the editor splits into lines itself.
-#[tauri::command]
-pub async fn lyrics_parse(text: String) -> Result<Vec<crate::lyrics::LyricLine>, String> {
-    crate::lyrics::parse_file(&text)
-}
-
 // --- Changelog ------------------------------------------------------------------------------
 
 #[derive(Clone, serde::Serialize)]
@@ -3037,8 +2630,8 @@ pub async fn release_notes() -> Result<Vec<ReleaseNote>, String> {
         prerelease: bool,
     }
     let releases: Vec<GhRelease> = crate::http::client()
-        .get("https://api.github.com/repos/SimoHypers/limusic/releases?per_page=20")
-        .header("User-Agent", concat!("Limusic/", env!("CARGO_PKG_VERSION")))
+        .get("https://api.github.com/repos/hck0n3/aura-pc-v2/releases?per_page=20")
+        .header("User-Agent", concat!("Aura/", env!("CARGO_PKG_VERSION")))
         .header("Accept", "application/vnd.github+json")
         .timeout(std::time::Duration::from_secs(15))
         .send()
@@ -3069,7 +2662,7 @@ pub async fn release_notes() -> Result<Vec<ReleaseNote>, String> {
 /// Tauri's Linux updater knows one trick: rewrite an AppImage in place. It takes the path from
 /// `Env::appimage` and, when that is unset, falls back to `current_exe()` and writes the downloaded
 /// AppImage bytes over whatever it finds there. On the `.rpm` and on distro packages (the AUR's
-/// `limusic-bin`) that is a package-manager-owned `/usr/bin/limusic-app`: it fails on permissions
+/// `aura-bin`) that is a package-manager-owned `/usr/bin/aura-app`: it fails on permissions
 /// rather than doing damage, but offering the button at all is a lie. Those users update through
 /// their package manager, so the UI shows them a download link instead.
 ///
@@ -3094,7 +2687,7 @@ pub fn can_self_update(app: tauri::AppHandle) -> bool {
 /// the release workflows move it to the newest release candidate, or to the newest release once that
 /// is ahead, so the URL never changes.
 const BETA_MANIFEST: &str =
-    "https://github.com/SimoHypers/limusic/releases/download/beta/latest.json";
+    "https://github.com/hck0n3/aura-pc-v2/releases/download/beta/latest.json";
 
 /// What the updater plugin's own `check` command returns, so the UI can wrap it in the plugin's
 /// `Update` class and install it the usual way.
@@ -3164,7 +2757,7 @@ pub fn quit_app(app: tauri::AppHandle) {
 // --- Diagnostics ----------------------------------------------------------------------------
 
 /// The bug-report blob for Settings ▸ About: environment header plus the redacted tail of
-/// `limusic.log`. See `crate::diagnostics`.
+/// `aura.log`. See `crate::diagnostics`.
 #[tauri::command]
 pub fn diagnostics(app: tauri::AppHandle, state: St<'_>) -> String {
     crate::diagnostics::report(&app, &state.db)
@@ -3659,17 +3252,17 @@ mod tests {
 
     #[test]
     fn storage_tally_sorts_the_data_dir() {
-        let dir = std::env::temp_dir().join(format!("limusic-storage-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("aura-storage-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let put = |rel: &str, n: usize| {
             let p = dir.join(rel);
             std::fs::create_dir_all(p.parent().unwrap()).unwrap();
             std::fs::write(p, vec![0u8; n]).unwrap();
         };
-        put("limusic.sqlite", 100);
-        put("limusic.sqlite-wal", 10);
-        put("limusic.corrupt-1.sqlite", 1);
-        put("limusic.log", 5);
+        put("aura.sqlite", 100);
+        put("aura.sqlite-wal", 10);
+        put("aura.corrupt-1.sqlite", 1);
+        put("aura.log", 5);
         put("audio-cache/a", 20);
         put("karaoke-cache/x/y.flac", 300);
         put("models/m.onnx", 40);
@@ -3733,7 +3326,6 @@ mod tests {
             video_id: "abc".into(),
             title: "Grace".into(),
             queued: true,
-            queued_by: Some("simohypers".into()),
             autoplay: true,
             set_video_id: Some("SVI".into()),
             ..Default::default()

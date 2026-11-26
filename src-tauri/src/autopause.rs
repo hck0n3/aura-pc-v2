@@ -63,10 +63,10 @@ fn poll_once(
     state.on_external_audio(!playing.is_empty());
 }
 
-/// Limusic's own media session (souvlaki) is in the same list and must never pause us.
+/// Aura's own media session (souvlaki) is in the same list and must never pause us.
 #[cfg(any(windows, target_os = "linux"))]
 fn is_own(id: &str) -> bool {
-    id.to_ascii_lowercase().contains("limusic")
+    id.to_ascii_lowercase().contains("aura")
 }
 
 #[cfg(windows)]
@@ -190,7 +190,7 @@ mod linux_watcher {
         let mut apps = BTreeSet::new();
         for name in &names {
             let Some(id) = player_id(name) else { continue };
-            // playerctld mirrors whichever player was active last, and that can be Limusic itself,
+            // playerctld mirrors whichever player was active last, and that can be Aura itself,
             // so counting it would let the music pause itself.
             if id == "playerctld" || is_own(&id) {
                 continue;

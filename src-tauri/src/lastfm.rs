@@ -1,5 +1,5 @@
-//! Last.fm + ListenBrainz scrobbling. One consumer of the same track/duration/position stream
-//! that feeds `discord.rs` — but simpler: neither service cares about live position, only two
+//! Last.fm + ListenBrainz scrobbling. A consumer of the track/duration/position stream that
+//! feeds the OS media widget — but simpler: neither service cares about live position, only two
 //! moments per track. A now-playing ping when a track starts, and one scrobble once the track
 //! has played half its length or 4 minutes, whichever comes first (Last.fm's official rule;
 //! tracks under 30s never scrobble). Both numbers are the user's to change in the Scrobbling
@@ -11,7 +11,7 @@
 //! `submit-listens` calls in [`crate::listenbrainz`]. A fix to when a play counts (repeat-one,
 //! real played time) lands once, not in two tasks.
 //!
-//! Everything is best-effort (context/16 fail-soft, same as Discord/media): a failed scrobble is
+//! Everything is best-effort (context/16 fail-soft, same as media): a failed scrobble is
 //! a `debug!` line, never a user-facing error. No offline queue — Last.fm accepts scrobbles up to
 //! two weeks late, but a queue is complexity we add only if dropped scrobbles ever show up.
 //! ponytail: no offline queue; add one if scrobbles visibly go missing.
@@ -40,11 +40,11 @@ use crate::state::AppState;
 /// (via build.rs) — never from source, the repo is public. Registered at
 /// <https://www.last.fm/api/account/create>. Without them the titlebar button errors out with a
 /// clear message instead of silently doing nothing.
-const API_KEY: &str = match option_env!("LIMUSIC_LASTFM_API_KEY") {
+const API_KEY: &str = match option_env!("AURA_LASTFM_API_KEY") {
     Some(v) => v,
     None => "",
 };
-const API_SECRET: &str = match option_env!("LIMUSIC_LASTFM_API_SECRET") {
+const API_SECRET: &str = match option_env!("AURA_LASTFM_API_SECRET") {
     Some(v) => v,
     None => "",
 };
@@ -63,9 +63,9 @@ const ERR_TOKEN_PENDING: i64 = 14;
 const ERR_TEMP_UNAVAILABLE: i64 = 16;
 
 /// How scrobbling behaves, from the Scrobbling settings tab (#327, #404). One JSON blob in the
-/// `lastfm_config` setting, the same pattern as `discord_rpc_config`: a new knob is a field here,
+/// `lastfm_config` setting, a new knob is a field here,
 /// a field in `ui/src/lib/scrobble.ts`, and a control in the tab. Missing or unparseable fields
-/// fall back to [`Default`], which is exactly how Limusic scrobbled before the tab existed.
+/// fall back to [`Default`], which is exactly how Aura scrobbled before the tab existed.
 #[derive(Clone, serde::Deserialize)]
 #[serde(default)]
 pub struct ScrobbleConfig {
@@ -665,8 +665,8 @@ fn split_title(title: &str) -> Option<(String, String)> {
 ///
 /// This runs on the string, not on `artist_runs`, because the runs are gone exactly where this is
 /// needed most: `backfill_metadata` clears them whenever it repairs the byline from
-/// `videoDetails.author`, and a Listen Together guest's queue never had them. Without runs only
-/// "&" cuts.
+/// `videoDetails.author`, and rows restored from older queues may never have had them. Without
+/// runs only "&" cuts.
 // ponytail: separator scan. A real credit parser only if users report bylines it gets wrong.
 fn primary_artist(artists: &str, strict: bool, runs: &[ArtistRun]) -> String {
     let mut cuts = vec![","];

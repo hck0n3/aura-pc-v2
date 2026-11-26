@@ -57,7 +57,6 @@
 	} from '$lib/player.svelte';
 	import { lastfm } from '$lib/lastfm.svelte';
 	import { listenbrainz } from '$lib/listenbrainz.svelte';
-	import { lt } from '$lib/lt.svelte';
 	import { t } from '$lib/i18n.svelte';
 	import { invalidateCachedPrefix } from '$lib/pagecache';
 
@@ -162,7 +161,7 @@
 		// then shifts every row.
 		const row = queueIndex !== undefined ? q.items[queueIndex] : undefined;
 		const upcoming =
-			row?.video_id === song.video_id && queueIndex! > q.currentIndex && lt.role !== 'guest';
+			row?.video_id === song.video_id && queueIndex! > q.currentIndex;
 		if (upcoming && !row.queued && !row.queued_end) {
 			try {
 				await api.removeFromQueue(queueIndex!);

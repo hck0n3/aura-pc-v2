@@ -131,8 +131,7 @@ mod tests {
 
     #[test]
     fn test_verify_or_discard_tampered() {
-        let tmp =
-            std::env::temp_dir().join(format!("limusic-karaoke-test-{}", rand::random::<u64>()));
+        let tmp = std::env::temp_dir().join(format!("aura-karaoke-test-{}", rand::random::<u64>()));
         let _ = std::fs::create_dir_all(&tmp);
 
         let fake_bytes = b"fake runtime bytes";
@@ -150,8 +149,7 @@ mod tests {
 
     #[test]
     fn test_verify_or_discard_missing() {
-        let tmp =
-            std::env::temp_dir().join(format!("limusic-karaoke-test-{}", rand::random::<u64>()));
+        let tmp = std::env::temp_dir().join(format!("aura-karaoke-test-{}", rand::random::<u64>()));
         let _ = std::fs::create_dir_all(&tmp);
 
         let fake_bytes = b"fake runtime bytes";
@@ -170,8 +168,8 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn a_corrupt_windows_runtime_is_discarded() {
-        let tmp = std::env::temp_dir()
-            .join(format!("limusic-karaoke-test-win-{}", rand::random::<u64>()));
+        let tmp =
+            std::env::temp_dir().join(format!("aura-karaoke-test-win-{}", rand::random::<u64>()));
         let _ = std::fs::create_dir_all(&tmp);
         std::fs::write(tmp.join("onnxruntime.dll"), b"garbage bytes").unwrap();
         assert!(tmp.exists());

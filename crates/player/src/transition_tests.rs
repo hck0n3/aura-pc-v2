@@ -366,7 +366,7 @@ fn automatic_crossfade_runs_both_effected_decks_in_real_time() {
 /// clock. 20 ms is the editor's whole budget; a fresh read strays well under one.
 #[test]
 fn clock_reads_follow_the_wall_clock_at_any_tempo() {
-    let dir = std::env::temp_dir().join("limusic-clock-test");
+    let dir = std::env::temp_dir().join("aura-clock-test");
     std::fs::create_dir_all(&dir).unwrap();
     let track = dir.join("tone.wav");
     wav(&track, 30.0, |t| tone(440.0, t));

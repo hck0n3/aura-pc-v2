@@ -25,7 +25,6 @@
 	import { Slider } from '$lib/components/ui/slider';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import type { Reverb } from '$lib/api';
-	import { inRoom } from '$lib/lt.svelte';
 	import { playback, setTempoPitch } from '$lib/player.svelte';
 	import { t } from '$lib/i18n.svelte';
 	import {
@@ -93,16 +92,15 @@
 		untrack(() => (pending = null));
 	});
 
-	const roomLocked = $derived(inRoom());
-	/** A preset as it plays here: a listening room keeps its shared clock at normal tempo. */
-	const here = (s: EffectSettings) => presetSettings(s, roomLocked);
+	/** A preset as it plays here. */
+	const here = (s: EffectSettings) => presetSettings(s, false);
 	const activeBuiltin = $derived(BUILTIN_PRESETS.find((p) => sameSound(view, here(p)))?.id ?? null);
 	const activeSaved = $derived(presets.find((p) => sameSound(view, here(p)))?.name ?? null);
 	const nothingToSave = $derived(!!activeBuiltin || !!activeSaved);
 
 	function commit(next: EffectSettings) {
 		const settings = {
-			speed: roomLocked ? 1 : next.speed,
+			speed: next.speed,
 			semitones: next.semitones,
 			reverb: { ...next.reverb }
 		};
@@ -152,8 +150,7 @@
 		if (!trimmed || trimmed.length > PRESET_NAME_MAX) return;
 		const preset: EffectPreset = {
 			name: trimmed,
-			// In a room the tempo shown is the room's, so a replaced preset keeps its own.
-			speed: roomLocked ? (existing?.speed ?? 1) : view.speed,
+			speed: view.speed,
 			semitones: view.semitones,
 			reverb: { ...view.reverb }
 		};
@@ -187,11 +184,9 @@
 		return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
 	};
 	const tempoNote = $derived(
-		roomLocked
-			? t('dialogs.tempo_pitch.tempo_room_locked')
-			: view.speed !== 1 && playback.duration > 0
-				? t('dialogs.tempo_pitch.song_length', { time: fmt(playback.duration / view.speed) })
-				: ''
+		view.speed !== 1 && playback.duration > 0
+			? t('dialogs.tempo_pitch.song_length', { time: fmt(playback.duration / view.speed) })
+			: ''
 	);
 	function fineValue(key: FineKey, v: number) {
 		if (key === 'decay') return `${v.toFixed(1)} s`;
@@ -372,11 +367,6 @@
 						{!storageReady ? t('dialogs.tempo_pitch.preset_load_error') : presetError}
 					</p>
 				{/if}
-				{#if roomLocked}
-					<p class="mt-2 px-1 text-xs leading-relaxed text-muted-foreground">
-						{t('dialogs.tempo_pitch.preset_room_hint')}
-					</p>
-				{/if}
 			</div>
 
 			<h3 class={LABEL}>{t('dialogs.tempo_pitch.adjust')}</h3>
@@ -385,7 +375,7 @@
 					{@render valueRow(
 						t('dialogs.tempo_pitch.tempo'),
 						view.speed === 1 ? t('dialogs.tempo_pitch.normal') : `${view.speed.toFixed(2)}×`,
-						view.speed !== 1 && !roomLocked,
+						view.speed !== 1,
 						() => commit({ ...base, speed: 1 })
 					)}
 					<Slider
@@ -394,7 +384,6 @@
 						max={TEMPO.max}
 						step={TEMPO.step}
 						value={view.speed}
-						disabled={roomLocked}
 						onValueChange={(v) => (draft = { speed: Math.round(v * 20) / 20 })}
 						onValueCommit={(v) => commit({ ...base, speed: Math.round(v * 20) / 20 })}
 						aria-label={t('dialogs.tempo_pitch.tempo')}

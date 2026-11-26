@@ -38,7 +38,7 @@ ok(fold('Português') === 'portugues', 'fold strips accents and lowercases');
 // --- coverage ----------------------------------------------------------------------------------
 const en = { a: 'one', b: { c: 'two', d: 'three' }, e: 'four' };
 ok(coverage(en, en) === 1, 'the complete catalog is 1');
-// Weblate writes an untranslated string as "", so a blank is missing, not translated.
+// A translation tool writes an untranslated string as "", so a blank is missing, not translated.
 ok(coverage({ a: 'un', b: { c: '', d: 'trois' } }, en) === 0.5, 'blanks do not count as translated');
 ok(coverage({}, en) === 0, 'an empty catalog is 0');
 ok(coverage({ ...en, gone: 'stale key' }, en) === 1, 'a key English dropped cannot push it past 1');

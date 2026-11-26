@@ -6,27 +6,19 @@
 		Settings02Icon,
 		PaintBoardIcon,
 		PlayCircleIcon,
-		MusicNote01Icon,
-		PencilEdit02Icon,
-		SentIcon,
-		Tap01Icon,
 		Database02Icon,
 		InformationCircleIcon,
 		KeyboardIcon,
 		Cancel01Icon as RemoveIcon,
 		Copy01Icon,
-		Coffee02Icon,
-		DiscordIcon,
 		LastFmIcon,
 		Globe02Icon,
 		ArrowDown01Icon,
 		Alert02Icon,
 		LinkSquare02Icon,
-		ComputerPhoneSyncIcon,
 		Search01Icon,
 		ArrowRight01Icon
 	} from '@hugeicons/core-free-icons';
-	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Switch } from '$lib/components/ui/switch';
@@ -40,14 +32,11 @@
 	import * as api from '$lib/api';
 	import { blocked, karaokeAvailability, karaokeConsent, karaokeModels, karaokeSelection, cancelKaraokeModelDownload, deleteKaraokeModel, playback, prefs, refreshLanguage, setAutoplay, ui, toast, unblockArtist, setKaraokeDevice, applyKaraokeStatus, chooseKaraokeModel, refreshKaraokeModels } from '$lib/player.svelte';
 	import { win } from '$lib/win.svelte';
-	import { lt } from '$lib/lt.svelte';
 	import AppearanceSettings from '$lib/components/AppearanceSettings.svelte';
 	import Changelog from '$lib/components/Changelog.svelte';
-	import DiscordSettings from '$lib/components/DiscordSettings.svelte';
 	import ExperimentalBadge from '$lib/components/ExperimentalBadge.svelte';
 	import { KARAOKE_TIERS, tierMB } from '$lib/karaoke-tiers';
 	import ScrobbleSettings from '$lib/components/ScrobbleSettings.svelte';
-	import DevicesSettings from '$lib/components/DevicesSettings.svelte';
 	import {
 		updateState,
 		availableMessage,
@@ -62,9 +51,6 @@
 	import { match } from '$lib/localsearch';
 	import { HOTKEY_ACTIONS } from '$lib/hotkeys.svelte';
 	import GlobalHotkeysSettings from '$lib/components/GlobalHotkeysSettings.svelte';
-	import LimusicAccountSettings from './LimusicAccountSettings.svelte';
-	import LimusicNotes from './LimusicNotes.svelte';
-	import { limusic } from '$lib/limusic.svelte';
 	import LyricsSourcesSettings from '$lib/components/LyricsSourcesSettings.svelte';
 	import EnhancedLyricsSettings from '$lib/components/EnhancedLyricsSettings.svelte';
 	import LanguagePicker from '$lib/components/LanguagePicker.svelte';
@@ -74,14 +60,8 @@
 		{ id: 'general', label: t('settings.tabs.general'), hint: t('settings.tabs.general_hint'), icon: Settings02Icon },
 		{ id: 'themes', label: t('settings.tabs.themes'), hint: t('settings.tabs.themes_hint'), icon: PaintBoardIcon },
 		{ id: 'playback', label: t('settings.tabs.playback'), hint: t('settings.tabs.playback_hint'), icon: PlayCircleIcon },
-		// Only once the service has said it takes contributions (`limusic.available`).
-		...(limusic.available
-			? [{ id: 'contributing' as const, label: t('settings.tabs.contributing'), hint: t('settings.tabs.contributing_hint'), icon: PencilEdit02Icon }]
-			: []),
 		{ id: 'hotkeys', label: t('settings.tabs.hotkeys'), hint: t('settings.tabs.hotkeys_hint'), icon: KeyboardIcon },
-		{ id: 'discord', label: t('settings.tabs.discord'), hint: t('settings.tabs.discord_hint'), icon: DiscordIcon },
 		{ id: 'scrobbling', label: t('settings.tabs.scrobbling'), hint: t('settings.tabs.scrobbling_hint'), icon: LastFmIcon },
-		{ id: 'devices', label: t('settings.tabs.devices'), hint: t('settings.tabs.devices_hint'), icon: ComputerPhoneSyncIcon },
 		{ id: 'data', label: t('settings.tabs.data'), hint: t('settings.tabs.data_hint'), icon: Database02Icon },
 		{ id: 'about', label: t('settings.tabs.about'), hint: t('settings.tabs.about_hint'), icon: InformationCircleIcon }
 	]);
@@ -137,13 +117,8 @@
 			query = '';
 			// Opened on a section from elsewhere (the lyrics source picker): its tab, scrolled to it
 			// once the tab has rendered. The Last.fm menu and "Edit scrobble" open a whole tab.
-			if (ui.settingsFocus === 'scrobbling' || ui.settingsFocus === 'devices') {
+			if (ui.settingsFocus === 'scrobbling') {
 				tab = ui.settingsFocus;
-				ui.settingsFocus = null;
-				load();
-				loadKaraoke();
-			} else if (ui.settingsFocus === 'limusic') {
-				tab = 'contributing';
 				ui.settingsFocus = null;
 				load();
 				loadKaraoke();
@@ -192,7 +167,7 @@
 		diagError = '';
 		try {
 			const path = await save({
-				defaultPath: `limusic-diagnostics-${new Date().toISOString().slice(0, 10)}.txt`,
+				defaultPath: `aura-diagnostics-${new Date().toISOString().slice(0, 10)}.txt`,
 				filters: [{ name: 'Text', extensions: ['txt'] }]
 			});
 			if (!path) return;
@@ -216,7 +191,7 @@
 				version,
 				system
 			});
-			await api.openExternal(`https://github.com/SimoHypers/limusic/issues/new?${q}`);
+			await api.openExternal(`https://github.com/hck0n3/aura-pc-v2/issues/new?${q}`);
 		} catch (e) {
 			diagError = String(e);
 		}
@@ -412,7 +387,6 @@
 	// A room carries one track and one position, so an overlap cannot be synced: the backend
 	// suspends the fade for as long as we are in one (`AppState::apply_crossfade`). Say so here,
 	// or it reads as crossfade quietly breaking.
-	const crossfadeSuspended = $derived(lt.role !== 'none');
 	// Clamped like the player clamps it (`set_crossfade`), so a stored value from anywhere but this
 	// slider cannot show a number the audio will not use.
 	const crossfadeSecs = $derived.by(() => {
@@ -789,7 +763,7 @@
 {/snippet}
 
 <Dialog.Root bind:open={ui.settingsOpen}>
-	<!-- The Discord, Scrobbling and Appearance tabs put their live preview *beside* the controls rather than
+	<!-- The Scrobbling and Appearance tabs put their live preview *beside* the controls rather than
 	     under them, so they need the extra width; every other tab reads better narrow. Deliberately not animated:
 	     transitioning the width relayouts the whole modal every frame, and WebKitGTK is the webview
 	     that would pay for it. -->
@@ -802,7 +776,7 @@
 				query = '';
 			}
 		}}
-		class="gap-0 overflow-hidden p-0 {tab === 'discord' || tab === 'scrobbling' || tab === 'themes' ? 'sm:max-w-5xl' : tab === 'hotkeys' ? 'sm:max-w-4xl' : 'sm:max-w-3xl'}"
+		class="gap-0 overflow-hidden p-0 {tab === 'scrobbling' || tab === 'themes' ? 'sm:max-w-5xl' : tab === 'hotkeys' ? 'sm:max-w-4xl' : 'sm:max-w-3xl'}"
 	>
 		<Dialog.Description class="sr-only">{t('settings.title')}</Dialog.Description>
 
@@ -852,9 +826,6 @@
 								class={active ? 'text-primary' : ''}
 							/>
 							<span class="truncate">{tb.label}</span>
-							{#if tb.id === 'contributing' && limusic.unreadNotes > 0}
-								<span class="ml-auto size-2 shrink-0 rounded-full bg-primary" aria-label={t('limusic.notes_unread')}></span>
-							{/if}
 						</button>
 					{/each}
 				</div>
@@ -925,12 +896,8 @@
 				<!-- Hidden, not unmounted, while a search shows: Esc brings the tab back as it was, an
 				     unsaved edit in it included. -->
 				<div class={searching ? 'hidden' : 'contents'}>
-				{#if loaded && tab === 'discord'}
-					<DiscordSettings {settings} />
-				{:else if loaded && tab === 'scrobbling'}
+				{#if loaded && tab === 'scrobbling'}
 					<ScrobbleSettings {settings} />
-				{:else if tab === 'devices'}
-					<DevicesSettings />
 				{:else if tab === 'themes'}
 					<AppearanceSettings />
 				{:else}
@@ -1047,9 +1014,7 @@
 								{@render row({
 									title: t('settings.playback.crossfade'),
 									badge: t('settings.themes.experimental'),
-									desc: crossfadeSuspended
-										? t('settings.playback.crossfade_lt_paused')
-										: t('settings.playback.crossfade_hint'),
+									desc: t('settings.playback.crossfade_hint'),
 									control: crossfadeSwitch,
 									tall: true
 								})}
@@ -1201,42 +1166,6 @@
 								{@render row({ title: t('settings.general.stream_clients'), below: clientList })}
 							</div>
 						</section>
-					{:else if tab === 'contributing'}
-						<!-- Limusic Lyrics: who you are there, and how lyrics get added. Its own tab: as a
-						     section at the bottom of Playback nobody found it. -->
-						<section class={GROUP}>
-							<h3 class={LABEL}>{t('limusic.account')}</h3>
-							<LimusicAccountSettings />
-						</section>
-						<LimusicNotes group={GROUP} label={LABEL} />
-						<section class={GROUP}>
-							<h3 class={LABEL}>{t('limusic.how_title')}</h3>
-							<div data-settings-card class={CARD}>
-								{#each [{ title: t('limusic.how_open'), hint: t('limusic.how_open_hint'), icon: MusicNote01Icon }, { title: t('lyrics_editor.how_tap'), hint: t('lyrics_editor.how_tap_hint'), icon: Tap01Icon }, { title: t('lyrics_editor.how_send'), hint: t('lyrics_editor.how_send_hint'), icon: SentIcon }] as h (h.title)}
-									<div class="flex items-center gap-3.5 px-4 py-3">
-										<span class="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-muted">
-											<HugeiconsIcon icon={h.icon} class="size-[18px]" />
-										</span>
-										<div class="min-w-0">
-											<p class="text-sm font-medium">{h.title}</p>
-											<p class="text-xs text-muted-foreground">{h.hint}</p>
-										</div>
-									</div>
-								{/each}
-								<div class="flex flex-wrap items-center gap-3 px-4 py-3">
-									<p class="min-w-40 flex-1 text-xs text-muted-foreground">{t('limusic.open_editor_hint')}</p>
-									<Button
-										size="sm"
-										onclick={() => {
-											ui.settingsOpen = false;
-											goto('/lyrics-editor');
-										}}
-									>
-										{t('limusic.open_editor')}
-									</Button>
-								</div>
-							</div>
-						</section>
 					{:else if tab === 'hotkeys'}
 						<GlobalHotkeysSettings />
 					{:else if tab === 'data'}
@@ -1293,7 +1222,7 @@
 							class="mb-7 rounded-xl border bg-gradient-to-br from-primary/8 to-transparent px-4 py-4"
 						>
 							<div class="flex items-center gap-2">
-								<span class="font-heading text-lg font-bold">Limusic</span>
+								<span class="font-heading text-lg font-bold">Aura</span>
 								{#if version}
 									<span
 										class="rounded-full bg-primary/12 px-2 py-0.5 text-[11px] font-semibold text-primary"
@@ -1305,25 +1234,17 @@
 							<p class="mt-1.5 max-w-prose text-xs leading-relaxed text-muted-foreground">
 								{t('settings.about.description')}
 							</p>
+							<!-- Legal notice (GPL-3.0 §5a, §5d): the author of this version and the program it
+							     modifies. A proper notice, so it is the same in every language. -->
+							<p class="mt-2 text-xs text-muted-foreground" data-testid="about-legal">
+								Aura © 2026 hck0n3. Basado en Limusic —
+								<button
+									type="button"
+									class="cursor-pointer underline underline-offset-2 hover:text-foreground"
+									onclick={() => api.openExternal('https://www.gnu.org/licenses/gpl-3.0.html')}
+								>GPL-3.0</button>
+							</p>
 						</div>
-
-						<section class={GROUP}>
-							<h3 class={LABEL}>{t('settings.sections.support')}</h3>
-							<div data-settings-card class={CARD}>
-								{@render row({
-									title: t('settings.about.discord'),
-									desc: t('settings.about.discord_hint'),
-									control: discordButton,
-									tall: true
-								})}
-								{@render row({
-									title: t('settings.about.kofi'),
-									desc: t('settings.about.kofi_hint'),
-									control: kofiButton,
-									tall: true
-								})}
-							</div>
-						</section>
 
 						<section class={GROUP}>
 							<h3 class={LABEL}>{t('settings.sections.updates')}</h3>
@@ -1545,7 +1466,7 @@
 
 {#snippet clientList()}
 	<p class="mb-3 max-w-prose text-xs leading-relaxed text-muted-foreground">
-		{t('settings.general.stream_clients_hint', { var: 'LIMUSIC_DISABLED_CLIENTS' })}
+		{t('settings.general.stream_clients_hint', { var: 'AURA_DISABLED_CLIENTS' })}
 	</p>
 	<div class="flex flex-col gap-2">
 		{#each clients as name (name)}
@@ -1652,20 +1573,6 @@
 
 {#snippet reportButton()}
 	<Button size="sm" onclick={openBugForm}>{t('settings.about.report_issue_button')}</Button>
-{/snippet}
-
-{#snippet discordButton()}
-	<Button variant="secondary" size="sm" onclick={() => api.openExternal(api.DISCORD_URL)}>
-		<HugeiconsIcon icon={DiscordIcon} size={15} strokeWidth={1.8} />
-		{t('settings.about.discord_button')}
-	</Button>
-{/snippet}
-
-{#snippet kofiButton()}
-	<Button variant="secondary" size="sm" onclick={() => api.openExternal('https://ko-fi.com/simohypers')}>
-		<HugeiconsIcon icon={Coffee02Icon} size={15} strokeWidth={1.8} />
-		{t('settings.about.kofi_button')}
-	</Button>
 {/snippet}
 
 {#snippet diagAlert()}

@@ -58,7 +58,7 @@ ok(titles('TRAY').includes('settings.general.close_to_tray'), 'case-insensitive'
 ok(titles('ambient').includes('settings.playback.ambient_light'), 'a row behind a switch is listed');
 ok(titles('bandwidth').includes('settings.playback.audio_quality'), 'the description matches');
 ok(titles('video').includes('settings.playback.hide_videos'), 'the section matches');
-ok(titles('phone').includes('settings.tabs.devices'), 'a tab is found by its hint');
+ok(titles('shortcuts').includes('settings.tabs.hotkeys'), 'a tab is found by its hint');
 
 // A translated catalog: the local word and the English one both find the row, the local one ranks.
 const fr = { settings: { general: { close_to_tray: 'Réduire dans la zone de notification' } } };

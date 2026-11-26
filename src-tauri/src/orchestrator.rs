@@ -43,7 +43,7 @@ pub struct PlaybackData {
     /// YouTube's own `musicVideoType` for this videoId: `Some(true)` = a video upload, `Some(false)`
     /// = the generated audio track, `None` = the metadata client never answered. The player view's
     /// music-video mode believes this over the queue row's flag, which several rows arrive without
-    /// (a card played from a shelf, a Listen Together mirror, an album row swapped to its audio id).
+    /// (a card played from a shelf, an album row swapped to its audio id).
     pub is_video: Option<bool>,
     /// The same field read as "a podcast episode" (#500), `None` on the same terms.
     pub is_episode: Option<bool>,

@@ -333,7 +333,7 @@ mod tests {
 
     #[test]
     fn test_pipeline_workflow() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_pipeline_test");
+        let tmp = std::env::temp_dir().join("aura_pipeline_test");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -403,7 +403,7 @@ mod tests {
 
     #[test]
     fn test_pipeline_cancellation() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_pipeline_cancel");
+        let tmp = std::env::temp_dir().join("aura_pipeline_cancel");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -442,7 +442,7 @@ mod tests {
 
     #[test]
     fn test_pipeline_decode_error() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_pipeline_err");
+        let tmp = std::env::temp_dir().join("aura_pipeline_err");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -483,7 +483,7 @@ mod tests {
 
     #[test]
     fn test_pipeline_incomplete_download() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_pipeline_incomplete");
+        let tmp = std::env::temp_dir().join("aura_pipeline_incomplete");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -563,7 +563,7 @@ mod tests {
     /// error the app recognises as "too long". The cap is 1 s here instead of 15 min.
     #[test]
     fn test_pipeline_refuses_a_track_over_the_cap() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_pipeline_too_long");
+        let tmp = std::env::temp_dir().join("aura_pipeline_too_long");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }

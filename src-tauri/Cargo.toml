@@ -1,9 +1,10 @@
 [package]
-name = "limusic-app"
+name = "aura-app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Limusic — desktop YouTube Music client"
+authors.workspace = true
+description = "Aura — reproductor de escritorio para YouTube Music"
 rust-version = "1.80"
 
 [lib]
@@ -49,13 +50,8 @@ innertube = { path = "../crates/innertube" }
 player = { path = "../crates/player" }
 karaoke = { path = "../crates/karaoke" }
 souvlaki = { version = "0.8.3", default-features = false, features = ["use_zbus"] }
-# Listen Together: shared wire types + WebSocket client (wss via rustls). context/19.
-listen-protocol = { workspace = true }
-tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
 futures-util = { workspace = true }
 rand = { workspace = true }
-rustls = { version = "0.23", default-features = false, features = ["ring"] }
-discord-rich-presence = "1.1.0"
 # Last.fm API signature (api_sig is md5 of the sorted params + secret), and the stable
 # saved-account key (db.rs::account_key).
 md-5 = "0.10"
@@ -86,7 +82,7 @@ unicode-normalization = "0.1"
 # Mock runtime for the IPC guard test (lib.rs `only_ui`).
 tauri = { version = "2", features = ["test"] }
 
-# Letting a song notification show while Limusic is frontmost (notify.rs, #94). Same objc2 that
+# Letting a song notification show while Aura is frontmost (notify.rs, #94). Same objc2 that
 # mac-notification-sys and tao already pull in.
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"

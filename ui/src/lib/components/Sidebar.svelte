@@ -23,15 +23,14 @@
 		Chart02Icon,
 		VolumeHighIcon,
 		PlayIcon,
-		PauseIcon,
-		DiscordIcon
+		PauseIcon
 	} from '@hugeicons/core-free-icons';
 	import LogoMark from './LogoMark.svelte';
-	import LimusicLoader from './LimusicLoader.svelte';
+	import AuraLoader from './AuraLoader.svelte';
 	import { playItem } from '$lib/browse';
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button';
-	import { DISCORD_URL, ON_REPEAT_ID, isLocalPlaylist, openExternal, togglePause, type BrowseItem } from '$lib/api';
+	import { ON_REPEAT_ID, isLocalPlaylist, openExternal, togglePause, type BrowseItem } from '$lib/api';
 	import { thumb } from '$lib/thumb';
 	import PlaylistMenu from './PlaylistMenu.svelte';
 	import {
@@ -151,7 +150,7 @@
 	)}"
 >
 	<div class="flex items-center justify-center px-2 py-2 {wide('lg:justify-between')}">
-		<span class="hidden font-heading text-lg font-bold tracking-tight {wide('lg:block')}">Limusic</span>
+		<span class="hidden font-heading text-lg font-bold tracking-tight {wide('lg:block')}">Aura</span>
 		<!-- Column when collapsed: the two buttons don't fit side by side in the 64px rail. -->
 		<div class="flex items-center gap-1 {collapsed ? 'flex-col' : ''}">
 			<Button
@@ -179,16 +178,6 @@
 			>
 				<HugeiconsIcon icon={Sun01Icon} strokeWidth={2} class="h-4 w-4 dark:hidden" />
 				<HugeiconsIcon icon={Moon02Icon} strokeWidth={2} class="hidden h-4 w-4 dark:block" />
-			</Button>
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="hover:text-primary"
-				onclick={() => openExternal(DISCORD_URL).catch((e) => toast.error(t('toasts.browser_failed', { error: String(e) })))}
-				title={t('nav.discord')}
-				aria-label={t('nav.discord')}
-			>
-				<HugeiconsIcon icon={DiscordIcon} strokeWidth={2} class="h-4 w-4" />
 			</Button>
 		</div>
 	</div>
@@ -360,7 +349,7 @@
 								onclick={() => playRow(pl)}
 							>
 								{#if starting === pl.id}
-									<LimusicLoader class="size-6 text-white" />
+									<AuraLoader class="size-6 text-white" />
 								{:else}
 									<!-- altIcon/showAlt, not a ternary: `icon` is read once at mount. -->
 									<HugeiconsIcon

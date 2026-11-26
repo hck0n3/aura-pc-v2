@@ -116,7 +116,7 @@ runs; CPU is UI process plus web process plus Xwayland as % of one core):
 | dev, Wayland, GPU painting (before CPU painting) | 21 ms | 4% | 40% | 42% | 35% |
 | system libraries on X11 + SHM, CPU painting | 28 ms | 6% | 54% | 56% | 49% |
 | AppImage as shipped (software) | 40 ms | 14% | 36% | 31% | 26% |
-| AppImage, `LIMUSIC_GDK_BACKEND=wayland` (software) | 39 ms | 14% | 45% | 43% | 36% |
+| AppImage, `AURA_GDK_BACKEND=wayland` (software) | 39 ms | 14% | 45% | 43% | 36% |
 | AppImage, acceleration forced, X11 + SHM, CPU painting | 38 ms | 6% | 55% | 57% | 50% |
 | AppImage, acceleration forced, Wayland, CPU painting | 36 ms | 6% | 42% | 43% | 35% |
 | AppImage, acceleration forced, Wayland, GPU painting | 23 ms | 5% | 41% | 42% | 35% |
@@ -170,15 +170,14 @@ acceleration there would cost every steady animation 25 points of a core.
 ### 2026-11-21, a song change hitched a game on the other monitor
 
 **Wanted:** a song change that a game running at the same time doesn't feel. Several Linux users
-reported a frame hitch in a game at most song changes, with Limusic open on a second monitor.
+reported a frame hitch in a game at most song changes, with Aura open on a second monitor.
 
 **What it cost:** per-thread CPU from `/proc/<pid>/task/*/schedstat` every 20 ms, around five skips
 and three roll-overs, on the 1.4.1 AppImage (i5-8400, GTX 1060, Plasma on Wayland) with the player
 view open and a 192-song queue. Each change cost 1.0-1.3 s of CPU across processes within 3 s, 2-4
 cores in its busiest 100 ms. The largest piece was the web process main thread: about 400 ms solid
 right after the change with "Adapt colors to artwork" on, about 100 ms with it off, then a 50 ms
-paint and about a second of frames while the queue glides to the next row. The Discord client
-(Vesktop) added 100-800 ms of its own whenever the presence card's cover changed. The same changes
+paint and about a second of frames while the queue glides to the next row. The same changes
 on local files with the window on an empty Home cost under 0.1 s.
 
 **What we settled for:** the page under the player view and theater mode goes out of rendering
@@ -191,6 +190,6 @@ accent restyle that remains is the price of the feature: every element inherits 
   It runs one light thread, and the hitch is CPU taken from a game that wants every core.
 - The first measurements ran on local files and an empty Home, and found almost nothing. The cost
   lives in a real profile: a big page under the player view, a queue under the windowing
-  threshold, the accent on, Discord running.
+  threshold, the accent on, other apps running.
 - `content-visibility: hidden` looked like the cheaper switch, with no rebuild on the way back.
   WebKitGTK resolves style under it anyway.

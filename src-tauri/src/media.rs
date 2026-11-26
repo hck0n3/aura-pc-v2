@@ -102,7 +102,7 @@ fn run(app: AppHandle, rx: std::sync::mpsc::Receiver<MediaUpdate>) {
     #[cfg(not(target_os = "windows"))]
     let hwnd = None;
 
-    let config = PlatformConfig { dbus_name: "limusic", display_name: "Limusic", hwnd };
+    let config = PlatformConfig { dbus_name: "aura", display_name: "Aura", hwnd };
     let mut controls = match MediaControls::new(config) {
         Ok(c) => c,
         Err(e) => {
@@ -186,11 +186,10 @@ fn apply_metadata(
     });
 }
 
-/// Request a cover big enough for a media widget or Discord card: stored thumbs are usually
+/// Request a cover big enough for a media widget: stored thumbs are usually
 /// row-sized (120px), which looks pixelated anywhere larger (#360). Mirrors `ui/src/lib/thumb.ts`:
 /// only googleusercontent-style URLs carry their size in the URL; i.ytimg path-variant thumbs and
-/// local `file://` covers pass through unchanged (other sizes can 404). 512 is the size Discord has
-/// always requested, so it is known to be served.
+/// local `file://` covers pass through unchanged (other sizes can 404). 512 is a size known to be served.
 pub(crate) fn cover_url(url: &str) -> String {
     static WH: OnceLock<regex::Regex> = OnceLock::new();
     static S: OnceLock<regex::Regex> = OnceLock::new();

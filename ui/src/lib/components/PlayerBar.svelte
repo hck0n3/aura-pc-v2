@@ -48,8 +48,6 @@
 	import Marquee from './Marquee.svelte';
 	import SpeedPicker from './SpeedPicker.svelte';
 	import TrackMenu from './TrackMenu.svelte';
-	import DevicePicker from './DevicePicker.svelte';
-	import { link } from '$lib/link.svelte';
 	import { currentLocale, t } from '$lib/i18n.svelte';
 	import LiveBadge from './LiveBadge.svelte';
 
@@ -422,9 +420,8 @@
 
 	<!-- Volume + queue -->
 	<div class="flex flex-1 items-center justify-end gap-2">
-		<!-- Volume is the first control to drop on a narrow window (OS volume still works). It is
-		     this desktop's, so it goes while the bar controls a linked device. -->
-		<div class="group/vol relative hidden items-center gap-1 {link.remote ? '' : 'md:flex'}">
+		<!-- Volume is the first control to drop on a narrow window (OS volume still works). -->
+		<div class="group/vol relative hidden items-center gap-1 md:flex">
 			<Button
 				variant="ghost"
 				size="icon-sm"
@@ -464,9 +461,6 @@
 		</div>
 		<!-- One cluster, so they sit tighter to each other than to the volume slider. -->
 		<div class="flex items-center gap-0.5">
-			{#if link.status !== 'off'}<DevicePicker />{/if}
-			<!-- Speed, pitch and reverb are this desktop's player's; hidden while it controls a linked device. -->
-			{#if !link.remote}
 			<Button
 				variant={ui.tempoPitchOpen ? 'secondary' : 'ghost'}
 				size="icon-sm"
@@ -479,7 +473,6 @@
 					class="h-5 w-5 {effectsOn ? 'text-primary' : ''}"
 				/>
 			</Button>
-			{/if}
 			<Button
 				variant={lyricsOpen ? 'secondary' : 'ghost'}
 				size="icon-sm"

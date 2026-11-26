@@ -22,19 +22,16 @@
 		CameraVideoIcon,
 		CheckmarkCircle01Icon,
 		HotspotOfflineIcon,
-		UserGroup02Icon,
 		Link04Icon,
 		Settings02Icon
 	} from '@hugeicons/core-free-icons';
-	import LimusicLoader from './LimusicLoader.svelte';
+	import AuraLoader from './AuraLoader.svelte';
 	import LastFmIcon from './LastFmIcon.svelte';
-	import DiscordIcon from './DiscordIcon.svelte';
 	import AccountMenu from './AccountMenu.svelte';
 	import { appIcon } from '$lib/appicon.svelte';
 	import * as api from '$lib/api';
 	import { openMiniPlayer, playback, prefs, refreshView, toast, ui } from '$lib/player.svelte';
 	import { win } from '$lib/win.svelte';
-	import { lt } from '$lib/lt.svelte';
 	import { anchorMenu, fitMenu, NO_ANCHOR } from '$lib/menu';
 	import { t } from '$lib/i18n.svelte';
 	import { connectLastfm, disconnectLastfm, lastfm, watchLastfm } from '$lib/lastfm.svelte';
@@ -62,24 +59,6 @@
 	const connecting = $derived(lastfm.connecting);
 	let menuOpen = $state(false);
 	let anchor = $state(NO_ANCHOR);
-
-	// Discord Rich Presence — a plain on/off toggle of the `discord_rpc` setting (the backend
-	// connects/clears the presence the moment it flips). Optimistic; reverted on failure. The flag
-	// lives in `prefs` because the Discord settings tab toggles the same thing: a local copy here
-	// went stale the moment the other one was used.
-	const discordOn = $derived(prefs.discordRpc);
-
-	async function toggleDiscord() {
-		const next = !discordOn;
-		prefs.discordRpc = next;
-		try {
-			await api.setSetting('discord_rpc', next ? 'true' : 'false');
-			toast.success(next ? t('integrations.discord_on') : t('integrations.discord_off'));
-		} catch (e) {
-			prefs.discordRpc = !next;
-			toast.error(String(e));
-		}
-	}
 
 	onMount(watchLastfm);
 	onMount(watchListenBrainz);
@@ -139,7 +118,7 @@
 	<span
 		class="pointer-events-none absolute inset-x-0 hidden text-center text-xs font-medium tracking-wide text-muted-foreground min-[50rem]:block"
 	>
-		Limusic
+		Aura
 	</span>
 
 	<!-- macOS overlay style floats the traffic lights over the top-left of the webview, so the row
@@ -202,49 +181,6 @@
 			<HugeiconsIcon icon={Link04Icon} class="h-4 w-4" />
 		</button>
 
-		<!-- Opens the same modal as the home hero's button (one dialog, mounted in +layout). -->
-		<button
-			class="flex h-full w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground {lt.role !==
-			'none'
-				? 'text-primary'
-				: ''}"
-			onclick={() => (ui.ltOpen = true)}
-			title={t('nav.listen_together')}
-			aria-label={t('nav.listen_together')}
-		>
-			<span class="relative">
-				<HugeiconsIcon icon={UserGroup02Icon} class="h-4 w-4" />
-				{#if lt.role !== 'none'}
-					<!-- Discord's status dot with a ping behind it: two layers, because animate-ping
-					     scales and fades the element it's on, so a lone dot would blink out. -->
-					<span class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5">
-						<span class="absolute inset-0 animate-ping rounded-full bg-emerald-500 opacity-75"
-						></span>
-						<span class="absolute inset-0 rounded-full bg-emerald-500 ring-[1.5px] ring-background"
-						></span>
-					</span>
-				{/if}
-			</span>
-		</button>
-
-		<button
-			class="flex h-full w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground {discordOn
-				? 'text-foreground'
-				: ''}"
-			onclick={toggleDiscord}
-			title={discordOn ? t('integrations.discord_tooltip_on') : t('integrations.discord_tooltip_off')}
-			aria-label={t('settings.general.discord_rpc')}
-		>
-			<span class="relative">
-				<DiscordIcon class="h-4 w-4" />
-				<!-- Presence status dot, Discord-style: green = live, red = off. -->
-				<span
-					class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full ring-[1.5px] ring-background {discordOn
-						? 'bg-emerald-500'
-						: 'bg-red-500'}"
-				></span>
-			</span>
-		</button>
 
 		<button
 			class="flex h-full w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground {connected
@@ -257,7 +193,7 @@
 			<span class="relative">
 				<LastFmIcon class="h-4 w-4 {connecting ? 'animate-pulse opacity-60' : ''}" />
 				{#if connecting}
-					<LimusicLoader class="absolute -bottom-1.5 -right-2 size-4" />
+					<AuraLoader class="absolute -bottom-1.5 -right-2 size-4" />
 				{:else if connected}
 					<!-- bg-background ring so the badge reads over the icon's stroke. -->
 					<HugeiconsIcon

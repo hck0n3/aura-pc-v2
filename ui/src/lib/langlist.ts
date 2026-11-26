@@ -1,6 +1,6 @@
 // The computed bits behind the language picker, kept pure so `langlist.check.ts` can run them
 // without a DOM or a Svelte runtime: which languages a query matches, how much of a catalog
-// Weblate has actually landed, and which catalog a system language gets.
+// has actually been translated, and which catalog a system language gets.
 
 /** The fields the search reads. `LocaleInfo` satisfies it; the check file makes its own. */
 export interface Searchable {
@@ -34,7 +34,7 @@ export function matchLocales<T extends Searchable>(locales: T[], query: string):
 }
 
 /**
- * Non-blank strings in `catalog` at the paths where English has one. Weblate writes an untranslated
+ * Non-blank strings in `catalog` at the paths where English has one. A translation tool writes an untranslated
  * string as "", and it keeps keys English has since dropped for a while, so those count for nothing.
  */
 function translated(english: unknown, catalog: unknown): number {

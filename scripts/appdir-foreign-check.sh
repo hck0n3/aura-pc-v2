@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Check a Limusic AppDir on a distro that isn't the build host. Runs INSIDE a container, with the
+# Check an Aura AppDir on a distro that isn't the build host. Runs INSIDE a container, with the
 # AppDir mounted at /app, and installs the desktop packages it needs itself.
 #
-#   podman run --rm -v "$PWD/target/release/bundle/appimage/limusic.AppDir:/app:ro,z" \
+#   podman run --rm -v "$PWD/target/release/bundle/appimage/aura.AppDir:/app:ro,z" \
 #     -v "$PWD/scripts/appdir-foreign-check.sh:/check.sh:ro,z" debian:sid bash /check.sh
 #
 # Also runs against a published release: extract it with `--appimage-extract` and mount
@@ -37,7 +37,7 @@
 set -uo pipefail
 
 APPDIR=/app
-BIN="$APPDIR/usr/bin/limusic-app"
+BIN="$APPDIR/usr/bin/aura-app"
 FAIL=0
 step() { printf '\n── %s\n' "$1"; }
 bad()  { echo "   FAIL: $1"; FAIL=1; }
@@ -230,20 +230,20 @@ else
   # The short backend names came with weston 12; bookworm's 10 only knows the module file.
   BACKEND=headless
   case "$(weston --version 2>/dev/null)" in *" "[0-9].*|*" 1"[01].*) BACKEND=headless-backend.so ;; esac
-  weston --backend="$BACKEND" --socket=limusic-check --idle-time=0 > /tmp/weston.log 2>&1 &
+  weston --backend="$BACKEND" --socket=aura-check --idle-time=0 > /tmp/weston.log 2>&1 &
   WESTONPID=$!
   for _ in $(seq 20); do
-    [ -S "$XDG_RUNTIME_DIR/limusic-check" ] && break
+    [ -S "$XDG_RUNTIME_DIR/aura-check" ] && break
     sleep 0.5
   done
-  if [ ! -S "$XDG_RUNTIME_DIR/limusic-check" ]; then
+  if [ ! -S "$XDG_RUNTIME_DIR/aura-check" ]; then
     sed 's/^/   weston: /' /tmp/weston.log | head -20
     bad "weston never opened its socket, so the Wayland launch could not run"
   else
     : > /tmp/run-wl.log
     # env -u DISPLAY: xvfb-run above leaves none behind, but a stray one would let GTK fall back to
     # X11 and pass this step without ever touching Wayland.
-    env -u DISPLAY WAYLAND_DISPLAY=limusic-check timeout 90 dbus-run-session -- "$APPDIR/AppRun" \
+    env -u DISPLAY WAYLAND_DISPLAY=aura-check timeout 90 dbus-run-session -- "$APPDIR/AppRun" \
       > /tmp/run-wl.log 2>&1 &
     RUNPID=$!
     for _ in $(seq 90); do
