@@ -180,23 +180,49 @@ compatibilidad); se parte siempre del mejor formato disponible para perder lo m�
   yt-dlp. Debe funcionar en un equipo limpio.
 - **El DSP no se aplica al archivo descargado** (se guarda limpio; el DSP suena al reproducirlo).
 
-**Etiquetas ID3v2.3** (la versión que mejor lee Windows/Explorador y la mayoría de reproductores y
-autos), rellenando todo lo que se pueda obtener:
-- Título, artista(s) (todos, separados), artista del álbum, álbum, año y fecha de lanzamiento,
-  número de pista / total, disco / total, duración.
-- Género: de Last.fm (Limusic ya integra Last.fm) o MusicBrainz cuando haya coincidencia segura.
-- Créditos cuando YouTube los dé: compositor, letrista, productor, sello, ℗/© (copyright).
-- **Letra**: sin sincronizar (USLT) y sincronizada (SYLT) desde las fuentes de letras de Limusic.
-- ReplayGain de pista (TXXX) calculado o tomado del loudness que da YouTube.
-- Contenido explícito, ISRC y IDs de MusicBrainz cuando la coincidencia sea segura.
-- Origen: ID de video y URL de YouTube Music (TXXX/WOAS), fecha de descarga, "Aura" como codificador.
-- Enriquecimiento con MusicBrainz: solo con coincidencia fuerte (título + artista + duración);
-  si no, se queda con lo de YouTube. Nunca etiquetas inventadas.
+**Etiquetas: el conjunto completo que Apple Music / iTunes lee y muestra** (decisión del dueño
+2026-11-26), en ID3v2.3 (lo leen Apple Music/iTunes, Windows, autos y casi todo). Cada campo se
+rellena si hay dato fiable; si no, se deja vacío (nunca inventado):
+
+| Campo Apple Music | Frame ID3 | Fuente |
+|---|---|---|
+| Título / Artista / Álbum / Artista del álbum | TIT2 / TPE1 / TALB / TPE2 | YouTube |
+| Compositor | TCOM | créditos YouTube / MusicBrainz |
+| Agrupación (Grouping) | TIT1 (+ GRP1) | MusicBrainz si aplica |
+| Género | TCON | Apple (iTunes Search API) → Last.fm → MusicBrainz |
+| Año / fecha de lanzamiento | TYER + TDAT (+ TXXX RELEASETIME) | Apple → YouTube |
+| Pista n.º / total, Disco n.º / total | TRCK / TPOS | Apple → MusicBrainz → YouTube |
+| Compilación | TCMP | Apple (collection "Various Artists") / MusicBrainz |
+| BPM | TBPM | análisis del audio al descargar (mejor esfuerzo) |
+| Comentarios | COMM | "Descargado con Aura" + URL de origen |
+| Letra (sin sincronizar / sincronizada) | USLT / SYLT | fuentes de letras de Limusic |
+| Obra / Movimiento (Work, Movement) | TIT1 / MVNM / MVIN | MusicBrainz (clásica) |
+| Campos de orden (sort): título, artista, artista del álbum, álbum, compositor | TSOT / TSOP / TSO2 / TSOA / TSOC | derivados ("The Beatles" → "Beatles") / MusicBrainz |
+| Contenido explícito | TXXX ITUNESADVISORY (1 explícito, 2 limpio) | Apple → YouTube |
+| Copyright / ℗ | TCOP | Apple (collection copyright) → YouTube |
+| Sello / editora | TPUB | MusicBrainz → YouTube |
+| ISRC | TSRC | MusicBrainz / Apple |
+| Codificado por | TENC / TSSE | "Aura" / "LAME 320 CBR" |
+| ReplayGain / Sound Check | TXXX REPLAYGAIN_* + COMM iTunNORM | calculado del audio |
+| Portada | APIC (Front cover) | ver abajo |
+| Extra: IDs de MusicBrainz, ID de video y URL YouTube Music, fecha de descarga | TXXX / WOAS | — |
+
+No se pueden escribir (no aplican a un archivo propio): IDs de catálogo/compra de Apple, cuenta,
+"media kind" de tienda, calificaciones de usuario.
+
+**Fuente principal de enriquecimiento: la API pública de búsqueda de iTunes**
+(`itunes.apple.com/search` y `/lookup`, sin clave), que da género, fecha, números de pista/disco,
+explícito, copyright y portada de Apple. Solo se acepta con coincidencia fuerte (título + artista +
+duración ±3 s, ignorando "(Official Video)", "feat." y similares). Si no hay coincidencia segura,
+MusicBrainz; si tampoco, solo datos de YouTube. Peticiones espaciadas para no abusar. El orden de
+prioridad entre fuentes por campo es el de la tabla.
 
 **Portada**
-- La carátula **cuadrada del álbum** (no la miniatura 16:9 del video) a la **máxima resolución que
-  sirva YouTube** (pedir el tamaño grande del CDN de imágenes, p. ej. ~1200–3000 px), JPEG de alta
-  calidad, incrustada como APIC "Front cover". Si solo hay miniatura de video, recortarla al cuadrado.
+- Preferir la **portada de Apple** a 3000×3000 cuando hubo coincidencia fuerte con iTunes; si no,
+  la carátula **cuadrada del álbum** de YouTube a la máxima resolución que sirva su CDN de imágenes
+  (no la miniatura 16:9 del video; si solo hay esa, recortarla al cuadrado). JPEG calidad alta,
+  incrustada como APIC "Front cover". Tope razonable de tamaño (~2–3 MB) para que autos y
+  reproductores la lean.
 
 **Resto**
 - Descargar tema, álbum y playlist; cola con progreso, cancelar y reintentar; carpeta configurable;
