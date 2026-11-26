@@ -57,7 +57,9 @@ env:
   # API 2.x). Bump deliberately, a new mpv is a new 117 MB DLL in the installer: a 7z with
   # libmpv-2.dll at its root (a shinchiro `mpv-dev-x86_64-*.7z` works as is), uploaded with
   # `gh release upload deps <file>`, then update both lines below.
-  MPV_DEV_URL: https://github.com/hck0n3/aura-pc-v2/releases/download/deps/libmpv-2-x86_64-20260610-git-304426c.7z
+  # The release asset of this repo (tag `deps`). Fetched with the job's token, since a private
+  # repo answers an anonymous download with a 404.
+  MPV_DEV_ASSET: libmpv-2-x86_64-20260610-git-304426c.7z
   MPV_DEV_SHA256: af708edcdf6ed12ac7b2bb31b4cbeba0bf7d4eef345a715ef5de782c0ddd6671
   MPV_DIR: ${{ github.workspace }}\.libmpv
 
@@ -220,13 +222,16 @@ jobs:
       # just emits `cargo:rustc-link-lib=mpv` (pregenerated bindings, no headers needed).
       - name: Build the libmpv import library
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = "Stop"
           New-Item -ItemType Directory -Force -Path "$env:MPV_DIR" | Out-Null
-          curl.exe -fsSL -o "$env:MPV_DIR\mpv-dev.7z" "$env:MPV_DEV_URL"
+          gh release download deps --repo "$env:GITHUB_REPOSITORY" --pattern "$env:MPV_DEV_ASSET" --output "$env:MPV_DIR\mpv-dev.7z" --clobber
+          if ($LASTEXITCODE -ne 0) { throw "could not download $env:MPV_DEV_ASSET from the deps release" }
           if ((Get-FileHash "$env:MPV_DIR\mpv-dev.7z" -Algorithm SHA256).Hash -ne $env:MPV_DEV_SHA256) { throw "mpv-dev.7z does not match MPV_DEV_SHA256" }
           7z x "$env:MPV_DIR\mpv-dev.7z" -o"$env:MPV_DIR" -y | Out-Null
-          if (-not (Test-Path "$env:MPV_DIR\libmpv-2.dll")) { throw "libmpv-2.dll not found in the dev package — did MPV_DEV_URL change shape?" }
+          if (-not (Test-Path "$env:MPV_DIR\libmpv-2.dll")) { throw "libmpv-2.dll not found in the dev package — did MPV_DEV_ASSET change shape?" }
 
           # dumpbin/lib live in the MSVC toolchain. (cargo itself finds MSVC on its own; this is
           # only so we can run the two tools.)
