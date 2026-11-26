@@ -57,7 +57,7 @@ JR PC y Aura Hi-Res PC son el **mismo código**; manda JR PC.
 ventana/título, íconos, textos de UI y las 40+ traducciones (`ui/src/lib/locales/*.json`), README,
 nombres de módulos/archivos con "limusic" (`src-tauri/src/limusic.rs`, `ui/src/lib/limusic*.ts`, etc.)
 y nombres de crates/paquetes donde aparezca. Autor/publisher en `Cargo.toml`, `package.json`,
-instalador: el dueño (nombre exacto: ver §11).
+instalador: el dueño `hck0n3`.
 
 **Se elimina por completo:**
 - Discord: `src-tauri/src/discord.rs` (Rich Presence), `DiscordSettings/DiscordCard/DiscordIcon.svelte`,
@@ -76,7 +76,7 @@ aceptó este punto.
 
 **Servidores del autor anterior** (decisión en §11): `lyrics.limusic.app` (letras comunitarias +
 cuentas), `sync.limusic.app/ws` (Escuchar juntos), updater en `github.com/SimoHypers/limusic`.
-El updater se apunta a `github.com/hck0n3/aura/releases` con una **clave de firma nueva** (la
+El updater se apunta a `github.com/hck0n3/aura-pc-v2/releases` con una **clave de firma nueva** (la
 privada la genera el dueño y va en GitHub Secrets; nunca al repo).
 
 ## 5. Enfoques considerados (elegido: A)
@@ -189,7 +189,7 @@ En Aura:
 
 ## 10. Repositorio y entrega
 
-- Repo nuevo `hck0n3/aura` (el dueño lo crea; esta sesión no puede crear repos) con la historia de
+- Repo `hck0n3/aura-pc-v2` con la historia de
   Limusic como base, para conservar autoría de commits ajena tal como exige la GPL y poder traer
   arreglos futuros.
 - Trabajo en ramas + PRs en borrador, por etapas: (1) rebranding y quitar Discord, (2) DSP,
@@ -197,11 +197,24 @@ En Aura:
 
 ## 11. Decisiones pendientes del dueño
 
-(Se rellenan con las respuestas del dueño.)
+Respondidas por el dueño el 2026-11-26:
+
+- **Letras comunitarias + cuentas (`lyrics.limusic.app`, `src-tauri/src/limusic.rs`,
+  `LimusicAccountSettings.svelte`, `ui/src/lib/limusic*.ts`): se QUITAN por completo**, con su UI,
+  comandos Tauri, filas de ajustes y claves de traducción. Las demás fuentes de letras de Limusic
+  (LRCLIB, etc.) se quedan.
+- **Escuchar juntos (`sync.limusic.app`, `src-tauri/src/listentogether/`, `crates/listen-protocol`,
+  `crates/sync-server`, `devicelink.rs` si solo sirve a esto): se QUITA por completo.** Verificar
+  qué más usa `devicelink`/`listen-protocol` antes de borrar.
+- **Firma: `hck0n3`** en copyright, `authors`/publisher (Cargo, package.json, instalador) y en
+  *Acerca de*: "Aura © 2026 hck0n3. Basado en Limusic — GPL-3.0".
+- **Repo:** `hck0n3/aura-pc-v2` (creado; `main` = historia completa de Limusic hasta d9f7dcf).
+  Se borra también el workflow diario `stream-health.yml` y `website.yml`, y los workflows de
+  release pasan a apuntar a este repo.
 
 ## 11b. Decisiones tomadas por el diseñador (el dueño puede corregirlas)
 
-- **Dependencias de build y actualizaciones** se mudan a releases de `hck0n3/aura`: el
+- **Dependencias de build y actualizaciones** se mudan a releases de `hck0n3/aura-pc-v2`: el
   `libmpv-2.dll` fijado que hoy baja el workflow de Windows desde `SimoHypers/limusic/releases/
   download/deps/` (el dueño lo sube una vez a un release `deps` de su repo), el chequeo de versiones
   por API de GitHub (`commands.rs` ~3040) y el `latest.json` del canal beta (`commands.rs` ~3097).
