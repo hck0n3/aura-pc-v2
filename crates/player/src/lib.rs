@@ -17,7 +17,9 @@ mod video;
 pub use video::{GlDisplay, Thumbnail, VideoRenderer};
 
 mod decode;
+pub mod dsp;
 pub use decode::decode_to_wav;
+pub use dsp::{Amount, BandKind, DspSettings, Eq, EqBand, EqMode};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
