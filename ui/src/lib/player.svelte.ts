@@ -1892,8 +1892,7 @@ export function notePlaylistAdd(playlistId: string, songs: SongItem[]) {
 		autoplay: undefined,
 		queued: undefined,
 		queued_end: undefined,
-		queued_from: undefined,
-		queued_by: undefined
+		queued_from: undefined
 	}));
 	lastPlaylistAdd.epoch++;
 }

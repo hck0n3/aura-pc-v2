@@ -59,11 +59,7 @@ pub struct SongItem {
     /// response didn't carry one, which the UI treats the same as [`Rating::Indifferent`].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rating: Option<Rating>,
-    /// Listen Together: username of the guest who added this queue item (`None` for the user's own
-    /// tracks). Never parsed from YouTube — pure queue metadata, carried for attribution.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub queued_by: Option<String>,
-    /// "Play next" (or a guest's session add): marks the "up next" block so successive adds stack
+    /// "Play next": marks the "up next" block so successive adds stack
     /// FIFO right after the current song. Pure queue metadata, never parsed.
     #[serde(default)]
     pub queued: bool,
@@ -650,7 +646,6 @@ pub(crate) fn parse_list_item(node: &Value) -> Option<SongItem> {
         added_by_avatars,
         added_at: added_at(node),
         rating: like_status(node),
-        queued_by: None,
         queued: false,
         queued_end: false,
         queued_from: None,
@@ -962,7 +957,6 @@ fn parse_panel_video(node: &Value) -> Option<SongItem> {
         added_by_avatars: Vec::new(),
         added_at: None,
         rating: like_status(node),
-        queued_by: None,
         queued: false,
         queued_end: false,
         queued_from: None,

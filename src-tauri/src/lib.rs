@@ -7,7 +7,6 @@ mod blocked;
 mod cipher;
 mod commands;
 mod db;
-mod devicelink;
 mod diagnostics;
 mod hotkeys;
 mod http;
@@ -19,7 +18,6 @@ mod karaoke_model;
 mod karaoke_runtime;
 mod lastfm;
 mod listenbrainz;
-mod listentogether;
 mod local;
 mod lyrics;
 mod matugen;
@@ -863,10 +861,10 @@ pub fn run() {
     // e.g. clicking the app icon while we're hidden in the tray — re-shows this instance
     // instead of spawning a second one (which would fight over SQLite and mpv).
     //
-    // `LIMUSIC_MULTI=1` lifts the guard, because the guard is exactly what makes Listen Together
-    // impossible to test on one machine. Pair it with `XDG_DATA_HOME` (Linux) or `APPDATA`
-    // (Windows) pointing somewhere else, or the second copy opens the first one's SQLite file and
-    // the two fight over it, which is what the guard exists to prevent:
+    // `LIMUSIC_MULTI=1` lifts the guard, for running two copies side by side on one machine. Pair
+    // it with `XDG_DATA_HOME` (Linux) or `APPDATA` (Windows) pointing somewhere else, or the
+    // second copy opens the first one's SQLite file and the two fight over it, which is what the
+    // guard exists to prevent:
     //
     //     LIMUSIC_MULTI=1 XDG_DATA_HOME=/tmp/limusic-b ./target/debug/limusic-app
     if std::env::var_os("LIMUSIC_MULTI").is_none() {
@@ -1115,15 +1113,6 @@ pub fn run() {
                 lastfm::ScrobbleConfig::load(&db),
             );
 
-            // Listen Together session (context/19). Server URL is a DB setting so "home PC → VPS" is
-            // config, not a rebuild. The sync channel feeds the guest-playback bridge below.
-            // Empty means the built-in default, which `LtSession` resolves when it connects. The
-            // URL does not live here so that nothing ever has to hand it to the UI.
-            let lt_url = db.get_setting("lt_server_url").unwrap_or_default();
-            let (lt, lt_sync_rx) = listentogether::LtSession::new(handle.clone(), lt_url);
-            // Device link: opens a socket only once the user has linked a device.
-            let (link, link_rx) = devicelink::LinkSession::new(handle.clone(), db.clone());
-
             let app_state = Arc::new(AppState::new(
                 it,
                 clients,
@@ -1131,8 +1120,6 @@ pub fn run() {
                 db.clone(),
                 handle.clone(),
                 orchestrator,
-                lt,
-                link,
                 cache_dir.clone(),
                 media,
                 lastfm,
@@ -1207,28 +1194,6 @@ pub fn run() {
                 appicon::apply(&handle);
             }
 
-            // Bridge: apply Listen Together sync commands (guest playback / host seed) to AppState.
-            {
-                let st = app_state.clone();
-                let mut rx = lt_sync_rx;
-                tauri::async_runtime::spawn(async move {
-                    while let Some(cmd) = rx.recv().await {
-                        st.apply_sync(cmd).await;
-                    }
-                });
-            }
-
-            // Bridge: apply what the device link asks of the player (remote controls, pause on a
-            // takeover by another device).
-            {
-                let st = app_state.clone();
-                let mut rx = link_rx;
-                tauri::async_runtime::spawn(async move {
-                    while let Some(cmd) = rx.recv().await {
-                        st.apply_link(cmd).await;
-                    }
-                });
-            }
 
             // Restore the last session's queue, then optionally start playback.
             {
@@ -1546,26 +1511,6 @@ pub fn run() {
             commands::import_set_auto,
             commands::import_update,
             commands::import_resolve,
-            commands::lt_get_state,
-            commands::lt_set_server_url,
-            commands::lt_create_room,
-            commands::lt_join_room,
-            commands::lt_leave,
-            commands::lt_approve_join,
-            commands::lt_reject_join,
-            commands::lt_kick,
-            commands::lt_transfer_host,
-            commands::lt_suggest,
-            commands::lt_approve_suggestion,
-            commands::lt_reject_suggestion,
-            commands::lt_request_sync,
-            commands::link_state,
-            commands::link_start_pairing,
-            commands::link_cancel_pairing,
-            commands::link_unlink,
-            commands::link_forget,
-            commands::link_continue_here,
-            commands::link_play_on,
             commands::get_lyrics,
             commands::choose_lyrics_source,
             commands::set_lyrics_offset,
@@ -1718,46 +1663,32 @@ fn spawn_event_pump(
         while let Some(ev) = events.recv().await {
             match ev {
                 PlayerEvent::Position(p) => {
-                    // Quiet while the windows show another linked device's playback.
-                    if throttle.should_emit(p, std::time::Instant::now()) && !state.showing_remote()
-                    {
+                    if throttle.should_emit(p, std::time::Instant::now()) {
                         let _ = app.emit("position", serde_json::json!({ "position": p }));
                     }
                     state.on_position(p).await;
                 }
                 PlayerEvent::Duration(d) => {
-                    if !state.showing_remote() {
-                        let _ = app.emit("duration", serde_json::json!({ "duration": d }));
-                    }
+                    let _ = app.emit("duration", serde_json::json!({ "duration": d }));
                     state.on_duration(d).await;
                 }
                 PlayerEvent::Playing(playing) => {
-                    let remote = state.showing_remote();
-                    if !remote {
-                        let _ =
-                            app.emit("playback-state", if playing { "playing" } else { "paused" });
-                    }
+                    let _ = app.emit("playback-state", if playing { "playing" } else { "paused" });
                     if !playing {
                         state.flush_position(); // persist exact resume position on pause
-                        if !remote {
-                            let _ = app.emit(
-                                "position",
-                                serde_json::json!({ "position": state.current_position() }),
-                            );
-                        }
+                        let _ = app.emit(
+                            "position",
+                            serde_json::json!({ "position": state.current_position() }),
+                        );
                     }
                     state.media_set_playing(playing);
-                    // Playing here ends showing another linked device; pausing may start it.
-                    state.link_remote_refresh().await;
                     // Keep the tray's toggle label honest — this arm is the same chokepoint
                     // MPRIS uses, so tray state can't drift from media-key state.
                     tray::set_playing(&app, playing);
                 }
-                // Listen Together host: broadcast a pause/resume. Not from `Playing`, which also
-                // flips when a track runs out, and that arrives here after the next track was
-                // announced (`on_track_ended` loads it on this pump), with the old track's end as
-                // the position. Guests then seek the new track to it, past the end of a shorter one.
-                PlayerEvent::Paused(paused) => state.lt_on_play_state(!paused).await,
+                // The bare pause flag has no consumer here: `Playing` above drives the UI, the OS
+                // widget and the tray.
+                PlayerEvent::Paused(_) => {}
                 PlayerEvent::TrackEnded => {
                     state.on_track_ended().await;
                 }

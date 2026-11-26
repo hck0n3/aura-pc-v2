@@ -42,13 +42,10 @@ export interface SongItem {
 	/** The signed-in user's rating (absent when the response didn't say — same as 'indifferent'). */
 	rating?: Rating;
 	/** "Add to library" off the row's own menu, with a token for each direction. Absent on rows
-	 *  YouTube sent no menu for, and on the ones built here (local files, On Repeat, a Listen
-	 *  Together guest's queue) — the menu hides the action rather than offering a dead one.
+	 *  YouTube sent no menu for, and on the ones built here (local files, On Repeat) — the menu hides the action rather than offering a dead one.
 	 *  Library ▸ Songs is not Liked Music: this is a feedback write, not a rating. */
 	library?: { in_library: boolean; add_token?: string; remove_token?: string };
-	/** Listen Together: name of the guest who added this queue item (session adds only). */
-	queued_by?: string;
-	/** Queued to play next ("Play next", or a guest's session add) — the "Next in queue" block. */
+	/** Queued to play next ("Play next") — the "Next in queue" block. */
 	queued?: boolean;
 	/** Appended by "Add to queue" — its own block at the tail of the queue. */
 	queued_end?: boolean;
@@ -101,14 +98,13 @@ export interface QueueState {
 	/** What seeded the queue (playlist/album title, "<song> Radio") — the "Next from" header. */
 	sourceName?: string | null;
 	/** The playlist the queue was started from, when it was one. What "Remove from this playlist"
-	 *  in the player's track menu writes to; absent for radios, single songs and guest queues. */
+	 *  in the player's track menu writes to; absent for radios and single songs. */
 	sourceId?: string | null;
 	/** Title of the track a click replaced this queue mid-play, for the panel's "Back to …" line.
 	 *  Set only while `backToPrevious` would actually do something: at the head of the queue, with
 	 *  a kept one behind it. */
 	prevTrack?: string | null;
-	/** The playing device's Autoplay setting: this desktop's, or a linked phone's while the bar
-	 *  controls it. Absent from a phone that predates it. */
+	/** The Autoplay setting. */
 	autoplay?: boolean | null;
 }
 

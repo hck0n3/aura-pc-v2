@@ -665,8 +665,8 @@ fn split_title(title: &str) -> Option<(String, String)> {
 ///
 /// This runs on the string, not on `artist_runs`, because the runs are gone exactly where this is
 /// needed most: `backfill_metadata` clears them whenever it repairs the byline from
-/// `videoDetails.author`, and a Listen Together guest's queue never had them. Without runs only
-/// "&" cuts.
+/// `videoDetails.author`, and rows restored from older queues may never have had them. Without
+/// runs only "&" cuts.
 // ponytail: separator scan. A real credit parser only if users report bylines it gets wrong.
 fn primary_artist(artists: &str, strict: bool, runs: &[ArtistRun]) -> String {
     let mut cuts = vec![","];

@@ -48,9 +48,7 @@ pub enum PlayerEvent {
     /// alone never hears that a track began, and only recovers on a manual pause/unpause.
     Playing(bool),
     /// mpv's `pause` flag changed: someone pressed pause or play. Unlike [`PlayerEvent::Playing`]
-    /// this says nothing when the playlist runs dry or a new file starts, which is what a Listen
-    /// Together host has to broadcast: a track change is announced on its own, and a "stopped"
-    /// from the gap between two tracks reaches the room after the next one has started.
+    /// this says nothing when the playlist runs dry or a new file starts.
     Paused(bool),
     /// One track finished normally (EOF) — orchestrator advances the queue.
     TrackEnded,
@@ -561,8 +559,8 @@ impl Player {
             .set_property("stream-lavf-o", if live { LAVF_LIVE_OPTS } else { LAVF_FILE_OPTS })?;
         self.mpv().set_property("demuxer-lavf-o", if live { LAVF_LIVE_DEMUX_OPTS } else { "" })?;
         *self.decks.live_url.lock().unwrap() = live.then(|| url.to_owned());
-        // A broadcast always starts at its live edge: a resume point or a host's position is a
-        // track position, and as an offset into the DVR window it lands hours behind (#424).
+        // A broadcast always starts at its live edge: a resume point is a track position, and as
+        // an offset into the DVR window it lands hours behind (#424).
         let start = start.filter(|_| !live);
         let args = loadfile_args(url, start, file_opts, loadfile_has_index(self.mpv()));
         let refs: Vec<&str> = args.iter().map(String::as_str).collect();
@@ -727,7 +725,7 @@ impl Player {
 
     pub fn seek(&self, position_secs: f64) -> Result<(), Error> {
         // A broadcast's timeline is its DVR window, not a track (#424): a position from the UI,
-        // a media key or a Listen Together host means nothing in it.
+        // or a media key means nothing in it.
         if self.on_air() {
             return Ok(());
         }
@@ -2444,9 +2442,8 @@ mod tests {
         assert!(!is_ao_init_failed(&Error::Raw(mpv_error::NothingToPlay)));
     }
 
-    /// A Listen Together host broadcasts `Paused`, so a track running out must not produce one:
-    /// it reached the room after the next track had started, with the old track's end as the
-    /// position, and guests seeked the new track past its own end.
+    /// `Paused` is the pause flag the user flips, so a track running out must not produce one: it
+    /// would arrive after the next track had started, with the old track's end as the position.
     #[test]
     fn running_out_is_not_a_pause() {
         use super::{Player, PlayerEvent};
