@@ -78,7 +78,7 @@ function getNestedValue(obj: unknown, path: string): unknown {
  */
 export function t(key: TranslationKey, params?: Record<string, string | number>): string {
 	let str = getNestedValue(translations[activeLocale], key);
-	// Weblate writes an untranslated string as "", so empty counts as missing: a half-finished
+	// A translation tool writes an untranslated string as "", so empty counts as missing: a half-finished
 	// catalog must render English, not a blank label.
 	if (typeof str !== 'string' || str === '') str = getNestedValue(translations.en, key);
 	if (typeof str !== 'string') return key;
@@ -93,7 +93,7 @@ export function tEn(key: TranslationKey): string {
 }
 
 /**
- * How much of each catalog Weblate has actually landed, 0..1, so the picker can say a language is
+ * How much of each catalog has actually been translated, 0..1, so the picker can say a language is
  * half English before someone picks it and finds out the hard way.
  *
  * Counted once at module load: the catalogs are bundled and nothing here changes at runtime.

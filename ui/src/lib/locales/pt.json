@@ -583,7 +583,6 @@
 			"language": "Idioma da interface",
 			"language_hint": "Seleciona o idioma de apresentação da interface.",
 			"language_search": "Pesquisar idiomas",
-			"language_contribute": "Ajuda a traduzir o Limusic",
 			"shortcuts_hint": "Abre os atalhos de teclado com {key}",
 			"play_on_start": "Retomar a reprodução ao abrir",
 			"play_on_start_hint": "Começa a reproduzir a tua última fila quando o Limusic abre.",

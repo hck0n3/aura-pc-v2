@@ -328,7 +328,6 @@
 			"stream_clients": "Client di streaming",
 			"stream_clients_hint": "Disattiva un client per ignorarlo durante la risoluzione degli stream. Sovrascritto dalla variabile d'ambiente {var}.",
 			"language_search": "Cerca lingue",
-			"language_contribute": "Aiuta a tradurre Limusic",
 			"track_notifications": "Notifiche dei brani",
 			"track_notifications_hint": "Mostra una notifica quando inizia un nuovo brano mentre Limusic è in background.",
 			"start_minimized": "Avvia ridotto nell'area di notifica",

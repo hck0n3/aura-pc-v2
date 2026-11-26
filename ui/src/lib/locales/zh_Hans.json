@@ -348,7 +348,6 @@
 			"language": "界面语言",
 			"language_hint": "选择界面显示语言。",
 			"language_search": "搜索语言",
-			"language_contribute": "帮助翻译 Limusic",
 			"shortcuts_hint": "按 {key} 打开键盘快捷键",
 			"autostart": "启动时运行",
 			"autostart_hint": "系统启动时自动启动 Limusic。",

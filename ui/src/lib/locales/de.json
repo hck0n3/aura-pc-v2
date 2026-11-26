@@ -386,7 +386,6 @@
 			"stream_clients": "Stream-Clients",
 			"stream_clients_hint": "Einen Client deaktivieren, um ihn beim Abrufen von Streams zu überspringen. Wird durch die Umgebungsvariable {var} überschrieben.",
 			"language_search": "Sprachen durchsuchen",
-			"language_contribute": "Hilf mit, Limusic zu übersetzen",
 			"track_notifications": "Titelbenachrichtigungen",
 			"track_notifications_hint": "Eine Benachrichtigung anzeigen, wenn ein neuer Titel startet und Limusic im Hintergrund läuft.",
 			"start_minimized": "Minimiert im Infobereich starten",

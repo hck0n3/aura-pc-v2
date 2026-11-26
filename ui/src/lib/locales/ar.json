@@ -361,7 +361,6 @@
 			"stream_clients": "عملاء البث",
 			"stream_clients_hint": "أوقف تشغيل عميل لتخطيه عند جلب تدفقات البث. يتم تجاوزه بواسطة متغير البيئة {var}.",
 			"language_search": "البحث في اللغات",
-			"language_contribute": "ساعد في ترجمة Limusic",
 			"track_notifications": "إشعارات الأغاني",
 			"track_notifications_hint": "إظهار إشعار عند بدء أغنية جديدة أثناء وجود Limusic في الخلفية.",
 			"start_minimized": "بدء التشغيل مصغراً في علبة النظام",

@@ -364,7 +364,6 @@
 			"language": "表示言語",
 			"language_hint": "インターフェースの表示言語を選択します。",
 			"language_search": "言語を検索",
-			"language_contribute": "Limusicの翻訳に参加する",
 			"shortcuts_hint": "{key} でキーボードショートカットを開く",
 			"autostart": "システム起動時に自動実行",
 			"autostart_hint": "パソコンの起動時にLimusicを自動的に開始します。",

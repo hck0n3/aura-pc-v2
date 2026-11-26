@@ -397,7 +397,6 @@
 			"stream_clients": "Klienci strumieni",
 			"stream_clients_hint": "Wyłącz klienta, aby go pominąć przy rozwiązywaniu strumieni. Nadpisywane przez zmienną środowiskową {var}.",
 			"language_search": "Szukaj języków",
-			"language_contribute": "Pomóż tłumaczyć Limusic",
 			"track_notifications": "Powiadomienia o utworach",
 			"track_notifications_hint": "Pokazuj powiadomienie o nowym utworze, gdy Limusic działa w tle.",
 			"start_minimized": "Uruchamiaj do zasobnika przy starcie",

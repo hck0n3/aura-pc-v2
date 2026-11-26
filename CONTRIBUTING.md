@@ -1,153 +1,88 @@
-# Contributing
+# Contribuir a Aura
 
-Thanks for wanting to help. This is a small project, so this is short.
+## Preparar el entorno
 
-## Before you start
+Los requisitos y la compilación están en el [README](README.md#compilar-desde-el-código). Lo
+específico de Windows y macOS está en [docs/BUILD-PLATFORMS.md](docs/BUILD-PLATFORMS.md).
 
-- **Downloads are out of scope.** The desktop app won't get offline downloads,
-  and a PR adding them will be closed. The reasoning is in
-  [this discussion](https://github.com/SimoHypers/limusic/discussions/291).
-- **Planning a big feature? Talk to me first.** Open an issue describing what
-  you want to build before you write any code, or comment on the issue if one
-  already exists. I'll tell you whether it's planned, and we can scope it out
-  together so the PR fits when it arrives. A new page, a new integration, or
-  anything that changes playback or extraction counts as big. Bug fixes don't
-  need this, send them straight in.
-
-## Getting set up
-
-Prerequisites and the build are in the [README](README.md#building-from-source).
-Windows and macOS specifics live in [docs/BUILD-PLATFORMS.md](docs/BUILD-PLATFORMS.md).
-
-Run the app with hot reload:
+Arrancar la app con recarga en caliente:
 
 ```bash
 cargo tauri dev
 ```
 
-That is `cargo tauri`, not `pnpm tauri`: the CLI is the Rust one
-(`cargo install tauri-cli`), and `ui/package.json` has no tauri script.
+Es `cargo tauri`, no `pnpm tauri`: la CLI es la de Rust (`cargo install tauri-cli`).
 
-## Formatting
-
-Run it, don't fight it:
+## Formato
 
 ```bash
 cargo fmt --all
 ```
 
-`rustfmt.toml` is committed, so `cargo fmt` matches the existing style and
-should produce no changes outside the code you actually touched. If it wants to
-reformat files you never opened, something is wrong with the config rather than
-with you, so please open an issue instead of committing the churn.
+`rustfmt.toml` está en el repo, así que `cargo fmt` respeta el estilo y no debería cambiar nada
+fuera del código que tocaste. Deja el formateo fuera de los commits de funciones.
 
-Keep formatting out of feature commits either way. A reformat of unrelated files
-buries the real change and makes review much harder.
-
-The frontend has no Prettier config, so switch off format-on-save for `ui/`
-rather than letting your editor restyle the files you open (quotes, trailing
-commas). Match the style of the file you are in.
+La interfaz no tiene configuración de Prettier: desactiva el formateo al guardar en `ui/` y sigue
+el estilo del archivo en el que estás.
 
 ## Tests
 
 ```bash
-cargo test --all                                        # everything, no network
-cargo test -p limusic-app --lib -- --ignored --nocapture   # hits live lyrics APIs
-cd ui && pnpm check                                     # svelte-check + types
+cargo test --all                                        # todo, sin red
+cargo test -p aura-app --lib -- --ignored --nocapture   # consulta las APIs de letras reales
+cd ui && pnpm check && pnpm test                        # svelte-check, tipos y chequeos propios
+bash scripts/check-aura-brand.sh all                    # sin rastros de la marca anterior
 ```
 
-Tests that talk to the network are `#[ignore]`d so the default run works
-offline. If you touch a lyrics provider, run the ignored ones: a provider whose
-endpoint has changed returns "no lyrics" rather than an error, so it looks
-exactly like a track that simply has none.
+Los tests que usan la red llevan `#[ignore]` para que la ejecución normal funcione sin conexión.
+Si tocas un proveedor de letras, corre los ignorados: un proveedor cuyo endpoint cambió devuelve
+"sin letras" en vez de un error.
 
-Live YouTube extraction checks are behind a feature flag instead, since they hit
-the network:
+Las comprobaciones de extracción de YouTube en vivo van detrás de una feature:
 
 ```bash
 cargo test -p innertube --features integration-tests -- --nocapture
 ```
 
-Run these after changing the client list, the cipher, or anything in the resolve
-path. A failure usually means YouTube changed something rather than that your
-patch is wrong; `.github/workflows/stream-health.yml` runs them nightly and says
-what each one means.
+Córrelas después de cambiar la lista de clientes, el cifrado o el camino de resolución.
 
-On macOS the test binaries link libmpv just like the app does, so they need the
-same `LIBRARY_PATH` as the build or they fail to link with
-`ld: library 'mpv' not found`:
+En macOS los binarios de test enlazan libmpv igual que la app, así que necesitan el mismo
+`LIBRARY_PATH`:
 
 ```bash
 export LIBRARY_PATH="$(brew --prefix)/lib:$LIBRARY_PATH"
 ```
 
-See [docs/BUILD-PLATFORMS.md](docs/BUILD-PLATFORMS.md) for the rest of the macOS
-setup.
-
 ## Pull requests
 
-- **Target `dev`, not `master`.** Every change lands on `dev` first, and `master`
-  only moves when a release is cut from it. Branch from `dev` and pick it as the
-  base when you open the PR.
-- **Open from a branch, not your fork's `master`.** It keeps your default branch
-  clean and makes it much easier to take your changes.
-- **Changing how the app looks or behaves? Open an issue first.** Describe what
-  bothers you, with a screenshot, and wait until we agree on the change before
-  writing code. Most of the UI is the way it is on purpose, and a PR that
-  redesigns it unasked will probably be closed.
-- **One change per PR.** Unrelated changes in one PR can't be reviewed or merged
-  separately, so open one each.
-- **Say why.** For every change, the description says what problem it fixes,
-  not only what the code does.
-- **Say what you tested.** "Played five tracks, checked light and dark" is worth
-  more than a description of the code.
-- **Used AI to write the code? Say which model.** AI-assisted PRs are welcome,
-  but the description has to name the model that wrote the code (for example
-  "Claude Opus 5.5" or "GPT-5"), not just "AI". If an AI agent is opening the PR
-  itself, it should state its own model the same way.
+- Una rama por cambio, con PR contra `main`.
+- Un cambio por PR, con el porqué y lo que probaste.
 
-## Translations
+## Traducciones
 
-Translations live in `ui/src/lib/locales/` as nested JSON, one file per language,
-with `en.json` as the source of truth.
+Las traducciones están en `ui/src/lib/locales/` como JSON anidado, un archivo por idioma, con
+`en.json` como referencia.
 
-**Use [Weblate](https://hosted.weblate.org/projects/limusic/) rather than editing
-the JSON by hand.** It shows you the English original beside each string, flags
-translations that went stale when the English changed, and opens the pull request
-for you. Hand-edited JSON tends to drift out of sync with `en.json` within a
-release or two.
+- Los marcadores como `{count}` y `{playlist}` se sustituyen al ejecutar: escríbelos igual que en
+  inglés; puedes moverlos dentro de la frase.
+- Una clave que falta no es un error: cae al inglés.
 
-Two things to know:
+Para añadir un idioma: crea el JSON, impórtalo en `ui/src/lib/locales/index.ts` y añádelo a
+`LocaleId`, `LOCALES` y `translations`.
 
-- Placeholders like `{count}` and `{playlist}` are substituted at runtime. Keep
-  them spelled exactly as they are in the English string; you can move them
-  around the sentence freely.
-- A missing key is not a bug. Anything a catalog does not have falls back to
-  English at runtime, so a partial translation is safe to ship.
+## Convenciones
 
-Adding a new language: Weblate creates the JSON file, then import it in
-`ui/src/lib/locales/index.ts` and add the locale to `LocaleId`, `LOCALES` and
-`translations` there so the picker offers it.
+- **Íconos: solo [HugeIcons](https://hugeicons.com)** (`@hugeicons/svelte` y
+  `@hugeicons/core-free-icons`).
+- **Componentes base: shadcn-svelte** antes de hacer uno a mano.
+- **La interfaz nunca habla con YouTube.** Todo lo de YouTube queda detrás de los comandos de Tauri.
+- **Los colores salen de los tokens del tema** (`--foreground`, `--muted-foreground`, …), nunca de
+  hex o rgb fijos.
+- **Los efectos visuales siguen [docs/UI-PERFORMANCE.md](docs/UI-PERFORMANCE.md).** Léelo antes de
+  añadir un blur, sombra, animación al pasar el mouse o `backdrop-filter`.
 
-## House conventions
+## Alcance
 
-- **Icons: [HugeIcons](https://hugeicons.com) only** (`@hugeicons/svelte` plus
-  `@hugeicons/core-free-icons`). Not Lucide, not a second icon set, not inline
-  SVGs.
-- **UI primitives: shadcn-svelte** before hand-rolling a component.
-- **The frontend never talks to YouTube.** Everything YouTube-shaped stays
-  behind the Rust command boundary; the UI goes through Tauri commands and
-  events only.
-- **Colours come from theme tokens** (`--foreground`, `--muted-foreground`, and
-  friends), never hardcoded hex or rgb. There are light and dark themes, and a
-  hardcoded white is invisible in half of them.
-- **Visual effects follow [docs/UI-PERFORMANCE.md](docs/UI-PERFORMANCE.md).**
-  Read it before adding a blur, shadow, hover animation or `backdrop-filter`.
-  Linux, Windows and macOS run three different webviews, and an effect that is
-  free on your machine can make the app lag on someone else's.
-
-## A note on scope
-
-This talks to YouTube's private API and breaks whenever YouTube changes
-something. Anything extraction-related needs to be updatable: client versions in
-config rather than hardcoded, and graceful degradation when a step fails.
+Aura usa la API privada de YouTube y se rompe cuando YouTube cambia algo. Todo lo relacionado con la
+extracción tiene que poder actualizarse: versiones de cliente en configuración y no fijas en el
+código, y degradación ordenada cuando un paso falla.

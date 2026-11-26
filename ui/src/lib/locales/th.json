@@ -376,7 +376,6 @@
 			"language": "ภาษาของอินเทอร์เฟซ",
 			"language_hint": "เลือกภาษาที่ใช้แสดงอินเทอร์เฟซ",
 			"language_search": "ค้นหาภาษา",
-			"language_contribute": "ช่วยแปล Limusic",
 			"shortcuts_hint": "เปิดปุ่มลัดคีย์บอร์ดด้วย {key}",
 			"autostart": "เปิดเมื่อเริ่มระบบ",
 			"autostart_hint": "เริ่ม Limusic โดยอัตโนมัติเมื่อระบบของคุณบูต",

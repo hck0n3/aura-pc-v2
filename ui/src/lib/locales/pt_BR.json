@@ -365,7 +365,6 @@
 			"system_titlebar": "Usar barra de título do sistema",
 			"system_titlebar_hint": "Deixe sua área de trabalho desenhar a moldura e os botões da janela. O Limusic mantém sua própria barra de ferramentas abaixo dela.",
 			"language_search": "Pesquisar idiomas",
-			"language_contribute": "Ajude a traduzir o Limusic",
 			"track_notifications": "Notificações de músicas",
 			"track_notifications_hint": "Mostra uma notificação quando uma nova música começa a tocar enquanto o Limusic está em segundo plano.",
 			"start_minimized": "Iniciar na bandeja ao ligar o sistema",

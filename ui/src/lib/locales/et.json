@@ -398,7 +398,6 @@
 			"language": "Kasutajaliidese keel",
 			"language_hint": "Vali kasutajaliidese kuvamiskeel.",
 			"language_search": "Otsi keeli",
-			"language_contribute": "Aita Limusicut tõlkida",
 			"shortcuts_hint": "Ava kiirklahvide loend klahviga {key}",
 			"autostart": "Käivita süsteemi käivitumisel",
 			"autostart_hint": "Käivita Limusic automaatselt, kui süsteem käivitub.",

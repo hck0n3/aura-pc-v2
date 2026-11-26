@@ -357,7 +357,6 @@
 			"system_titlebar": "Folosește bara de titlu a sistemului",
 			"system_titlebar_hint": "Permite sistemului să deseneze cadrul ferestrei și butoanele acesteia. Limusic își păstrează propria bară dedesubt.",
 			"language_search": "Caută limbi",
-			"language_contribute": "Ajută la traducerea Limusic",
 			"track_notifications": "Notificări melodie",
 			"track_notifications_hint": "Afișează o notificare când începe o nouă melodie dacă Limusic este în fundal.",
 			"start_minimized": "Pornește minimizat în bara de sistem",

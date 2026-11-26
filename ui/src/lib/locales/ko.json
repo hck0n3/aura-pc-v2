@@ -397,7 +397,6 @@
 			"stream_clients": "스트리밍 클라이언트",
 			"stream_clients_hint": "스트림 주소를 분석할 때 제외할 클라이언트는 비활성화하세요. {var} 환경 변수가 설정되어 있으면 이 옵션보다 우선 적용됩니다.",
 			"language_search": "언어 검색",
-			"language_contribute": "Limusic 번역 기여하기",
 			"start_minimized": "시스템 시작 시 트레이로 최소화하여 실행",
 			"start_minimized_hint": "컴퓨터가 켜질 때 자동으로 실행되지만, 직접 열기 전까지는 시스템 트레이에 숨겨진 상태를 유지합니다.",
 			"track_notifications": "곡 재생 알림",

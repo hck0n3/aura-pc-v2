@@ -409,7 +409,6 @@
 			"language": "Ngôn ngữ giao diện",
 			"language_hint": "Chọn ngôn ngữ hiển thị giao diện.",
 			"language_search": "Tìm ngôn ngữ",
-			"language_contribute": "Hỗ trợ dịch Limusic",
 			"shortcuts_hint": "Mở danh sách phím tắt bằng {key}",
 			"autostart": "Khởi động cùng hệ thống",
 			"autostart_hint": "Tự động khởi chạy Limusic khi bạn khởi động máy tính.",

@@ -359,7 +359,6 @@
 			"system_titlebar": "Utiliser la barre de titre du système",
 			"system_titlebar_hint": "Laisser votre environnement de bureau gérer le cadre de la fenêtre et ses boutons. Limusic conserve sa propre barre d'outils en dessous.",
 			"language_search": "Rechercher une langue",
-			"language_contribute": "Aider à traduire Limusic",
 			"track_notifications": "Notifications de titre",
 			"track_notifications_hint": "Afficher une notification lorsqu'un nouveau titre démarre et que Limusic est en arrière-plan.",
 			"start_minimized": "Démarrer réduit dans la zone de notification",

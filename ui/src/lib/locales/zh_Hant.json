@@ -395,7 +395,6 @@
 			"stream_clients": "串流用戶端",
 			"stream_clients_hint": "關閉用戶端可在解析串流時跳過該選項。此設定會被環境變數 {var} 覆寫。",
 			"language_search": "搜尋語言",
-			"language_contribute": "協助翻譯 Limusic",
 			"track_notifications": "換曲通知",
 			"track_notifications_hint": "當 Limusic 在背景執行且開始播放新歌曲時，顯示系統通知。",
 			"start_minimized": "開機啟動時最小化至系統匣",

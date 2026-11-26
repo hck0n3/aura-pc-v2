@@ -582,7 +582,6 @@
 			"language": "Felület nyelve",
 			"language_hint": "Válaszd ki a felület megjelenítési nyelvét.",
 			"language_search": "Nyelvek keresése",
-			"language_contribute": "Segíts lefordítani a Limusicot",
 			"shortcuts_hint": "A billentyűparancsok megnyitása ezzel: {key}",
 			"play_on_start": "Lejátszás folytatása megnyitáskor",
 			"play_on_start_hint": "Az utolsó sor lejátszásának indítása a Limusic megnyitásakor.",
