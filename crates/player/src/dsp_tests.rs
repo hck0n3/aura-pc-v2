@@ -258,3 +258,26 @@ fn invalid_settings_are_refused_before_mpv() {
     let err = p.set_dsp(DspSettings { preamp_db: 40.0, ..on() }).unwrap_err();
     assert!(err.to_string().contains("preampDb"), "{err}");
 }
+
+#[test]
+fn device_list_starts_with_auto() {
+    let dir = tempfile::tempdir().unwrap();
+    let p = Player::new(dir.path().to_str().unwrap()).unwrap();
+    let devices = p.audio_devices();
+    assert_eq!(devices.first().map(|d| d.name.as_str()), Some("auto"), "{devices:?}");
+}
+
+#[test]
+fn an_unknown_saved_device_falls_back_to_auto() {
+    let dir = tempfile::tempdir().unwrap();
+    let p = Player::new(dir.path().to_str().unwrap()).unwrap();
+    p.set_audio_device("pulse/unplugged-usb-headphones").unwrap();
+    assert_eq!(p.mpv().get_property::<String>("audio-device").unwrap(), "auto");
+    p.set_audio_device("").unwrap();
+    assert_eq!(p.mpv().get_property::<String>("audio-device").unwrap(), "auto");
+}
+
+#[test]
+fn the_idle_deck_inherits_the_device() {
+    assert!(INHERITED.contains(&"audio-device"));
+}

@@ -39,6 +39,14 @@ pub enum Error {
     Dsp(String),
 }
 
+/// An audio output as mpv names it (`name`, which [`Player::set_audio_device`] takes) and as the
+/// system describes it.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct AudioDevice {
+    pub name: String,
+    pub description: String,
+}
+
 /// Events pumped from mpv's event thread. context/14 §player surface.
 #[derive(Debug, Clone)]
 pub enum PlayerEvent {
@@ -950,6 +958,46 @@ impl Player {
     pub fn dsp(&self) -> DspSettings {
         self.decks.af.lock().unwrap().dsp.clone()
     }
+
+    /// The outputs mpv can play on, `auto` (the system's default) first.
+    pub fn audio_devices(&self) -> Vec<AudioDevice> {
+        let mut out = vec![AudioDevice { name: "auto".into(), description: String::new() }];
+        let Some(list) =
+            self.mpv().get_property::<MpvNode>("audio-device-list").ok().and_then(MpvNode::array)
+        else {
+            return out;
+        };
+        for node in list {
+            let Some(map) = node.map() else { continue };
+            let mut device = AudioDevice { name: String::new(), description: String::new() };
+            for (key, value) in map {
+                match key.as_str() {
+                    "name" => device.name = value.str().unwrap_or_default().to_owned(),
+                    "description" => {
+                        device.description = value.str().unwrap_or_default().to_owned()
+                    }
+                    _ => {}
+                }
+            }
+            if !device.name.is_empty() && device.name != "auto" {
+                out.push(device);
+            }
+        }
+        out
+    }
+
+    /// Play on `name` (from [`Self::audio_devices`]), on both decks. Empty, or a device that is
+    /// not there any more (headphones unplugged since it was saved), is the system's default.
+    pub fn set_audio_device(&self, name: &str) -> Result<(), Error> {
+        let known = !name.is_empty() && self.audio_devices().iter().any(|d| d.name == name);
+        let name = if known { name } else { "auto" };
+        for deck in 0..2 {
+            if let Some(mpv) = self.decks.mpv(deck) {
+                mpv.set_property("audio-device", name)?;
+            }
+        }
+        Ok(())
+    }
 }
 
 fn reverb_path(decks: &Decks, preset: u8) -> std::path::PathBuf {
@@ -1422,7 +1470,8 @@ const FADE_STEP: Duration = Duration::from_millis(50);
 /// Properties a fresh deck has to inherit from the one playing. mpv keeps these per instance, so
 /// a preload that skipped them would stream past the user's proxy, without their headers, at 1x,
 /// with no loudness gain and no pitch shift.
-const INHERITED: [&str; 5] = ["user-agent", "http-header-fields", "http-proxy", "speed", "af"];
+const INHERITED: [&str; 6] =
+    ["user-agent", "http-header-fields", "http-proxy", "speed", "af", "audio-device"];
 
 /// Load `url` on the idle deck, paused and silent, ready for [`start_crossfade`] to bring it up.
 fn preload(decks: &Decks, mpv: &Arc<Mpv>, url: &str) -> Result<(), Error> {
