@@ -163,18 +163,45 @@ Lógica de JR (`src/core/main.js`, `_getRadarTracks`, ~línea 1248) a portar en 
 guardado localmente en la base de datos de Limusic (funciona sin iniciar sesión). Si el usuario
 inició sesión con YouTube, se suman también sus suscripciones (`get_library_subscriptions`).
 
-## 8. Descarga en máxima calidad
+## 8. Descargas en MP3 320 con etiquetas completas
 
-JR PC usa yt-dlp + ffmpeg y en el modo rápido **recomprime a MP3 ~190 kbps**, lo que pierde calidad.
-En Aura:
-- Elegir el **mejor formato de audio** que ofrece YouTube para ese tema (normalmente Opus ~160 kbps
-  itag 251; AAC 256 kbps itag 141 cuando la cuenta Premium lo da), con la misma resolución de
-  streams que Limusic ya usa para reproducir (`audioproxy.rs`, `crates/innertube`, cipher/potoken).
-- **Guardar el flujo original sin recomprimir** (remux a `.opus`/`.m4a`), con etiquetas (título,
-  artista, álbum, año, número) y carátula incrustada.
-- Lo descargado aparece en la biblioteca local de Limusic y suena con el DSP.
-- Descargar tema, álbum y playlist; cola con progreso y cancelar; carpeta configurable.
-- No se empaqueta yt-dlp salvo que la resolución propia de Limusic no alcance.
+**Decisión del dueño (2026-11-26): las descargas son MP3 320 kbps** con toda la información posible
+en las etiquetas y la portada en alta calidad. Se le explicó que la fuente de YouTube es como mucho
+Opus ~160 kbps / AAC 256 kbps, así que el MP3 320 no añade calidad sobre la fuente (es por
+compatibilidad); se parte siempre del mejor formato disponible para perder lo mínimo.
+
+**Audio**
+- Fuente: el mejor formato de audio que ofrece YouTube para el tema (Opus itag 251; AAC 141 si la
+  cuenta Premium lo da), resuelto con lo que Limusic ya usa para reproducir (`audioproxy.rs`,
+  `crates/innertube`, cipher/potoken). No se recomprime nada intermedio.
+- Codificación única a **MP3 CBR 320 kbps, 44.1 kHz estéreo, LAME calidad máxima** (`-q 0`).
+- Cómo decodificar/codificar es del builder; sugerencia: decodificar con libmpv a PCM (como ya hace
+  `crates/player/src/decode.rs`) y codificar con LAME vía crate Rust, sin empaquetar ffmpeg.exe ni
+  yt-dlp. Debe funcionar en un equipo limpio.
+- **El DSP no se aplica al archivo descargado** (se guarda limpio; el DSP suena al reproducirlo).
+
+**Etiquetas ID3v2.3** (la versión que mejor lee Windows/Explorador y la mayoría de reproductores y
+autos), rellenando todo lo que se pueda obtener:
+- Título, artista(s) (todos, separados), artista del álbum, álbum, año y fecha de lanzamiento,
+  número de pista / total, disco / total, duración.
+- Género: de Last.fm (Limusic ya integra Last.fm) o MusicBrainz cuando haya coincidencia segura.
+- Créditos cuando YouTube los dé: compositor, letrista, productor, sello, ℗/© (copyright).
+- **Letra**: sin sincronizar (USLT) y sincronizada (SYLT) desde las fuentes de letras de Limusic.
+- ReplayGain de pista (TXXX) calculado o tomado del loudness que da YouTube.
+- Contenido explícito, ISRC y IDs de MusicBrainz cuando la coincidencia sea segura.
+- Origen: ID de video y URL de YouTube Music (TXXX/WOAS), fecha de descarga, "Aura" como codificador.
+- Enriquecimiento con MusicBrainz: solo con coincidencia fuerte (título + artista + duración);
+  si no, se queda con lo de YouTube. Nunca etiquetas inventadas.
+
+**Portada**
+- La carátula **cuadrada del álbum** (no la miniatura 16:9 del video) a la **máxima resolución que
+  sirva YouTube** (pedir el tamaño grande del CDN de imágenes, p. ej. ~1200–3000 px), JPEG de alta
+  calidad, incrustada como APIC "Front cover". Si solo hay miniatura de video, recortarla al cuadrado.
+
+**Resto**
+- Descargar tema, álbum y playlist; cola con progreso, cancelar y reintentar; carpeta configurable;
+  nombres de archivo `Artista - Título.mp3` en carpetas `Artista/Álbum/` (configurable).
+- Lo descargado entra a la biblioteca local de Limusic y suena con el DSP.
 
 ## 9. Restricciones
 
