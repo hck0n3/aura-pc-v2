@@ -3454,6 +3454,20 @@ impl AppState {
         self.apply_playback_params(speed, semitones, reverb).await
     }
 
+    /// The listener's DSP: applied on both decks, saved, and confirmed to every window
+    /// (`dsp-changed`). Shares the effects lock so it never interleaves with a tempo change.
+    pub async fn set_dsp(&self, dsp: player::DspSettings) -> Result<(), String> {
+        let _effects = self.playback_effects.lock().await;
+        self.player.set_dsp(dsp.clone()).map_err(|e| e.to_string())?;
+        save_dsp(&self.db, &dsp);
+        let _ = self.app.emit("dsp-changed", &dsp);
+        Ok(())
+    }
+
+    pub fn dsp(&self) -> player::DspSettings {
+        self.player.dsp()
+    }
+
     // Caller holds playback_effects through the update and notification so two windows cannot
     // emit confirmations out of order. The live tempo reset uses this same path.
     async fn apply_playback_params(
@@ -5396,6 +5410,32 @@ pub fn saved_crossfade(db: &Db) -> Option<f64> {
     Some(secs.filter(|s| s.is_finite()).unwrap_or(5.0).clamp(1.0, 10.0))
 }
 
+/// The listener's DSP as saved (`dsp` setting, JSON). Anything unreadable or out of range is the
+/// default, which is off: a bad row must never keep the app from playing.
+pub fn saved_dsp(db: &Db) -> player::DspSettings {
+    let Some(json) = db.get_setting("dsp") else { return player::DspSettings::default() };
+    match serde_json::from_str::<player::DspSettings>(&json) {
+        Ok(dsp) => match dsp.validate() {
+            Ok(()) => dsp,
+            Err(e) => {
+                tracing::warn!(error = %e, "saved DSP out of range, using the default");
+                player::DspSettings::default()
+            }
+        },
+        Err(e) => {
+            tracing::warn!(error = %e, "saved DSP unreadable, using the default");
+            player::DspSettings::default()
+        }
+    }
+}
+
+pub fn save_dsp(db: &Db, dsp: &player::DspSettings) {
+    match serde_json::to_string(dsp) {
+        Ok(json) => db.set_setting("dsp", &json),
+        Err(e) => tracing::warn!(error = %e, "DSP not saved"),
+    }
+}
+
 /// Karaoke cache size limit in megabytes (default 2048, valid range 512..=20480).
 pub fn saved_karaoke_cache_limit_mb(db: &Db) -> u64 {
     let mb = db
@@ -5590,10 +5630,33 @@ mod tests {
         drop_duplicates, enqueue_at, format_duration, freshen, get_url, history_threshold, is_mix,
         loudness_gain, merge_radio, next_index, parse_duration_ms, persist_fingerprint,
         play_next_index, playlist_context, prefer_version, prev_track_title, put_url,
-        queue_fingerprint, radio_seed_for, retain_upcoming, shuffle_new_queue, shuffle_upcoming,
-        splice_radio_into, swap_version, trim_played, twin_position, unshuffled, upcoming_queued,
-        QueueState, RepeatMode, VideoUrls, KEEP_PLAYED, LOCAL_PLAYLIST_PREFIX, MAX_BOOST_DB,
+        queue_fingerprint, radio_seed_for, retain_upcoming, save_dsp, saved_dsp, shuffle_new_queue,
+        shuffle_upcoming, splice_radio_into, swap_version, trim_played, twin_position, unshuffled,
+        upcoming_queued, QueueState, RepeatMode, VideoUrls, KEEP_PLAYED, LOCAL_PLAYLIST_PREFIX,
+        MAX_BOOST_DB,
     };
+
+    #[test]
+    fn saved_dsp_falls_back_to_default_on_bad_json() {
+        let db = crate::db::Db::open(std::path::Path::new(":memory:")).unwrap();
+        assert_eq!(saved_dsp(&db), player::DspSettings::default(), "nothing saved");
+        db.set_setting("dsp", "{");
+        assert_eq!(saved_dsp(&db), player::DspSettings::default(), "broken JSON");
+        db.set_setting("dsp", r#"{"preampDb": 99}"#);
+        assert_eq!(saved_dsp(&db), player::DspSettings::default(), "out of range");
+        db.set_setting("dsp", r#"{"unknownField": 1, "enabled": true}"#);
+        let newer = saved_dsp(&db);
+        assert!(newer.enabled, "a field this version doesn't know must not lose the rest");
+    }
+
+    #[test]
+    fn saved_dsp_round_trips() {
+        let db = crate::db::Db::open(std::path::Path::new(":memory:")).unwrap();
+        let mut dsp = player::DspSettings { enabled: true, loudness: true, ..Default::default() };
+        dsp.eq.aura[2] = -1.5;
+        save_dsp(&db, &dsp);
+        assert_eq!(saved_dsp(&db), dsp);
+    }
 
     /// The whole point of the video-URL map is answering a reopen without a round trip, so a live
     /// entry has to hit and a stale one has to miss. Getting the second one wrong hands the proxy a

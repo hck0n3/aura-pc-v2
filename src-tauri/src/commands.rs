@@ -228,6 +228,17 @@ pub async fn playback_clock(state: St<'_>) -> Result<Option<serde_json::Value>, 
     Ok(state.playback_clock())
 }
 
+/// The DSP (`player::dsp`): what plays now, and saved for the next launch.
+#[tauri::command]
+pub fn get_dsp(state: St<'_>) -> player::DspSettings {
+    state.dsp()
+}
+
+#[tauri::command]
+pub async fn set_dsp(state: St<'_>, dsp: player::DspSettings) -> Result<(), String> {
+    state.set_dsp(dsp).await
+}
+
 /// Session-only tempo (0.5–2.0), pitch (−12..=12 semitones), and reverb controls.
 #[tauri::command]
 pub async fn set_playback_params(
@@ -279,7 +290,8 @@ pub async fn get_queue(state: St<'_>) -> Result<serde_json::Value, String> {
 /// `visitor_data`) and internal blobs (`queue_json`, `queue_index`, `queue_position`) never cross
 /// into the webview: they'd otherwise ship the login credential to the renderer on every open, and
 /// the webview can't overwrite them either.
-const UI_SETTINGS: [&str; 32] = [
+const UI_SETTINGS: [&str; 33] = [
+    "dsp_profiles",
     "volume",
     "proxy",
     "quality",

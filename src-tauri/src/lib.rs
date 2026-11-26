@@ -1071,6 +1071,11 @@ pub fn run() {
                 hotkeys::LAST_NONZERO_VOLUME.store(volume, std::sync::atomic::Ordering::Relaxed);
             }
             player.set_crossfade(state::saved_crossfade(&db));
+            // The listener's DSP, before the first track. A refusal (a filter this libmpv lacks)
+            // only costs the DSP: the app plays without it.
+            if let Err(e) = player.set_dsp(state::saved_dsp(&db)) {
+                tracing::warn!(error = %e, "saved DSP not applied");
+            }
             let events = match player.take_events() {
                 Some(ev) => ev,
                 None => fatal(
@@ -1395,6 +1400,8 @@ pub fn run() {
             commands::playback_clock,
             commands::set_volume,
             commands::set_playback_params,
+            commands::get_dsp,
+            commands::set_dsp,
             commands::set_karaoke,
             commands::get_queue,
             commands::get_playback,
