@@ -189,7 +189,7 @@ mod tests {
 
     #[test]
     fn written_out_of_order_and_read_back_whole() {
-        let dir = std::env::temp_dir().join(format!("limusic-growing-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("aura-growing-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("g.wav");
         let frames = 1000;

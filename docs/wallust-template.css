@@ -1,13 +1,13 @@
-/* Limusic wallust palette template.
+/* Aura wallust palette template.
  *
- * Copy this file into ~/.config/wallust/templates/ as limusic.css and add it to the
+ * Copy this file into ~/.config/wallust/templates/ as aura.css and add it to the
  * [templates] table in wallust.toml (see docs/MATUGEN.md). wallust expands the placeholders.
  *
- * wallust makes one palette, dark or light, so it is written for both of Limusic's modes.
+ * wallust makes one palette, dark or light, so it is written for both of Aura's modes.
  * Surfaces are the background with a little of the foreground mixed in, which lifts them
  * on a dark palette and sinks them on a light one without a separate set of values.
  * The accent is color12 on a dark palette and color4 on a light one, whichever reads better
- * against the background. Destructive red stays Limusic's own: color1 is only red by chance.
+ * against the background. Destructive red stays Aura's own: color1 is only red by chance.
  * Based on the templates shared by 1ulisses in issue #631.
  */
 

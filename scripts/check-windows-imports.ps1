@@ -1,13 +1,13 @@
 <#
 .SYNOPSIS
-  Fails if limusic-app.exe's load-time imports differ from .github\windows-exe-imports.txt.
+  Fails if aura-app.exe's load-time imports differ from .github\windows-exe-imports.txt.
 
 .DESCRIPTION
   Every load-time import is a DLL the app needs just to START, on every machine, karaoke or not.
   The karaoke runtime (ONNX Runtime, DirectML, D3D12/DXGI, the C++ runtime) must never show up
   here: it is loaded by full path only when karaoke is turned on. A delay-load section fails too.
 
-  Usage: scripts\check-windows-imports.ps1 -Exe target\release\limusic-app.exe
+  Usage: scripts\check-windows-imports.ps1 -Exe target\release\aura-app.exe
   Compare a build made the way releases are (the tauri CLI, or STATIC_VCRUNTIME=true): a plain
   `cargo build` links the VC runtime dynamically and adds vcruntime140*.dll.
 

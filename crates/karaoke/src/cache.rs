@@ -315,7 +315,7 @@ mod tests {
 
     #[test]
     fn test_cache_basic_operations() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_basic");
+        let tmp = std::env::temp_dir().join("aura_cache_test_basic");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -340,7 +340,7 @@ mod tests {
 
     #[test]
     fn test_cache_eviction_and_keep() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_evict");
+        let tmp = std::env::temp_dir().join("aura_cache_test_evict");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -366,7 +366,7 @@ mod tests {
 
     #[test]
     fn test_cache_eviction_multiple_protected() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_evict_multi");
+        let tmp = std::env::temp_dir().join("aura_cache_test_evict_multi");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -400,7 +400,7 @@ mod tests {
 
     #[test]
     fn test_stale_tmp_cleanup() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_stale");
+        let tmp = std::env::temp_dir().join("aura_cache_test_stale");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -426,7 +426,7 @@ mod tests {
 
     #[test]
     fn test_cache_set_max_bytes() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_set_max");
+        let tmp = std::env::temp_dir().join("aura_cache_test_set_max");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -443,7 +443,7 @@ mod tests {
     /// on, so every lookup has to cope with the directory not existing yet.
     #[test]
     fn test_unprepared_cache_is_empty_and_harmless() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_unprepared");
+        let tmp = std::env::temp_dir().join("aura_cache_test_unprepared");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -462,7 +462,7 @@ mod tests {
     /// evict and clear what earlier sessions left on disk.
     #[test]
     fn test_unprepared_cache_sees_previous_session_files() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_previous_session");
+        let tmp = std::env::temp_dir().join("aura_cache_test_previous_session");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -495,7 +495,7 @@ mod tests {
     /// cache", however old it is; once unpinned it goes like any other file.
     #[test]
     fn test_pinned_files_are_never_deleted() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_pins");
+        let tmp = std::env::temp_dir().join("aura_cache_test_pins");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -537,7 +537,7 @@ mod tests {
 
     #[test]
     fn test_multi_model_cache() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_multi_model");
+        let tmp = std::env::temp_dir().join("aura_cache_test_multi_model");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }
@@ -572,7 +572,7 @@ mod tests {
 
     #[test]
     fn test_set_model_does_not_touch_pinned_file() -> Result<()> {
-        let tmp = std::env::temp_dir().join("limusic_cache_test_model_pin");
+        let tmp = std::env::temp_dir().join("aura_cache_test_model_pin");
         if tmp.exists() {
             let _ = fs::remove_dir_all(&tmp);
         }

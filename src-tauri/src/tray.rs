@@ -114,21 +114,21 @@ mod imp {
 
     /// `Handle` isn't `Clone`, so it lives here rather than in Tauri's managed state — that also
     /// keeps [`set_playing`] callable without borrowing across an await.
-    static HANDLE: OnceLock<Handle<LimusicTray>> = OnceLock::new();
+    static HANDLE: OnceLock<Handle<AuraTray>> = OnceLock::new();
 
-    struct LimusicTray {
+    struct AuraTray {
         app: AppHandle,
         playing: bool,
         icon: Vec<Icon>,
     }
 
-    impl Tray for LimusicTray {
+    impl Tray for AuraTray {
         fn id(&self) -> String {
-            "limusic".into()
+            "aura".into()
         }
 
         fn title(&self) -> String {
-            "Limusic".into()
+            "Aura".into()
         }
 
         fn icon_pixmap(&self) -> Vec<Icon> {
@@ -164,7 +164,7 @@ mod imp {
                 })
             };
             vec![
-                item("Show Limusic", "show"),
+                item("Show Aura", "show"),
                 MenuItem::Separator,
                 item(if self.playing { "Pause" } else { "Play" }, "play_pause"),
                 item("Next", "next"),
@@ -187,7 +187,7 @@ mod imp {
 
     pub fn init(app: &AppHandle) -> tauri::Result<()> {
         let icon = crate::appicon::current(app).map(|i| icon_pixmap(&i)).unwrap_or_default();
-        let tray = LimusicTray { app: app.clone(), playing: false, icon };
+        let tray = AuraTray { app: app.clone(), playing: false, icon };
         // Registering with the StatusNotifierWatcher is async and can outlive setup(); a failure
         // here costs the tray, not the app, so it's logged rather than propagated.
         //
@@ -238,7 +238,7 @@ mod imp {
     }
 
     pub fn init(app: &AppHandle) -> tauri::Result<()> {
-        let show = MenuItem::with_id(app, "show", "Show Limusic", true, None::<&str>)?;
+        let show = MenuItem::with_id(app, "show", "Show Aura", true, None::<&str>)?;
         let play_pause = MenuItem::with_id(app, "play_pause", "Play", true, None::<&str>)?;
         let next = MenuItem::with_id(app, "next", "Next", true, None::<&str>)?;
         let prev = MenuItem::with_id(app, "prev", "Previous", true, None::<&str>)?;
@@ -263,7 +263,7 @@ mod imp {
         let mut builder = TrayIconBuilder::with_id("main")
             .menu(&menu)
             .show_menu_on_left_click(false)
-            .tooltip("Limusic")
+            .tooltip("Aura")
             .on_menu_event(|app, event| handle_menu(app, event.id.as_ref()))
             .on_tray_icon_event(|tray, event| {
                 #[cfg(target_os = "macos")]
@@ -287,7 +287,7 @@ mod imp {
         let tray = builder.build(app)?;
         #[cfg(target_os = "macos")]
         {
-            let _ = tray.set_tooltip(Some("Limusic"));
+            let _ = tray.set_tooltip(Some("Aura"));
             patch_macos_tray();
         }
         #[cfg(not(target_os = "macos"))]

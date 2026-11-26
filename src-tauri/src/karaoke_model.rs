@@ -98,7 +98,7 @@ impl ModelManager {
 
     fn override_path(id: ModelId) -> Option<PathBuf> {
         if id == ModelId::DEFAULT {
-            if let Ok(val) = std::env::var("LIMUSIC_KARAOKE_MODEL") {
+            if let Ok(val) = std::env::var("AURA_KARAOKE_MODEL") {
                 let p = PathBuf::from(val.trim());
                 if p.exists() {
                     return Some(p);
@@ -616,12 +616,12 @@ mod tests {
     struct EnvGuard;
     impl Drop for EnvGuard {
         fn drop(&mut self) {
-            std::env::remove_var("LIMUSIC_KARAOKE_MODEL");
+            std::env::remove_var("AURA_KARAOKE_MODEL");
         }
     }
 
     fn temp_dir() -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("limusic_test_{}", rand::random::<u64>()));
+        let dir = std::env::temp_dir().join(format!("aura_test_{}", rand::random::<u64>()));
         let _ = std::fs::create_dir_all(&dir);
         dir
     }
@@ -705,7 +705,7 @@ mod tests {
 
     #[test]
     fn test_model_manager_new_creates_nothing() {
-        let tmp = std::env::temp_dir().join(format!("limusic_test_{}", rand::random::<u64>()));
+        let tmp = std::env::temp_dir().join(format!("aura_test_{}", rand::random::<u64>()));
         let _manager = ModelManager::new(&tmp);
         assert!(!tmp.exists(), "constructing the manager at launch must not create directories");
     }
@@ -717,7 +717,7 @@ mod tests {
         let override_file = tmp.join("custom_model.onnx");
         std::fs::write(&override_file, b"override").unwrap();
 
-        std::env::set_var("LIMUSIC_KARAOKE_MODEL", override_file.to_str().unwrap());
+        std::env::set_var("AURA_KARAOKE_MODEL", override_file.to_str().unwrap());
         let _env_guard = EnvGuard;
         let manager = ModelManager::new(&tmp);
         assert_eq!(manager.model_path(ModelId::DEFAULT), override_file);
@@ -729,7 +729,7 @@ mod tests {
         let _g = ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
         let tmp = temp_dir();
         let nonexistent = tmp.join("nonexistent.onnx");
-        std::env::set_var("LIMUSIC_KARAOKE_MODEL", nonexistent.to_str().unwrap());
+        std::env::set_var("AURA_KARAOKE_MODEL", nonexistent.to_str().unwrap());
         let _env_guard = EnvGuard;
 
         let manager = ModelManager::new(&tmp);
@@ -789,7 +789,7 @@ mod tests {
         let override_file = tmp.join("custom_model.onnx");
         std::fs::write(&override_file, b"override").unwrap();
 
-        std::env::set_var("LIMUSIC_KARAOKE_MODEL", override_file.to_str().unwrap());
+        std::env::set_var("AURA_KARAOKE_MODEL", override_file.to_str().unwrap());
         let _env_guard = EnvGuard;
         let manager = ModelManager::new(&tmp);
 

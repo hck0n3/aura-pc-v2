@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "limusic",
+  "productName": "aura",
   "version": "1.5.0-rc.2",
-  "identifier": "com.limusic.desktop",
+  "identifier": "com.hck0n3.aura",
   "build": {
     "frontendDist": "../ui/build",
     "devUrl": "http://localhost:5183",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "create": false,
-        "title": "Limusic",
+        "title": "Aura",
         "width": 1200,
         "height": 800,
         "minWidth": 640,
@@ -38,6 +38,8 @@
   "bundle": {
     "active": true,
     "category": "Music",
+    "publisher": "hck0n3",
+    "copyright": "Aura © 2026 hck0n3. Basado en Limusic — GPL-3.0",
     "targets": ["deb", "rpm", "appimage"],
     "createUpdaterArtifacts": true,
     "icon": [
@@ -69,7 +71,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/SimoHypers/limusic/releases/latest/download/latest.json"
+        "https://github.com/hck0n3/aura-pc-v2/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk0MENDMzA1NUFGMDI0NTQKUldSVUpQQmFCY01NbENPbW9XOTRvVU9YQ2lCQytOU2RyeDhHNFhkWHlNc1dITkFmbkd1ZTBlM1gK",
       "windows": {

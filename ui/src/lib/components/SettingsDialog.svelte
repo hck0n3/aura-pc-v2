@@ -191,7 +191,7 @@
 				version,
 				system
 			});
-			await api.openExternal(`https://github.com/SimoHypers/limusic/issues/new?${q}`);
+			await api.openExternal(`https://github.com/hck0n3/aura-pc-v2/issues/new?${q}`);
 		} catch (e) {
 			diagError = String(e);
 		}
@@ -1234,6 +1234,16 @@
 							<p class="mt-1.5 max-w-prose text-xs leading-relaxed text-muted-foreground">
 								{t('settings.about.description')}
 							</p>
+							<!-- Legal notice (GPL-3.0 §5a, §5d): the author of this version and the program it
+							     modifies. A proper notice, so it is the same in every language. -->
+							<p class="mt-2 text-xs text-muted-foreground" data-testid="about-legal">
+								Aura © 2026 hck0n3. Basado en Limusic —
+								<button
+									type="button"
+									class="cursor-pointer underline underline-offset-2 hover:text-foreground"
+									onclick={() => api.openExternal('https://www.gnu.org/licenses/gpl-3.0.html')}
+								>GPL-3.0</button>
+							</p>
 						</div>
 
 						<section class={GROUP}>
@@ -1456,7 +1466,7 @@
 
 {#snippet clientList()}
 	<p class="mb-3 max-w-prose text-xs leading-relaxed text-muted-foreground">
-		{t('settings.general.stream_clients_hint', { var: 'LIMUSIC_DISABLED_CLIENTS' })}
+		{t('settings.general.stream_clients_hint', { var: 'AURA_DISABLED_CLIENTS' })}
 	</p>
 	<div class="flex flex-col gap-2">
 		{#each clients as name (name)}

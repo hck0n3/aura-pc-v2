@@ -26,7 +26,7 @@ pub struct Db(Mutex<Connection>);
 pub fn account_key(session_cookie: &str) -> Option<String> {
     let sapisid = innertube::cookie_sapisid(session_cookie)?;
     let mut digest = Md5::new();
-    digest.update(b"limusic-google-account-v1");
+    digest.update(b"aura-google-account-v1");
     digest.update(sapisid.as_bytes());
     Some(format!("ga-{:x}", digest.finalize()))
 }
@@ -344,16 +344,9 @@ impl Db {
             );
             let _ = conn.execute_batch("PRAGMA user_version = 3");
         }
-        // A mirrored lyric was cached as "Limusic (Boidu)". The footer says Limusic alone now and
-        // the provider moved to `via`; rewritten rather than dropped, so a pin stays.
+        // Version 4 rewrote lyrics from a source this app no longer has; kept as a step so the
+        // versions after it stay where they are.
         if version < 4 {
-            let _ = conn.execute(
-                "UPDATE lyrics_cache SET lyrics = json_set(lyrics, '$.source', 'Limusic', '$.via',
-                    substr(json_extract(lyrics, '$.source'), 10,
-                        length(json_extract(lyrics, '$.source')) - 10))
-                 WHERE json_extract(lyrics, '$.source') LIKE 'Limusic (%)'",
-                [],
-            );
             let _ = conn.execute_batch("PRAGMA user_version = 4");
         }
         // #396: On Repeat's `plays` (a trailing month, a full `SongItem` per row) becomes
@@ -1770,7 +1763,7 @@ mod tests {
 
     #[test]
     fn on_repeat_leaves_local_files_out_and_the_file_is_wal() {
-        let path = std::env::temp_dir().join("limusic-plays-purge-test.sqlite");
+        let path = std::env::temp_dir().join("aura-plays-purge-test.sqlite");
         std::fs::remove_file(&path).ok();
         let d = Db::open(&path).unwrap();
         // Piggybacking on a file-backed test: `journal_mode` answers with a row, so setting it via
@@ -1791,7 +1784,7 @@ mod tests {
     /// cache is purged once, and from then on clearing it spares hand-picked lyrics.
     #[test]
     fn opening_the_db_migrates_the_boidu_switch_and_pins_survive_clears() {
-        let path = std::env::temp_dir().join("limusic-lyrics-providers-test.sqlite");
+        let path = std::env::temp_dir().join("aura-lyrics-providers-test.sqlite");
         std::fs::remove_file(&path).ok();
         {
             let d = Db::open(&path).unwrap();
@@ -1817,31 +1810,6 @@ mod tests {
         assert_eq!(d.get_lyrics("auto", 2, 10), None);
         assert_eq!(d.get_lyrics("miss", 2, 10), None);
         assert!(d.get_lyrics("picked", 2, 10).is_some(), "a hand-picked source is not a cache");
-        drop(d);
-        std::fs::remove_file(&path).ok();
-    }
-
-    /// A mirrored lyric cached as "Limusic (Boidu)" reads Limusic, via Boidu, and keeps its pin.
-    #[test]
-    fn opening_the_db_moves_a_mirrored_source_to_via() {
-        let path = std::env::temp_dir().join("limusic-lyrics-via-test.sqlite");
-        std::fs::remove_file(&path).ok();
-        {
-            let d = Db::open(&path).unwrap();
-            let conn = d.0.lock().unwrap();
-            conn.execute_batch("PRAGMA user_version = 3").unwrap();
-            conn.execute(
-                "INSERT INTO lyrics_cache VALUES('m', '{\"source\":\"Limusic (Boidu)\",\"pinned\":true}', 1)",
-                [],
-            )
-            .unwrap();
-        }
-        let d = Db::open(&path).unwrap();
-        let row: serde_json::Value =
-            serde_json::from_str(&d.get_lyrics("m", 2, 10).unwrap().unwrap()).unwrap();
-        assert_eq!(row["source"], "Limusic");
-        assert_eq!(row["via"], "Boidu");
-        assert_eq!(row["pinned"], true);
         drop(d);
         std::fs::remove_file(&path).ok();
     }
@@ -1985,7 +1953,7 @@ mod tests {
     #[test]
     fn opening_the_db_moves_plays_into_listens() {
         let dir = qtest_dir("plays-to-listens");
-        let path = dir.join("limusic.sqlite");
+        let path = dir.join("aura.sqlite");
         {
             let conn = rusqlite::Connection::open(&path).unwrap();
             conn.execute_batch(SCHEMA_V0_8_1).unwrap();
@@ -2132,7 +2100,7 @@ mod tests {
     /// already there is merged away rather than left to show up twice in the menu.
     #[test]
     fn opening_the_db_rekeys_and_dedupes_accounts() {
-        let path = std::env::temp_dir().join("limusic-accounts-rekey-test.sqlite");
+        let path = std::env::temp_dir().join("aura-accounts-rekey-test.sqlite");
         std::fs::remove_file(&path).ok();
         let canonical = account_key("SAPISID=aaa").unwrap();
         {
@@ -2178,7 +2146,7 @@ mod tests {
     /// Databases written before multi-account migrate their single session into `accounts` once.
     #[test]
     fn opening_the_db_migrates_the_legacy_session() {
-        let path = std::env::temp_dir().join("limusic-accounts-migration-test.sqlite");
+        let path = std::env::temp_dir().join("aura-accounts-migration-test.sqlite");
         std::fs::remove_file(&path).ok();
         {
             let d = Db::open(&path).unwrap();
@@ -2204,7 +2172,7 @@ mod tests {
 
     /// A fresh directory per test: these run in parallel and each one moves files around.
     fn qtest_dir(name: &str) -> std::path::PathBuf {
-        let dir = std::env::temp_dir().join(format!("limusic-qtest-{}-{name}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("aura-qtest-{}-{name}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         dir
@@ -2213,7 +2181,7 @@ mod tests {
     #[test]
     fn open_or_quarantine_moves_a_corrupt_file_aside() {
         let dir = qtest_dir("corrupt");
-        let path = dir.join("limusic.sqlite");
+        let path = dir.join("aura.sqlite");
         std::fs::write(&path, b"this is not a sqlite file").unwrap();
         {
             let (d, aside) = Db::open_or_quarantine(&path).unwrap();
@@ -2232,7 +2200,7 @@ mod tests {
     #[test]
     fn open_or_quarantine_leaves_a_healthy_file_alone() {
         let dir = qtest_dir("healthy");
-        let path = dir.join("limusic.sqlite");
+        let path = dir.join("aura.sqlite");
         Db::open(&path).unwrap().set_setting("k", "v");
         let (d, aside) = Db::open_or_quarantine(&path).unwrap();
         assert_eq!(aside, None);
@@ -2252,7 +2220,7 @@ mod tests {
     #[test]
     fn open_or_quarantine_leaves_an_unopenable_path_alone() {
         let dir = qtest_dir("unopenable");
-        let path = dir.join("limusic.sqlite");
+        let path = dir.join("aura.sqlite");
         std::fs::create_dir(&path).unwrap();
         assert!(Db::open_or_quarantine(&path).is_err());
         assert!(path.is_dir(), "nothing was moved aside");
@@ -2265,15 +2233,14 @@ mod tests {
     #[test]
     fn open_or_quarantine_drops_the_stale_wal_sidecars() {
         let dir = qtest_dir("sidecars");
-        let path = dir.join("limusic.sqlite");
+        let path = dir.join("aura.sqlite");
         std::fs::write(&path, b"this is not a sqlite file").unwrap();
-        std::fs::write(dir.join("limusic.sqlite-wal"), b"stale wal").unwrap();
-        std::fs::write(dir.join("limusic.sqlite-shm"), b"stale shm").unwrap();
+        std::fs::write(dir.join("aura.sqlite-wal"), b"stale wal").unwrap();
+        std::fs::write(dir.join("aura.sqlite-shm"), b"stale shm").unwrap();
         let (d, aside) = Db::open_or_quarantine(&path).unwrap();
         assert!(aside.is_some_and(|a| a.exists()), "the corrupt file is moved aside");
         for suffix in ["-wal", "-shm"] {
-            let now =
-                std::fs::read(dir.join(format!("limusic.sqlite{suffix}"))).unwrap_or_default();
+            let now = std::fs::read(dir.join(format!("aura.sqlite{suffix}"))).unwrap_or_default();
             assert!(!now.starts_with(b"stale"), "the fresh db inherited the old {suffix}");
         }
         drop(d);
@@ -2460,7 +2427,7 @@ mod tests {
     /// are there, because every release keeps them as projections of the active account.
     fn assert_upgrades_cleanly(tag: &str, schema: &str, migrated_account: bool) {
         let dir = qtest_dir(&format!("upgrade-{tag}"));
-        let path = dir.join("limusic.sqlite");
+        let path = dir.join("aura.sqlite");
         let now = now_secs();
         let later = now + 6 * 3600;
         let id = account_key(LEGACY_COOKIE).unwrap();

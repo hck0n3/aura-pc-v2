@@ -10,14 +10,14 @@
 #
 #   scripts/stream-health-local.sh            # run once, notify only if something broke
 #   scripts/stream-health-local.sh --install  # set up the daily systemd user timer
-#   systemctl --user list-timers limusic-stream-health.timer
+#   systemctl --user list-timers aura-stream-health.timer
 #
 # It tests `origin/dev` in a worktree of its own, never the checkout this script sits in: that one
 # is whatever branch was left open, maybe half-edited or not compiling, and a red from it says
 # nothing about YouTube. dev rather than master because a fix for a YouTube change then turns this
 # green the day it merges, not at the next release.
 #
-# ~/.local/state/limusic/
+# ~/.local/state/aura/
 #   stream-health.log                 full output of the last run
 #   stream-health-<date>-<time>.log   full output of every run that was not green, kept
 #   stream-health.history             one line per run: when, dev commit, verdict, each leg
@@ -32,26 +32,26 @@
 set -uo pipefail
 
 REPO=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-STATE="${XDG_STATE_HOME:-$HOME/.local/state}/limusic"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/aura"
 LOG="$STATE/stream-health.log"
 HISTORY="$STATE/stream-health.history"
-TREE="${XDG_CACHE_HOME:-$HOME/.cache}/limusic/stream-health-tree"
+TREE="${XDG_CACHE_HOME:-$HOME/.cache}/aura/stream-health-tree"
 UNITS="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 
 if [[ "${1:-}" == "--install" ]]; then
   mkdir -p "$UNITS"
-  cat > "$UNITS/limusic-stream-health.service" <<EOF
+  cat > "$UNITS/aura-stream-health.service" <<EOF
 [Unit]
-Description=Limusic: can YouTube still stream a whole track
+Description=Aura: can YouTube still stream a whole track
 After=network-online.target
 
 [Service]
 Type=oneshot
 ExecStart=$REPO/scripts/stream-health-local.sh
 EOF
-  cat > "$UNITS/limusic-stream-health.timer" <<'EOF'
+  cat > "$UNITS/aura-stream-health.timer" <<'EOF'
 [Unit]
-Description=Daily Limusic stream health check
+Description=Daily Aura stream health check
 
 [Timer]
 OnCalendar=daily
@@ -64,8 +64,8 @@ RandomizedDelaySec=15m
 WantedBy=timers.target
 EOF
   systemctl --user daemon-reload
-  systemctl --user enable --now limusic-stream-health.timer
-  systemctl --user list-timers --no-pager limusic-stream-health.timer
+  systemctl --user enable --now aura-stream-health.timer
+  systemctl --user list-timers --no-pager aura-stream-health.timer
   exit 0
 fi
 
@@ -139,17 +139,17 @@ kept="$STATE/stream-health-$(date +%F-%H%M%S).log"
 why=$(grep -A1 'panicked at' <<< "$main" | grep -v -e 'panicked at' -e '^--$' | cut -c1-160 | head -3)
 case $verdict in
   ok)
-    [[ $cap == lifted ]] && notify-send "Limusic: the #292 rustypipe cap has lifted" \
+    [[ $cap == lifted ]] && notify-send "Aura: the #292 rustypipe cap has lifted" \
       "rustypipe URLs stream to the end again. Drop the rustypipe_url_streams_to_the_end skip from stream-health.yml." 2>/dev/null
     exit 0 ;;
   build)
-    notify-send -u critical "Limusic: stream check did not build" \
+    notify-send -u critical "Aura: stream check did not build" \
       "origin/dev $sha does not compile, so nothing was asked of YouTube. See $kept" 2>/dev/null ;;
   flagged)
-    notify-send -u critical "Limusic: YouTube is bot-challenging this IP" \
+    notify-send -u critical "Aura: YouTube is bot-challenging this IP" \
       "Not a code break, and it lifts on its own. Keep live testing off this IP meanwhile. See $kept" 2>/dev/null ;;
   red)
-    notify-send -u critical "Limusic: YouTube stream check failed" \
+    notify-send -u critical "Aura: YouTube stream check failed" \
       "${why:-${note:-no panic message}} (dev $sha, $kept)" 2>/dev/null ;;
 esac
 exit "$status"

@@ -7,7 +7,7 @@
 			"runtime_linux": "Az ONNX Runtime (a hivatalos GitHub-kiadásból) és az ONNX Runtime WebGPU beépülő modul (a files.pythonhosted.org webhelyről) szintén letöltésre kerül.",
 			"credit": "UVR-MDX-NET-Inst_HQ_3, UVR-MDX-NET-Inst_Main és UVR_MDXNET_3_9662 – az Anjok07 és aufr33 által készített Ultimate Vocal Remover részei; MIT-licenc.",
 			"credit_link": "Ultimate Vocal Remover",
-			"redownload": "A dal előkészítéséhez a Aura még egyszer letölti annak hanganyagát.",
+			"redownload": "A dal előkészítéséhez az Aura még egyszer letölti annak hanganyagát.",
 			"directml": "Videokártyán a karaoke a Microsoft DirectML-en keresztül fut, amely használati adatokat küldhet a Microsoftnak."
 		},
 		"experimental_tooltip": "Még finomítás alatt áll. A Light hagyhat egy kis éneket, a Best pedig lassú videokártya nélkül. Ha egy dal rosszul sikerül, kérünk, jelentsd.",
@@ -40,7 +40,7 @@
 		},
 		"setup": {
 			"title": "Karaoke beállítása",
-			"desc": "A Aura ezen a számítógépen veszi ki az éneket a dalokból. Válassz egy minőséget egyszeri letöltésre, később módosíthatod.",
+			"desc": "Az Aura ezen a számítógépen veszi ki az éneket a dalokból. Válassz egy minőséget egyszeri letöltésre, később módosíthatod.",
 			"local": "A dalok ezen a számítógépen készülnek el, és semmi sem töltődik fel.",
 			"cache": "Az elkészített dalok a lemezen maradnak, így legközelebb azonnal lejátszhatók.",
 			"download": "{size} letöltése",
@@ -49,7 +49,7 @@
 			"progress": "{done} / {total} MB"
 		},
 		"unavailable": {
-			"not_installed": "A karaoke nincs benne a Aura ezen buildjében.",
+			"not_installed": "A karaoke nincs benne az Aura ezen buildjében.",
 			"corrupt": "A karaoke fájljai sérültek. Próbáld újra bekapcsolni a karaoke-t; ha ez nem segít, telepítsd újra a Auraot.",
 			"vc_runtime": "A karaoke újabb Microsoft Visual C++ Redistributable-t igényel (14.44 vagy újabb).",
 			"load_failed": "A karaoke nem tudott elindulni ezen a számítógépen.",
@@ -227,7 +227,7 @@
 	"errors": {
 		"unreachable": "A YouTube Music nem érhető el. Ellenőrizd a kapcsolatot.",
 		"offline_title": "Nincs kapcsolat",
-		"offline_body": "A Aura nem éri el a YouTube Musicot. Ellenőrizd az internetkapcsolatot, majd próbáld újra.",
+		"offline_body": "Az Aura nem éri el a YouTube Musicot. Ellenőrizd az internetkapcsolatot, majd próbáld újra.",
 		"generic_title": "Valami hiba történt"
 	},
 	"nav": {
@@ -584,21 +584,21 @@
 			"language_search": "Nyelvek keresése",
 			"shortcuts_hint": "A billentyűparancsok megnyitása ezzel: {key}",
 			"play_on_start": "Lejátszás folytatása megnyitáskor",
-			"play_on_start_hint": "Az utolsó sor lejátszásának indítása a Aura megnyitásakor.",
+			"play_on_start_hint": "Az utolsó sor lejátszásának indítása az Aura megnyitásakor.",
 			"autostart": "Indítás rendszerindításkor",
-			"autostart_hint": "A Aura automatikus indítása a rendszer indításakor.",
+			"autostart_hint": "Az Aura automatikus indítása a rendszer indításakor.",
 			"close_to_tray": "Bezárás a rendszertálcára",
-			"close_to_tray_hint": "A Aura futása a háttérben az ablak bezárásakor.",
+			"close_to_tray_hint": "Az Aura futása a háttérben az ablak bezárásakor.",
 			"track_notifications": "Dalértesítések",
-			"track_notifications_hint": "Értesítés megjelenítése, amikor új dal kezdődik, miközben a Aura a háttérben van.",
-			"track_notifications_focused": "A Aura használata közben is",
-			"track_notifications_focused_hint": "Értesítés megjelenítése akkor is, amikor a következő dal magától indul, miközben a Aura az aktív ablak. Az általad kiválasztott dalok soha nem jelenítenek meg értesítést.",
+			"track_notifications_hint": "Értesítés megjelenítése, amikor új dal kezdődik, miközben az Aura a háttérben van.",
+			"track_notifications_focused": "Az Aura használata közben is",
+			"track_notifications_focused_hint": "Értesítés megjelenítése akkor is, amikor a következő dal magától indul, miközben az Aura az aktív ablak. Az általad kiválasztott dalok soha nem jelenítenek meg értesítést.",
 			"start_minimized": "Indítás tálcára rendszerindításkor",
-			"start_minimized_hint": "Amikor a Aura a rendszerrel indul, a tálcán marad, amíg meg nem nyitod. Saját megnyitáskor mindig megjelenik az ablak.",
+			"start_minimized_hint": "Amikor az Aura a rendszerrel indul, a tálcán marad, amíg meg nem nyitod. Saját megnyitáskor mindig megjelenik az ablak.",
 			"system_titlebar": "Rendszer címsor használata",
-			"system_titlebar_hint": "Hagyd, hogy az asztali környezet rajzolja az ablakkeretet és gombjait. A Aura megtartja saját eszköztárát alatta.",
+			"system_titlebar_hint": "Hagyd, hogy az asztali környezet rajzolja az ablakkeretet és gombjait. Az Aura megtartja saját eszköztárát alatta.",
 			"update_banner": "Frissítési értesítések",
-			"update_banner_hint": "Banner megjelenítése, amikor a Aura új verziója elérhető.",
+			"update_banner_hint": "Banner megjelenítése, amikor az Aura új verziója elérhető.",
 			"proxy": "HTTP/HTTPS proxy",
 			"proxy_hint": "Minden hálózati kérés átirányítása egy egyedi proxy szerveren keresztül.",
 			"proxy_placeholder": "http://host:port (üres = nincs)",
@@ -671,7 +671,7 @@
 			"artwork_accent": "Színek igazítása a borítóhoz",
 			"artwork_accent_hint": "Az alkalmazás átszínezése a játszott szám borítójából: kiemelőszín, felületek és szegélyek, áttűnéssel a dalok között. Kikapcsolva a kiválasztott téma saját színeit tartja meg.",
 			"matugen": "Háttérkép paletta",
-			"matugen_hint": "Minden szín, a kiemelőszín is, a Matugen, wallust vagy pywal által a háttérképedből készített palettából. Először állítsd be a Aura sablont abban az eszközben.",
+			"matugen_hint": "Minden szín, a kiemelőszín is, a Matugen, wallust vagy pywal által a háttérképedből készített palettából. Először állítsd be az Aura sablont abban az eszközben.",
 			"reset_theme_hint": "A szín-, lekerekítettség- és betűtípus-felülírások elvetése. A beállításkészletet megtartja.",
 			"interface_font_label": "Felület betűtípusa",
 			"interface_font_short_hint": "Minden, kivéve a címeket.",
@@ -752,7 +752,7 @@
 		},
 		"hotkeys": {
 			"title": "Globális gyorsbillentyűk",
-			"description": "Vezéreld a lejátszást testreszabható gyorsbillentyűkkel akkor is, amikor a Aura kicsinyítve vagy a háttérben fut.",
+			"description": "Vezéreld a lejátszást testreszabható gyorsbillentyűkkel akkor is, amikor az Aura kicsinyítve vagy a háttérben fut.",
 			"enable": "Globális gyorsbillentyűk engedélyezése",
 			"enable_hint": "A globális gyorsbillentyűk ki vannak kapcsolva. Kapcsold be őket, hogy rendszerszinten figyelje a gyorsbillentyűket.",
 			"off": "Ki",
@@ -787,7 +787,7 @@
 			"action_toggle_repeat": "Ismétlés be/ki",
 			"action_toggle_repeat_hint": "Ismétlési mód váltása: ki, összes, egy.",
 			"action_show_app": "Alkalmazás megjelenítése",
-			"action_show_app_hint": "A Aura ablak előtérbe hozása."
+			"action_show_app_hint": "Az Aura ablak előtérbe hozása."
 		},
 		"data": {
 			"clear_cache_button": "Gyorsítótár törlése most"
@@ -1336,7 +1336,7 @@
 		"to_check": "{count} ellenőrizendő",
 		"not_found": "{count} nem található",
 		"keep_browsing_hint": "Bezárhatod, tovább folytatódik. Az oldalsáv mutatja, hol tart.",
-		"pace_hint": "A Aura szándékosan lassan halad, körülbelül egy dal két másodpercenként, hogy a YouTube Music szokásos használatot lásson.",
+		"pace_hint": "Az Aura szándékosan lassan halad, körülbelül egy dal két másodpercenként, hogy a YouTube Music szokásos használatot lásson.",
 		"waiting": "Szünetet tart, hogy bőven a YouTube Music korlátai alatt maradjon. {time} időpontban folytatódik.",
 		"keep_browsing": "Böngészés folytatása",
 		"stop": "Leállítás",

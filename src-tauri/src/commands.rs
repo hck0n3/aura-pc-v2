@@ -314,7 +314,7 @@ const UI_SETTINGS: [&str; 32] = [
     "locale",
 ];
 
-/// Resolve the music video for `video_id` and hand back a `limusicvideo://` URL the player view
+/// Resolve the music video for `video_id` and hand back a `auravideo://` URL the player view
 /// can put in a `<video src>`. `None` when YouTube has no usable video stream for it, which is the
 /// ordinary answer for a song and leaves the artwork in place. The real googlevideo URL never
 /// leaves Rust (context/11).
@@ -749,9 +749,9 @@ fn tally_data_dir(dir: &std::path::Path) -> StorageUsage {
             "audio-cache" => &mut u.audio,
             "karaoke-cache" => &mut u.karaoke,
             "models" | "runtime" => &mut u.models,
-            // Also a quarantined `limusic.corrupt-<stamp>.sqlite`.
-            n if n.starts_with("limusic.") && n.contains("sqlite") => &mut u.library,
-            n if n.starts_with("limusic.") => &mut u.other,
+            // Also a quarantined `aura.corrupt-<stamp>.sqlite`.
+            n if n.starts_with("aura.") && n.contains("sqlite") => &mut u.library,
+            n if n.starts_with("aura.") => &mut u.other,
             "cipher_cache" | "covers" | "app-icon.png" => &mut u.other,
             _ => &mut u.web,
         };
@@ -872,7 +872,7 @@ pub async fn open_mini(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 /// Swap back. Same path as the tray, so the widget and the tray can't disagree about what
-/// "show Limusic" means.
+/// "show Aura" means.
 #[tauri::command]
 pub async fn close_mini(app: tauri::AppHandle) -> Result<(), String> {
     crate::tray::show_main(&app);
@@ -1380,7 +1380,7 @@ pub async fn get_library_subscriptions(state: St<'_>) -> Result<Vec<BrowseItem>,
 }
 
 /// A playlist or album page. `id` is the browseId (`VL…` / `MPRE…`); Liked Songs is `VLLM`, and
-/// `LIMUSIC_ON_REPEAT` is the local auto-playlist rather than anything YouTube knows about.
+/// `AURA_ON_REPEAT` is the local auto-playlist rather than anything YouTube knows about.
 ///
 /// `sort` asks YouTube for the tracks in a given order; `None` gets whatever order the account
 /// already has the list in, which is what a fresh visit wants (it matches YouTube Music).
@@ -2630,8 +2630,8 @@ pub async fn release_notes() -> Result<Vec<ReleaseNote>, String> {
         prerelease: bool,
     }
     let releases: Vec<GhRelease> = crate::http::client()
-        .get("https://api.github.com/repos/SimoHypers/limusic/releases?per_page=20")
-        .header("User-Agent", concat!("Limusic/", env!("CARGO_PKG_VERSION")))
+        .get("https://api.github.com/repos/hck0n3/aura-pc-v2/releases?per_page=20")
+        .header("User-Agent", concat!("Aura/", env!("CARGO_PKG_VERSION")))
         .header("Accept", "application/vnd.github+json")
         .timeout(std::time::Duration::from_secs(15))
         .send()
@@ -2662,7 +2662,7 @@ pub async fn release_notes() -> Result<Vec<ReleaseNote>, String> {
 /// Tauri's Linux updater knows one trick: rewrite an AppImage in place. It takes the path from
 /// `Env::appimage` and, when that is unset, falls back to `current_exe()` and writes the downloaded
 /// AppImage bytes over whatever it finds there. On the `.rpm` and on distro packages (the AUR's
-/// `limusic-bin`) that is a package-manager-owned `/usr/bin/limusic-app`: it fails on permissions
+/// `aura-bin`) that is a package-manager-owned `/usr/bin/aura-app`: it fails on permissions
 /// rather than doing damage, but offering the button at all is a lie. Those users update through
 /// their package manager, so the UI shows them a download link instead.
 ///
@@ -2687,7 +2687,7 @@ pub fn can_self_update(app: tauri::AppHandle) -> bool {
 /// the release workflows move it to the newest release candidate, or to the newest release once that
 /// is ahead, so the URL never changes.
 const BETA_MANIFEST: &str =
-    "https://github.com/SimoHypers/limusic/releases/download/beta/latest.json";
+    "https://github.com/hck0n3/aura-pc-v2/releases/download/beta/latest.json";
 
 /// What the updater plugin's own `check` command returns, so the UI can wrap it in the plugin's
 /// `Update` class and install it the usual way.
@@ -2757,7 +2757,7 @@ pub fn quit_app(app: tauri::AppHandle) {
 // --- Diagnostics ----------------------------------------------------------------------------
 
 /// The bug-report blob for Settings ▸ About: environment header plus the redacted tail of
-/// `limusic.log`. See `crate::diagnostics`.
+/// `aura.log`. See `crate::diagnostics`.
 #[tauri::command]
 pub fn diagnostics(app: tauri::AppHandle, state: St<'_>) -> String {
     crate::diagnostics::report(&app, &state.db)
@@ -3252,17 +3252,17 @@ mod tests {
 
     #[test]
     fn storage_tally_sorts_the_data_dir() {
-        let dir = std::env::temp_dir().join(format!("limusic-storage-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("aura-storage-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let put = |rel: &str, n: usize| {
             let p = dir.join(rel);
             std::fs::create_dir_all(p.parent().unwrap()).unwrap();
             std::fs::write(p, vec![0u8; n]).unwrap();
         };
-        put("limusic.sqlite", 100);
-        put("limusic.sqlite-wal", 10);
-        put("limusic.corrupt-1.sqlite", 1);
-        put("limusic.log", 5);
+        put("aura.sqlite", 100);
+        put("aura.sqlite-wal", 10);
+        put("aura.corrupt-1.sqlite", 1);
+        put("aura.log", 5);
         put("audio-cache/a", 20);
         put("karaoke-cache/x/y.flac", 300);
         put("models/m.onnx", 40);

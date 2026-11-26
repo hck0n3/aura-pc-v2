@@ -1,4 +1,4 @@
-# Load-time imports of limusic-app.exe on Windows (dumpbin /DEPENDENTS), checked by
+# Load-time imports of aura-app.exe on Windows (dumpbin /DEPENDENTS), checked by
 # scripts/check-windows-imports.ps1 in windows-release.yml and checks.yml. One DLL per line,
 # compared case-insensitively; '#' starts a comment.
 #

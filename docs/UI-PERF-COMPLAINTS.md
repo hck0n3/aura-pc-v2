@@ -116,7 +116,7 @@ runs; CPU is UI process plus web process plus Xwayland as % of one core):
 | dev, Wayland, GPU painting (before CPU painting) | 21 ms | 4% | 40% | 42% | 35% |
 | system libraries on X11 + SHM, CPU painting | 28 ms | 6% | 54% | 56% | 49% |
 | AppImage as shipped (software) | 40 ms | 14% | 36% | 31% | 26% |
-| AppImage, `LIMUSIC_GDK_BACKEND=wayland` (software) | 39 ms | 14% | 45% | 43% | 36% |
+| AppImage, `AURA_GDK_BACKEND=wayland` (software) | 39 ms | 14% | 45% | 43% | 36% |
 | AppImage, acceleration forced, X11 + SHM, CPU painting | 38 ms | 6% | 55% | 57% | 50% |
 | AppImage, acceleration forced, Wayland, CPU painting | 36 ms | 6% | 42% | 43% | 35% |
 | AppImage, acceleration forced, Wayland, GPU painting | 23 ms | 5% | 41% | 42% | 35% |
@@ -170,7 +170,7 @@ acceleration there would cost every steady animation 25 points of a core.
 ### 2026-11-21, a song change hitched a game on the other monitor
 
 **Wanted:** a song change that a game running at the same time doesn't feel. Several Linux users
-reported a frame hitch in a game at most song changes, with Limusic open on a second monitor.
+reported a frame hitch in a game at most song changes, with Aura open on a second monitor.
 
 **What it cost:** per-thread CPU from `/proc/<pid>/task/*/schedstat` every 20 ms, around five skips
 and three roll-overs, on the 1.4.1 AppImage (i5-8400, GTX 1060, Plasma on Wayland) with the player

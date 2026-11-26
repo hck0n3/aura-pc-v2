@@ -30,8 +30,9 @@ excludes=(
 	':(exclude)scripts/check-aura-brand.sh'
 )
 
-# Líneas permitidas aunque coincidan (solo para la categoría brand).
-allow='Basado en Limusic — GPL-3\.0|Copyright'
+# Líneas permitidas aunque coincidan (solo para la categoría brand): la línea legal, avisos de
+# copyright y el test que comprueba que un orden de letras guardado con el proveedor quitado lo descarta.
+allow='Basado en Limusic —|Copyright|removed_limusic_provider|"lrclib,limusic,-boidu"|\*id != "limusic"'
 
 run() {
 	local name="$1" out

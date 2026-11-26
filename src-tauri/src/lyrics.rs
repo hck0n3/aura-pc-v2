@@ -112,7 +112,7 @@ pub struct LyricWord {
     pub text: String,
     pub start_ms: u64,
     pub end_ms: u64,
-    /// Background vocals: Limusic's `bg`, Apple's `x-bg` (TTML) and `isBackground` (KPOE). The
+    /// Background vocals: Aura's `bg`, Apple's `x-bg` (TTML) and `isBackground` (KPOE). The
     /// lyrics view draws them smaller, under the lead.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub bg: bool,
@@ -591,7 +591,7 @@ impl LrclibTrack {
 
 /// LRCLIB asks integrations to identify themselves via User-Agent.
 pub(crate) const LRCLIB_UA: &str =
-    concat!("Limusic v", env!("CARGO_PKG_VERSION"), " (https://github.com/SimoHypers/limusic)");
+    concat!("Aura v", env!("CARGO_PKG_VERSION"), " (https://github.com/hck0n3/aura-pc-v2)");
 
 /// A GET to LRCLIB, carrying the two things this API wants from us: who we are, and a bound on how
 /// long we will wait. Both used to be baked into a client of our own.
@@ -2199,7 +2199,7 @@ mod tests {
 
     /// Are the external providers still alive? Hits them all for real, so it is NOT in the default
     /// run (context/17: network tests are opt-in, or `cargo test` fails offline):
-    ///   cargo test -p limusic-app --lib -- --ignored --nocapture
+    ///   cargo test -p aura-app --lib -- --ignored --nocapture
     ///
     /// This exists because a provider that is *broken* and a provider that simply *has no lyrics
     /// for this track* both return `Ok(None)`, and nothing else in the chain can tell them apart:

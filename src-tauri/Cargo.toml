@@ -1,9 +1,10 @@
 [package]
-name = "limusic-app"
+name = "aura-app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Limusic — desktop YouTube Music client"
+authors.workspace = true
+description = "Aura — reproductor de escritorio para YouTube Music"
 rust-version = "1.80"
 
 [lib]
@@ -81,7 +82,7 @@ unicode-normalization = "0.1"
 # Mock runtime for the IPC guard test (lib.rs `only_ui`).
 tauri = { version = "2", features = ["test"] }
 
-# Letting a song notification show while Limusic is frontmost (notify.rs, #94). Same objc2 that
+# Letting a song notification show while Aura is frontmost (notify.rs, #94). Same objc2 that
 # mac-notification-sys and tao already pull in.
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"

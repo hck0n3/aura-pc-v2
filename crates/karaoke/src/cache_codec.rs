@@ -101,8 +101,8 @@ mod tests {
         let pcm_in = Pcm { sample_rate, channels: [left, right] };
 
         let tmp_dir = std::env::temp_dir();
-        let flac_path = tmp_dir.join("limusic_test_cache.flac");
-        let tmp_path = tmp_dir.join("limusic_test_cache.flac.tmp");
+        let flac_path = tmp_dir.join("aura_test_cache.flac");
+        let tmp_path = tmp_dir.join("aura_test_cache.flac.tmp");
 
         if flac_path.exists() {
             let _ = fs::remove_file(&flac_path);
@@ -159,7 +159,7 @@ mod tests {
         let pcm_in = Pcm { sample_rate, channels: [left, right] };
 
         let tmp_dir = std::env::temp_dir();
-        let flac_path = tmp_dir.join("limusic_peak_test.flac");
+        let flac_path = tmp_dir.join("aura_peak_test.flac");
         if flac_path.exists() {
             let _ = fs::remove_file(&flac_path);
         }

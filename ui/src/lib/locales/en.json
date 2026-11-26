@@ -1432,7 +1432,7 @@
 			"empty": "There are no songs in that.",
 			"unreadable": "That file couldn’t be read. Use the zip Spotify emailed you, one of the JSON files inside it, or a CSV.",
 			"csv_columns": "That CSV has no column of song titles.",
-			"spotify_changed": "Spotify changed how it shares playlists. A Aura update will fix this.",
+			"spotify_changed": "Spotify changed how it shares playlists. An Aura update will fix this.",
 			"busy": "An import is already running.",
 			"nothing_read": "Pick a playlist first.",
 			"gone": "That import isn’t open anymore.",

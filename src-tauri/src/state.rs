@@ -25,7 +25,7 @@ use crate::watchtime::{Target, Watch};
 /// Synthetic browseId for the On Repeat playlist. Not a YouTube id: `get_playlist` intercepts it
 /// and builds the page from local play counts, so it must never collide with a real browseId
 /// (`VL…` / `MPRE…` / `RD…`).
-pub const ON_REPEAT_ID: &str = "LIMUSIC_ON_REPEAT";
+pub const ON_REPEAT_ID: &str = "AURA_ON_REPEAT";
 /// How far back On Repeat looks. A month is long enough to survive a quiet week and short enough
 /// that the list still turns over with what you're actually playing.
 pub const ON_REPEAT_WINDOW_SECS: i64 = 30 * 24 * 60 * 60;
@@ -312,7 +312,7 @@ pub(crate) fn persisted_page_id(db: &Db) -> Option<(String, String)> {
 
 fn identity_selection_key(data_sync_id: &str) -> String {
     let mut hasher = DefaultHasher::new();
-    "limusic-account-identity-v1".hash(&mut hasher);
+    "aura-account-identity-v1".hash(&mut hasher);
     data_sync_id.hash(&mut hasher);
     format!("identity-{:016x}", hasher.finish())
 }
@@ -669,9 +669,9 @@ impl AppState {
     }
 
     /// User-disabled stream clients — comma-separated setting. Also the force-fail lever for the
-    /// rustypipe-solo acceptance test; `LIMUSIC_DISABLED_CLIENTS` env overrides for quick testing.
+    /// rustypipe-solo acceptance test; `AURA_DISABLED_CLIENTS` env overrides for quick testing.
     pub(crate) fn disabled_clients(&self) -> HashSet<String> {
-        let raw = std::env::var("LIMUSIC_DISABLED_CLIENTS")
+        let raw = std::env::var("AURA_DISABLED_CLIENTS")
             .ok()
             .or_else(|| self.db.get_setting("disabled_stream_clients"))
             .unwrap_or_default();
@@ -3408,7 +3408,7 @@ impl AppState {
             && self.db.get_setting("track_notifications").as_deref() == Some("true")
         {
             // A gapless advance started on its own, so with the opt-in it notifies even with
-            // Limusic in front (#94). Ceiling: the rare non-primed advance at track end comes
+            // Aura in front (#94). Ceiling: the rare non-primed advance at track end comes
             // through `start_current` like a user's pick, and stays background-only.
             let even_focused = stream_client == "gapless"
                 && self.db.get_setting("track_notifications_focused").as_deref() == Some("true");
