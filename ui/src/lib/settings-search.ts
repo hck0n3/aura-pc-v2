@@ -13,7 +13,6 @@ export type SettingsTab =
 	| 'general'
 	| 'themes'
 	| 'playback'
-	| 'contributing'
 	| 'hotkeys'
 	| 'scrobbling'
 	| 'devices'
@@ -38,7 +37,6 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 	['general', null, [['settings.tabs.general', 'settings.tabs.general_hint']]],
 	['themes', null, [['settings.tabs.themes', 'settings.tabs.themes_hint']]],
 	['playback', null, [['settings.tabs.playback', 'settings.tabs.playback_hint']]],
-	['contributing', null, [['settings.tabs.contributing', 'settings.tabs.contributing_hint']]],
 	['hotkeys', null, [['settings.tabs.hotkeys', 'settings.tabs.hotkeys_hint']]],
 	['scrobbling', null, [['settings.tabs.scrobbling', 'settings.tabs.scrobbling_hint']]],
 	['devices', null, [['settings.tabs.devices', 'settings.tabs.devices_hint']]],

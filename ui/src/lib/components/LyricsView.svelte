@@ -154,24 +154,6 @@
 	const ask = (now: NonNullable<typeof playback.now>) =>
 		lyricsFor(now).then((l) => (setNowLyrics(now.videoId, l), l));
 
-	// The cache brought this song's lyrics up to date behind the ones on screen (`refresh_stale`):
-	// swap them in where they are, with no loading state and no jump.
-	$effect(() => {
-		if (preview) return;
-		const sub = api.onLyricsUpdated((id) => {
-			const now = playback.now;
-			if (!now || now.videoId !== id || requested !== id) return;
-			ask(now)
-				.then((l) => {
-					if (requested !== id) return;
-					lyrics = l;
-					missing = !l || l.instrumental;
-				})
-				.catch(() => {});
-		});
-		return () => void sub.then((u) => u());
-	});
-
 	$effect(() => {
 		if (preview) {
 			requested = '';

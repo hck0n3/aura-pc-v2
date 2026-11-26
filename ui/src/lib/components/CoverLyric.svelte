@@ -27,14 +27,6 @@
 		if (!now || nowLyrics.id === now.videoId) return;
 		lyricsFor(now).then((l) => setNowLyrics(now.videoId, l), () => {});
 	});
-	// The cache brought the song's lyrics up to date behind the ones on screen (`refresh_stale`).
-	$effect(() => {
-		const sub = api.onLyricsUpdated((id) => {
-			const now = playback.now;
-			if (now?.videoId === id) lyricsFor(now).then((l) => setNowLyrics(id, l), () => {});
-		});
-		return () => void sub.then((u) => u());
-	});
 
 	const lyrics = $derived(nowLyrics.id === playback.now?.videoId ? nowLyrics.lyrics : null);
 	const lines = $derived(lyrics?.synced && !lyrics.instrumental ? lyrics.lines : null);

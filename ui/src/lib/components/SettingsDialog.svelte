@@ -6,10 +6,6 @@
 		Settings02Icon,
 		PaintBoardIcon,
 		PlayCircleIcon,
-		MusicNote01Icon,
-		PencilEdit02Icon,
-		SentIcon,
-		Tap01Icon,
 		Database02Icon,
 		InformationCircleIcon,
 		KeyboardIcon,
@@ -24,7 +20,6 @@
 		Search01Icon,
 		ArrowRight01Icon
 	} from '@hugeicons/core-free-icons';
-	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Switch } from '$lib/components/ui/switch';
@@ -59,9 +54,6 @@
 	import { match } from '$lib/localsearch';
 	import { HOTKEY_ACTIONS } from '$lib/hotkeys.svelte';
 	import GlobalHotkeysSettings from '$lib/components/GlobalHotkeysSettings.svelte';
-	import LimusicAccountSettings from './LimusicAccountSettings.svelte';
-	import LimusicNotes from './LimusicNotes.svelte';
-	import { limusic } from '$lib/limusic.svelte';
 	import LyricsSourcesSettings from '$lib/components/LyricsSourcesSettings.svelte';
 	import EnhancedLyricsSettings from '$lib/components/EnhancedLyricsSettings.svelte';
 	import LanguagePicker from '$lib/components/LanguagePicker.svelte';
@@ -71,10 +63,6 @@
 		{ id: 'general', label: t('settings.tabs.general'), hint: t('settings.tabs.general_hint'), icon: Settings02Icon },
 		{ id: 'themes', label: t('settings.tabs.themes'), hint: t('settings.tabs.themes_hint'), icon: PaintBoardIcon },
 		{ id: 'playback', label: t('settings.tabs.playback'), hint: t('settings.tabs.playback_hint'), icon: PlayCircleIcon },
-		// Only once the service has said it takes contributions (`limusic.available`).
-		...(limusic.available
-			? [{ id: 'contributing' as const, label: t('settings.tabs.contributing'), hint: t('settings.tabs.contributing_hint'), icon: PencilEdit02Icon }]
-			: []),
 		{ id: 'hotkeys', label: t('settings.tabs.hotkeys'), hint: t('settings.tabs.hotkeys_hint'), icon: KeyboardIcon },
 		{ id: 'scrobbling', label: t('settings.tabs.scrobbling'), hint: t('settings.tabs.scrobbling_hint'), icon: LastFmIcon },
 		{ id: 'devices', label: t('settings.tabs.devices'), hint: t('settings.tabs.devices_hint'), icon: ComputerPhoneSyncIcon },
@@ -135,11 +123,6 @@
 			// once the tab has rendered. The Last.fm menu and "Edit scrobble" open a whole tab.
 			if (ui.settingsFocus === 'scrobbling' || ui.settingsFocus === 'devices') {
 				tab = ui.settingsFocus;
-				ui.settingsFocus = null;
-				load();
-				loadKaraoke();
-			} else if (ui.settingsFocus === 'limusic') {
-				tab = 'contributing';
 				ui.settingsFocus = null;
 				load();
 				loadKaraoke();
@@ -848,9 +831,6 @@
 								class={active ? 'text-primary' : ''}
 							/>
 							<span class="truncate">{tb.label}</span>
-							{#if tb.id === 'contributing' && limusic.unreadNotes > 0}
-								<span class="ml-auto size-2 shrink-0 rounded-full bg-primary" aria-label={t('limusic.notes_unread')}></span>
-							{/if}
 						</button>
 					{/each}
 				</div>
@@ -1193,42 +1173,6 @@
 							<h3 class={LABEL}>{t('settings.sections.advanced')}</h3>
 							<div data-settings-card class={CARD}>
 								{@render row({ title: t('settings.general.stream_clients'), below: clientList })}
-							</div>
-						</section>
-					{:else if tab === 'contributing'}
-						<!-- Limusic Lyrics: who you are there, and how lyrics get added. Its own tab: as a
-						     section at the bottom of Playback nobody found it. -->
-						<section class={GROUP}>
-							<h3 class={LABEL}>{t('limusic.account')}</h3>
-							<LimusicAccountSettings />
-						</section>
-						<LimusicNotes group={GROUP} label={LABEL} />
-						<section class={GROUP}>
-							<h3 class={LABEL}>{t('limusic.how_title')}</h3>
-							<div data-settings-card class={CARD}>
-								{#each [{ title: t('limusic.how_open'), hint: t('limusic.how_open_hint'), icon: MusicNote01Icon }, { title: t('lyrics_editor.how_tap'), hint: t('lyrics_editor.how_tap_hint'), icon: Tap01Icon }, { title: t('lyrics_editor.how_send'), hint: t('lyrics_editor.how_send_hint'), icon: SentIcon }] as h (h.title)}
-									<div class="flex items-center gap-3.5 px-4 py-3">
-										<span class="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-muted">
-											<HugeiconsIcon icon={h.icon} class="size-[18px]" />
-										</span>
-										<div class="min-w-0">
-											<p class="text-sm font-medium">{h.title}</p>
-											<p class="text-xs text-muted-foreground">{h.hint}</p>
-										</div>
-									</div>
-								{/each}
-								<div class="flex flex-wrap items-center gap-3 px-4 py-3">
-									<p class="min-w-40 flex-1 text-xs text-muted-foreground">{t('limusic.open_editor_hint')}</p>
-									<Button
-										size="sm"
-										onclick={() => {
-											ui.settingsOpen = false;
-											goto('/lyrics-editor');
-										}}
-									>
-										{t('limusic.open_editor')}
-									</Button>
-								</div>
 							</div>
 						</section>
 					{:else if tab === 'hotkeys'}

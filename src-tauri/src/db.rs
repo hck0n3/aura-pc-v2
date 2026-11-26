@@ -864,8 +864,7 @@ impl Db {
         self.get_lyrics_row(video_id, now, miss_ttl).map(|(lyrics, _)| lyrics)
     }
 
-    /// `get_lyrics` with the row's stamp: when it was written, or last checked against its source
-    /// (`touch_lyrics`).
+    /// `get_lyrics` with the row's stamp: when it was written.
     pub fn get_lyrics_row(
         &self,
         video_id: &str,
@@ -884,15 +883,6 @@ impl Db {
             return None; // stale negative result → refetch
         }
         Some((lyrics, fetched_at))
-    }
-
-    /// Restamp a cached lyric without rewriting it. A "no lyrics" verdict keeps its own clock.
-    pub fn touch_lyrics(&self, video_id: &str, at: i64) {
-        let conn = self.0.lock().unwrap();
-        let _ = conn.execute(
-            "UPDATE lyrics_cache SET fetched_at = ?2 WHERE video_id = ?1 AND lyrics IS NOT NULL",
-            rusqlite::params![video_id, at],
-        );
     }
 
     /// `lyrics = None` records a "no lyrics found" verdict.
