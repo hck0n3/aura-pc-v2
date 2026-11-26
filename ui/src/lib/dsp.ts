@@ -177,3 +177,40 @@ export function readProfiles(raw: string | null | undefined): DspProfile[] {
 		return { name: p.name, dsp: { ...clone(DSP_DEFAULTS), ...p.dsp, eq: { ...DSP_DEFAULTS.eq, ...p.dsp.eq } } };
 	});
 }
+
+/** `send` at most once per `ms` while values keep coming, and always with the last one: a slider
+ *  drag rebuilds mpv's filter chain, which must not happen on every pixel. */
+export function throttleLatest<T>(
+	send: (v: T) => void,
+	ms: number,
+	clock: { now: () => number; later: (fn: () => void, ms: number) => void } = {
+		now: () => Date.now(),
+		later: (fn, wait) => void setTimeout(fn, wait)
+	}
+): (v: T) => void {
+	let last = -Infinity;
+	let waiting = false;
+	let pending: { v: T } | null = null;
+	const flush = () => {
+		waiting = false;
+		if (pending) {
+			const { v } = pending;
+			pending = null;
+			last = clock.now();
+			send(v);
+		}
+	};
+	return (v: T) => {
+		const now = clock.now();
+		if (!waiting && now - last >= ms) {
+			last = now;
+			send(v);
+			return;
+		}
+		pending = { v };
+		if (!waiting) {
+			waiting = true;
+			clock.later(flush, Math.max(0, ms - (now - last)));
+		}
+	};
+}

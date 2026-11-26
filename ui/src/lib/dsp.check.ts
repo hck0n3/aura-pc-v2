@@ -9,6 +9,7 @@ import {
 	SPATIAL_PROFILES,
 	parseAutoEq,
 	readProfiles,
+	throttleLatest,
 	withParametricPreset
 } from './dsp.ts';
 
@@ -57,4 +58,25 @@ try {
 }
 ok(threw, 'broken saved profiles throw');
 ok(readProfiles(JSON.stringify([{ name: 'Mío', dsp: DSP_DEFAULTS }]))[0].name === 'Mío', 'profiles round-trip');
+// Slider drags: one send every 120 ms at most, and the last value always goes out.
+{
+	let clock = 0;
+	const timers: { at: number; fn: () => void }[] = [];
+	const sent: number[] = [];
+	const send = throttleLatest((v: number) => sent.push(v), 120, {
+		now: () => clock,
+		later: (fn, ms) => timers.push({ at: clock + ms, fn })
+	});
+	for (let i = 1; i <= 10; i++) {
+		send(i);
+		clock += 5; // 10 moves in 50 ms
+	}
+	ok(sent.length === 1 && sent[0] === 1, `one send during the drag, got ${sent}`);
+	clock = 200;
+	for (const t of timers.splice(0)) if (t.at <= clock) t.fn();
+	ok(sent.length === 2 && sent[1] === 10, `the last value after the drag, got ${sent}`);
+	clock = 400;
+	send(11);
+	ok(sent.length === 3 && sent[2] === 11, 'a move after a quiet spell goes out at once');
+}
 console.log('ok');
