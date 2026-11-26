@@ -4,7 +4,7 @@ import type { LimusicLyricState, LimusicReportReason, LimusicSubmitted } from '.
 import type { TranslationKey } from './i18n.svelte';
 
 /** Where a sign-in provider's name is spelled. The service's ids are lower case. */
-export const PROVIDER_NAMES: Record<string, string> = { discord: 'Discord', github: 'GitHub' };
+export const PROVIDER_NAMES: Record<string, string> = { github: 'GitHub' };
 export const providerName = (id: string) => PROVIDER_NAMES[id] ?? id.charAt(0).toUpperCase() + id.slice(1);
 
 export interface Message {

@@ -1,7 +1,7 @@
 // Last.fm connection state. One owner, because three places read it: the titlebar button, the
 // Scrobbling settings tab (which can connect and disconnect too) and the track menu's "Edit
 // scrobble". A copy per component went stale the moment another one changed it, which is the
-// lesson `prefs.discordRpc` already taught.
+// lesson of keeping one owner for a shared flag.
 import * as api from '$lib/api';
 import { toast } from '$lib/player.svelte';
 import { t } from '$lib/i18n.svelte';

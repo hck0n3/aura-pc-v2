@@ -15,8 +15,6 @@
 		KeyboardIcon,
 		Cancel01Icon as RemoveIcon,
 		Copy01Icon,
-		Coffee02Icon,
-		DiscordIcon,
 		LastFmIcon,
 		Globe02Icon,
 		ArrowDown01Icon,
@@ -43,7 +41,6 @@
 	import { lt } from '$lib/lt.svelte';
 	import AppearanceSettings from '$lib/components/AppearanceSettings.svelte';
 	import Changelog from '$lib/components/Changelog.svelte';
-	import DiscordSettings from '$lib/components/DiscordSettings.svelte';
 	import ExperimentalBadge from '$lib/components/ExperimentalBadge.svelte';
 	import { KARAOKE_TIERS, tierMB } from '$lib/karaoke-tiers';
 	import ScrobbleSettings from '$lib/components/ScrobbleSettings.svelte';
@@ -79,7 +76,6 @@
 			? [{ id: 'contributing' as const, label: t('settings.tabs.contributing'), hint: t('settings.tabs.contributing_hint'), icon: PencilEdit02Icon }]
 			: []),
 		{ id: 'hotkeys', label: t('settings.tabs.hotkeys'), hint: t('settings.tabs.hotkeys_hint'), icon: KeyboardIcon },
-		{ id: 'discord', label: t('settings.tabs.discord'), hint: t('settings.tabs.discord_hint'), icon: DiscordIcon },
 		{ id: 'scrobbling', label: t('settings.tabs.scrobbling'), hint: t('settings.tabs.scrobbling_hint'), icon: LastFmIcon },
 		{ id: 'devices', label: t('settings.tabs.devices'), hint: t('settings.tabs.devices_hint'), icon: ComputerPhoneSyncIcon },
 		{ id: 'data', label: t('settings.tabs.data'), hint: t('settings.tabs.data_hint'), icon: Database02Icon },
@@ -789,7 +785,7 @@
 {/snippet}
 
 <Dialog.Root bind:open={ui.settingsOpen}>
-	<!-- The Discord, Scrobbling and Appearance tabs put their live preview *beside* the controls rather than
+	<!-- The Scrobbling and Appearance tabs put their live preview *beside* the controls rather than
 	     under them, so they need the extra width; every other tab reads better narrow. Deliberately not animated:
 	     transitioning the width relayouts the whole modal every frame, and WebKitGTK is the webview
 	     that would pay for it. -->
@@ -802,7 +798,7 @@
 				query = '';
 			}
 		}}
-		class="gap-0 overflow-hidden p-0 {tab === 'discord' || tab === 'scrobbling' || tab === 'themes' ? 'sm:max-w-5xl' : tab === 'hotkeys' ? 'sm:max-w-4xl' : 'sm:max-w-3xl'}"
+		class="gap-0 overflow-hidden p-0 {tab === 'scrobbling' || tab === 'themes' ? 'sm:max-w-5xl' : tab === 'hotkeys' ? 'sm:max-w-4xl' : 'sm:max-w-3xl'}"
 	>
 		<Dialog.Description class="sr-only">{t('settings.title')}</Dialog.Description>
 
@@ -925,9 +921,7 @@
 				<!-- Hidden, not unmounted, while a search shows: Esc brings the tab back as it was, an
 				     unsaved edit in it included. -->
 				<div class={searching ? 'hidden' : 'contents'}>
-				{#if loaded && tab === 'discord'}
-					<DiscordSettings {settings} />
-				{:else if loaded && tab === 'scrobbling'}
+				{#if loaded && tab === 'scrobbling'}
 					<ScrobbleSettings {settings} />
 				{:else if tab === 'devices'}
 					<DevicesSettings />
@@ -1308,24 +1302,6 @@
 						</div>
 
 						<section class={GROUP}>
-							<h3 class={LABEL}>{t('settings.sections.support')}</h3>
-							<div data-settings-card class={CARD}>
-								{@render row({
-									title: t('settings.about.discord'),
-									desc: t('settings.about.discord_hint'),
-									control: discordButton,
-									tall: true
-								})}
-								{@render row({
-									title: t('settings.about.kofi'),
-									desc: t('settings.about.kofi_hint'),
-									control: kofiButton,
-									tall: true
-								})}
-							</div>
-						</section>
-
-						<section class={GROUP}>
 							<h3 class={LABEL}>{t('settings.sections.updates')}</h3>
 							<div data-settings-card class={CARD}>
 								{@render row({
@@ -1652,20 +1628,6 @@
 
 {#snippet reportButton()}
 	<Button size="sm" onclick={openBugForm}>{t('settings.about.report_issue_button')}</Button>
-{/snippet}
-
-{#snippet discordButton()}
-	<Button variant="secondary" size="sm" onclick={() => api.openExternal(api.DISCORD_URL)}>
-		<HugeiconsIcon icon={DiscordIcon} size={15} strokeWidth={1.8} />
-		{t('settings.about.discord_button')}
-	</Button>
-{/snippet}
-
-{#snippet kofiButton()}
-	<Button variant="secondary" size="sm" onclick={() => api.openExternal('https://ko-fi.com/simohypers')}>
-		<HugeiconsIcon icon={Coffee02Icon} size={15} strokeWidth={1.8} />
-		{t('settings.about.kofi_button')}
-	</Button>
 {/snippet}
 
 {#snippet diagAlert()}

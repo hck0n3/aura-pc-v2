@@ -2,7 +2,7 @@
  * The Scrobbling tab's settings, as `ScrobbleSettings.svelte` edits them and `lastfm.rs` reads them.
  *
  * This is the TypeScript half of `ScrobbleConfig` in `src-tauri/src/lastfm.rs`: same field names,
- * same defaults, persisted as one JSON blob in the `lastfm_config` setting. Unlike the Discord tab,
+ * same defaults, persisted as one JSON blob in the `lastfm_config` setting. Unlike other tabs,
  * nothing here re-implements the backend's logic: what a track scrobbles as comes from Rust
  * (`lastfm_preview`), because a regex Rust's engine reads differently from JavaScript's would
  * otherwise make the preview lie. What lives here is the shape, the presets and the importers.

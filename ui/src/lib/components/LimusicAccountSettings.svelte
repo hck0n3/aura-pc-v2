@@ -1,14 +1,13 @@
 <script lang="ts">
 	// Contributing to Limusic Lyrics (see `limusic.rs`). One card that says who you are here:
-	// nobody yet, anonymous, or a linked account with its name, avatar and points. Linking Discord
-	// or GitHub is optional, so it is shown as what it gives and the one thing it reads. While a
+	// nobody yet, anonymous, or a linked account with its name, avatar and points. Linking
+	// GitHub is optional, so it is shown as what it gives and the one thing it reads. While a
 	// link waits for the browser, the card is the code its confirm page shows.
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import { ChampionIcon, FlashIcon, GithubIcon, Link01Icon, SecurityCheckIcon, UserIcon } from '@hugeicons/core-free-icons';
 	import { Button } from '$lib/components/ui/button';
-	import DiscordIcon from './DiscordIcon.svelte';
 	import { ui } from '$lib/player.svelte';
 	import { currentLocale, t } from '$lib/i18n.svelte';
 	import { cancelSignIn, limusic, refreshAccount, rename, signIn, signOut } from '$lib/limusic.svelte';
@@ -50,9 +49,7 @@
 </script>
 
 {#snippet brand(p: string, cls: string)}
-	{#if p === 'discord'}
-		<DiscordIcon class={cls} />
-	{:else if p === 'github'}
+	{#if p === 'github'}
 		<HugeiconsIcon icon={GithubIcon} class={cls} />
 	{:else}
 		<HugeiconsIcon icon={Link01Icon} class={cls} />

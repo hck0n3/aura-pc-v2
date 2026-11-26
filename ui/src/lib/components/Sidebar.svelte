@@ -23,15 +23,14 @@
 		Chart02Icon,
 		VolumeHighIcon,
 		PlayIcon,
-		PauseIcon,
-		DiscordIcon
+		PauseIcon
 	} from '@hugeicons/core-free-icons';
 	import LogoMark from './LogoMark.svelte';
 	import LimusicLoader from './LimusicLoader.svelte';
 	import { playItem } from '$lib/browse';
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button';
-	import { DISCORD_URL, ON_REPEAT_ID, isLocalPlaylist, openExternal, togglePause, type BrowseItem } from '$lib/api';
+	import { ON_REPEAT_ID, isLocalPlaylist, openExternal, togglePause, type BrowseItem } from '$lib/api';
 	import { thumb } from '$lib/thumb';
 	import PlaylistMenu from './PlaylistMenu.svelte';
 	import {
@@ -179,16 +178,6 @@
 			>
 				<HugeiconsIcon icon={Sun01Icon} strokeWidth={2} class="h-4 w-4 dark:hidden" />
 				<HugeiconsIcon icon={Moon02Icon} strokeWidth={2} class="hidden h-4 w-4 dark:block" />
-			</Button>
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="hover:text-primary"
-				onclick={() => openExternal(DISCORD_URL).catch((e) => toast.error(t('toasts.browser_failed', { error: String(e) })))}
-				title={t('nav.discord')}
-				aria-label={t('nav.discord')}
-			>
-				<HugeiconsIcon icon={DiscordIcon} strokeWidth={2} class="h-4 w-4" />
 			</Button>
 		</div>
 	</div>
