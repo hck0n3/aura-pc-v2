@@ -281,3 +281,47 @@ fn an_unknown_saved_device_falls_back_to_auto() {
 fn the_idle_deck_inherits_the_device() {
     assert!(INHERITED.contains(&"audio-device"));
 }
+
+#[test]
+fn mono_sources_go_through_every_stage() {
+    // mpv feeds a mono file to the chain still mono; an `aeval c=same` followed by a filter that
+    // forces stereo crashed FFmpeg 6.1 (segfault), taking the app with it.
+    let dir = tempfile::tempdir().unwrap();
+    let mut d = everything_on();
+    d.preamp_db = 0.0;
+    let out = render(dir.path(), "av://lavfi:anoisesrc=color=pink:amplitude=0.1:seed=5:d=0.5", &d);
+    assert!(out.len() >= 40_000, "mono render produced {} samples", out.len());
+    assert!(out.iter().any(|s| s.abs() > 0.001), "mono render was silent");
+}
+
+#[test]
+fn a_rejected_dsp_is_reported_as_the_dsp_even_with_reverb_on() {
+    let dir = tempfile::tempdir().unwrap();
+    let p = Player::new(dir.path().to_str().unwrap()).unwrap();
+    p.set_playback_params(1.0, 0, Reverb { enabled: true, wet: 0, ..Reverb::default() }).unwrap();
+    NO_DSP_FILTER.set(true);
+    let result = p.set_dsp(on());
+    NO_DSP_FILTER.set(false);
+    assert!(matches!(result, Err(Error::Dsp(_))), "{result:?}");
+}
+
+#[test]
+fn volume_steps_rebuild_the_chain_only_when_loudness_changes() {
+    let dir = tempfile::tempdir().unwrap();
+    let p = Player::new(dir.path().to_str().unwrap()).unwrap();
+    p.set_volume(100).unwrap();
+    p.set_dsp(DspSettings { loudness: true, ..on() }).unwrap();
+    let before = FILTER_PROBES.get();
+    // Near the top the lift is 0 dB either way: nothing to rebuild.
+    for v in [99, 98, 97, 96] {
+        p.set_volume(v).unwrap();
+    }
+    assert_eq!(FILTER_PROBES.get(), before, "loud-end volume steps rebuilt the chain");
+    // A drag through the quiet half: rebuilds only where the (half-dB) lift moves.
+    let start = FILTER_PROBES.get();
+    for v in (20..=60).rev() {
+        p.set_volume(v).unwrap();
+    }
+    let rebuilds = FILTER_PROBES.get() - start;
+    assert!(rebuilds > 0 && rebuilds <= 20, "{rebuilds} rebuilds for a 40-step drag");
+}

@@ -135,10 +135,10 @@ export const SPATIAL_PROFILES = [
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-/** An AutoEQ ParametricEQ.txt (`Filter N: ON PK|LSC|HSC Fc … Hz Gain … dB Q …`) as 24 bands:
- *  its filters (24 at most), then flat grid bands to fill the rest, by frequency. `null` when
- *  the text holds no filter line. */
-export function parseAutoEq(text: string): EqBand[] | null {
+/** An AutoEQ ParametricEQ.txt (`Preamp: … dB`, `Filter N: ON PK|LSC|HSC Fc … Hz Gain … dB Q …`):
+ *  its preamp (which offsets the boosts, as JR applied it) and 24 bands, its filters (24 at most)
+ *  then flat grid bands to fill the rest, by frequency. `null` when the text holds no filter line. */
+export function parseAutoEq(text: string): { bands: EqBand[]; preampDb: number } | null {
 	const kinds: Record<string, BandKind> = { PK: 'peak', LSC: 'lowshelf', LS: 'lowshelf', HSC: 'highshelf', HS: 'highshelf' };
 	const parsed: EqBand[] = [];
 	const line = /Filter\s+\d+:\s+ON\s+(PK|LSC|HSC|LS|HS)\s+Fc\s+([\d.]+)\s*Hz\s+Gain\s+(-?[\d.]+)\s*dB(?:\s+Q\s+([\d.]+))?/gi;
@@ -156,7 +156,11 @@ export function parseAutoEq(text: string): EqBand[] | null {
 	const fill = PARAMETRIC_FREQS.filter((f) => !used.has(f))
 		.slice(0, 24 - parsed.length)
 		.map((f) => ({ f, g: 0, q: 4.318, kind: 'peak' as const }));
-	return [...parsed, ...fill].sort((a, b) => a.f - b.f);
+	const preamp = /Preamp:\s*(-?[\d.]+)\s*dB/i.exec(text);
+	return {
+		bands: [...parsed, ...fill].sort((a, b) => a.f - b.f),
+		preampDb: preamp ? clamp(Number(preamp[1]), PREAMP_MIN, PREAMP_MAX) : 0
+	};
 }
 
 export interface DspProfile {
@@ -215,4 +219,12 @@ export function throttleLatest<T>(
 			clock.later(flush, Math.max(0, ms - (now - last)));
 		}
 	};
+}
+
+/** How long after a local edit `dsp-changed` is taken as the echo of a send, not news. */
+export const ECHO_QUIET_MS = 400;
+/** Whether a `dsp-changed` confirmation should replace what the tab shows: not while the user is
+ *  still moving something here, where it would carry an older value and pull the slider back. */
+export function acceptConfirmation(lastLocalEdit: number, now: number): boolean {
+	return now - lastLocalEdit >= ECHO_QUIET_MS;
 }

@@ -767,10 +767,12 @@ impl Player {
         self.mpv().set_property("volume", perceptual_to_mpv(volume))?;
         // Remembered because a crossfade scales it on both decks, and because the deck that
         // fades in is not the one this was last set on.
-        let before = self.decks.volume.swap(volume, Ordering::Relaxed);
-        // The DSP's loudness lift depends on the volume (more as it goes down).
+        // The DSP's loudness lift depends on the volume (more as it goes down). Rebuilt only when
+        // the lift itself changes, which is a few times over a whole drag.
         let af = self.decks.af.lock().unwrap();
-        if before != volume && af.dsp.enabled && af.dsp.loudness {
+        let link_before = dsp_link(&self.decks, &af.dsp);
+        self.decks.volume.store(volume, Ordering::Relaxed);
+        if af.dsp.enabled && af.dsp.loudness && dsp_link(&self.decks, &af.dsp) != link_before {
             for deck in 0..2 {
                 if let Err(e) = apply_filters(&self.decks, deck, &af) {
                     tracing::warn!(error = %e, "loudness did not follow the volume");
@@ -948,6 +950,13 @@ impl Player {
                 for rollback in 0..2 {
                     let _ = apply_filters(&self.decks, rollback, &previous);
                 }
+                // The chain also carries reverb and tempo, whose errors would name them: when the
+                // DSP's own graph is what mpv refuses, say so.
+                if let Some(link) = dsp_link(&self.decks, &wanted.dsp) {
+                    if let Err(dsp_error) = validate_lavfi(&link) {
+                        return Err(Error::Dsp(dsp_error.to_string()));
+                    }
+                }
                 return Err(e);
             }
         }
@@ -1023,13 +1032,11 @@ fn ensure_reverb_asset(decks: &Decks, preset: u8) -> Result<std::path::PathBuf, 
 fn apply_filters(decks: &Decks, deck: usize, af: &AudioFilters) -> Result<(), Error> {
     let Some(mpv) = decks.mpv(deck) else { return Ok(()) };
     let mut chain = af_chain(af.gain[deck], 0, 1.0);
-    if let Some(graph) = dsp::dsp_graph(&af.dsp, volume_db(decks.volume.load(Ordering::Relaxed))) {
-        #[cfg(test)]
-        let graph = if NO_DSP_FILTER.get() { "nosuchdspfilter".to_owned() } else { graph };
+    if let Some(link) = dsp_link(decks, &af.dsp) {
         if !chain.is_empty() {
             chain.push(',');
         }
-        chain.push_str(&format!("@dsp:lavfi=graph=%{}%{graph}", graph.len()));
+        chain.push_str(&link);
     }
     if af.reverb.enabled {
         if !chain.is_empty() {
@@ -1088,6 +1095,14 @@ fn apply_filters(decks: &Decks, deck: usize, af: &AudioFilters) -> Result<(), Er
     })?;
     mpv.set_property("speed", af.speed)?;
     Ok(())
+}
+
+/// The DSP's link in the `af` chain (`@dsp:lavfi=…`), or `None` while it is off.
+fn dsp_link(decks: &Decks, dsp: &DspSettings) -> Option<String> {
+    let graph = dsp::dsp_graph(dsp, volume_db(decks.volume.load(Ordering::Relaxed)))?;
+    #[cfg(test)]
+    let graph = if NO_DSP_FILTER.get() { "nosuchdspfilter".to_owned() } else { graph };
+    Some(format!("@dsp:lavfi=graph=%{}%{graph}", graph.len()))
 }
 
 fn set_filter_chain(mpv: &Mpv, chain: &str) -> Result<(), libmpv2::Error> {

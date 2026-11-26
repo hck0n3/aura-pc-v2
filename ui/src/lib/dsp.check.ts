@@ -5,6 +5,7 @@
 import {
 	AURA_PRESETS,
 	DSP_DEFAULTS,
+	acceptConfirmation,
 	clone,
 	PARAMETRIC_PRESETS,
 	SPATIAL_PROFILES,
@@ -42,12 +43,16 @@ const night = withParametricPreset(atmos, PARAMETRIC_PRESETS.find((p) => p.id ==
 ok(night.preampDb === -4 && night.spatial === 0, 'Noche sets its preamp and resets spatial');
 ok(SPATIAL_PROFILES.map((p) => p.id).join() === '0,1,2,3', 'four spatial profiles');
 
-const eq = parseAutoEq('Preamp: -6.2 dB\nFilter 1: ON PK Fc 105 Hz Gain -3.2 dB Q 0.70\nFilter 2: ON LSC Fc 20 Hz Gain 4 dB Q 0.7');
-ok(eq !== null && eq.length === 24, 'AutoEQ gives 24 bands');
-const pk = eq!.find((b) => b.f === 105)!;
+const parsed = parseAutoEq('Preamp: -6.2 dB\nFilter 1: ON PK Fc 105 Hz Gain -3.2 dB Q 0.70\nFilter 2: ON LSC Fc 20 Hz Gain 4 dB Q 0.7');
+ok(parsed !== null && parsed.bands.length === 24, 'AutoEQ gives 24 bands');
+ok(parsed!.preampDb === -6.2, 'AutoEQ keeps its preamp (it offsets the boosts)');
+ok(parseAutoEq('Preamp: -40 dB\nFilter 1: ON PK Fc 100 Hz Gain 1 dB Q 1')!.preampDb === -20, 'preamp clamped to -20');
+ok(parseAutoEq('Filter 1: ON PK Fc 100 Hz Gain 1 dB Q 1')!.preampDb === 0, 'no preamp line: 0 dB');
+const eq = parsed!.bands;
+const pk = eq.find((b) => b.f === 105)!;
 ok(pk && pk.kind === 'peak' && pk.g === -3.2 && pk.q === 0.7, 'AutoEQ peak band');
-ok(eq!.some((b) => b.f === 20 && b.kind === 'lowshelf' && b.g === 4), 'AutoEQ low shelf');
-ok(eq!.every((b, i) => i === 0 || eq![i - 1].f <= b.f), 'AutoEQ bands sorted by frequency');
+ok(eq.some((b) => b.f === 20 && b.kind === 'lowshelf' && b.g === 4), 'AutoEQ low shelf');
+ok(eq.every((b, i) => i === 0 || eq![i - 1].f <= b.f), 'AutoEQ bands sorted by frequency');
 ok(parseAutoEq('hola') === null, 'no filter lines: null');
 
 ok(readProfiles(null).length === 0, 'no saved profiles');
@@ -87,4 +92,8 @@ ok(readProfiles(JSON.stringify([{ name: 'Mío', dsp: DSP_DEFAULTS }]))[0].name =
 	copy.enabled = true;
 	ok(copy.enabled && !live.enabled, 'clone copies a reactive (Proxy) settings object');
 }
+// A confirmation of an older value must not pull a slider back while it is being dragged.
+ok(!acceptConfirmation(1000, 1100), 'an echo right after a local edit is ignored');
+ok(acceptConfirmation(1000, 1500), 'a change once the edit has settled is shown');
+ok(acceptConfirmation(-Infinity, 0), 'a change from another window with no local edit is shown');
 console.log('ok');

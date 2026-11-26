@@ -22,6 +22,7 @@
 		PREAMP_MAX,
 		PREAMP_MIN,
 		SPATIAL_PROFILES,
+		acceptConfirmation,
 		clone,
 		parseAutoEq,
 		readProfiles,
@@ -64,8 +65,10 @@
 	};
 	const send = throttleLatest((next: DspSettings) => void sendNow(next), 120);
 
+	let lastEdit = -Infinity;
 	/** Change a copy, show it, send it. */
 	function update(change: (d: DspSettings) => void) {
+		lastEdit = Date.now();
 		const next = clone(dsp);
 		change(next);
 		dsp = next;
@@ -76,7 +79,9 @@
 	onMount(() => {
 		api.getDsp().then((d) => (dsp = d));
 		api.audioDevices().then((d) => (devices = d)).catch(() => {});
-		api.onDspChanged((d) => (dsp = d)).then((u) => (unlisten = u));
+		api.onDspChanged((d) => {
+			if (acceptConfirmation(lastEdit, Date.now())) dsp = d;
+		}).then((u) => (unlisten = u));
 	});
 	onDestroy(() => unlisten?.());
 
@@ -110,17 +115,20 @@
 
 	let autoEqInput = $state<HTMLInputElement | null>(null);
 	async function importAutoEq(e: Event) {
-		const file = (e.currentTarget as HTMLInputElement).files?.[0];
+		// Held before the await: Svelte drops `currentTarget` once the event has been dispatched.
+		const input = e.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
 		if (!file) return;
-		const bands = parseAutoEq(await file.text());
-		(e.currentTarget as HTMLInputElement).value = '';
-		if (!bands) {
+		const parsed = parseAutoEq(await file.text());
+		input.value = ''; // so picking the same file again fires `change`
+		if (!parsed) {
 			toast.error(t('settings.audio.autoeq_failed'));
 			return;
 		}
 		update((d) => {
 			d.eq.mode = 'parametric';
-			d.eq.bands = bands;
+			d.eq.bands = parsed.bands;
+			d.preampDb = parsed.preampDb;
 		});
 	}
 

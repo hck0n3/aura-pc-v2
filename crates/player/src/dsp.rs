@@ -196,6 +196,10 @@ pub fn dsp_graph(d: &DspSettings, volume_db: f64) -> Option<String> {
     let mut stages: Vec<String> = Vec::new();
     let mut linear = |f: String| stages.push(format!("[in]{f}[out]"));
 
+    // Stereo from the first stage: mpv hands a mono file to the chain still mono, and an
+    // `aeval c=same` followed by a filter that forces stereo crashes FFmpeg 6.1. JR ran these
+    // stages on stereo output only.
+    linear("aformat=channel_layouts=stereo".into());
     if d.preamp_db != 0.0 {
         linear(format!("volume={}dB", n(d.preamp_db)));
     }
@@ -248,10 +252,13 @@ pub fn dsp_graph(d: &DspSettings, volume_db: f64) -> Option<String> {
     }
     if d.loudness {
         let att = ((-volume_db - 5.0) / 15.0).clamp(0.0, 1.0);
+        // In half-dB steps: the graph only changes (and mpv only rebuilds it) when the lift does,
+        // not on every pixel of a volume drag.
+        let half = |db: f64| (db * 2.0).round() / 2.0;
         linear(format!(
             "lowshelf=f=200:t=s:w=0.707:g={},highshelf=f=5000:t=s:w=0.707:g={}",
-            n(3.0 + 6.0 * att),
-            n(2.0 + 3.0 * att)
+            n(half(3.0 + 6.0 * att)),
+            n(half(2.0 + 3.0 * att))
         ));
     }
     if let Some((direct, shadow, room, itd_us)) = spatial_profile(d.spatial) {
