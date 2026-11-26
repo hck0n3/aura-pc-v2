@@ -5,7 +5,6 @@
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import { Tick02Icon } from '@hugeicons/core-free-icons';
 	import * as Popover from '$lib/components/ui/popover';
-	import { inRoom } from '$lib/lt.svelte';
 	import { playback, setTempoPitch } from '$lib/player.svelte';
 	import { t } from '$lib/i18n.svelte';
 
@@ -15,19 +14,16 @@
 	const label = (s: number) => `${+s.toFixed(2)}x`;
 
 	let open = $state(false);
-	// Rust refuses tempo in a listening room, so the chip says why instead of failing on click.
-	const locked = $derived(inRoom());
 </script>
 
 <Popover.Root bind:open>
 	<Popover.Trigger
-		disabled={locked}
-		class="cursor-pointer font-semibold tabular-nums disabled:cursor-default disabled:opacity-50 {playback.speed !==
+		class="cursor-pointer font-semibold tabular-nums {playback.speed !==
 		1
 			? 'text-primary'
 			: 'text-muted-foreground hover:text-foreground'} {klass}"
 		aria-label={t('player.speed')}
-		title={locked ? t('dialogs.tempo_pitch.tempo_room_locked') : t('player.speed')}
+		title={t('player.speed')}
 	>
 		<!-- Trimmed to the cap height, or the digits sit high: the line box leaves descender room
 		     under them that they don't use, and the icons beside them are centred on their ink. -->

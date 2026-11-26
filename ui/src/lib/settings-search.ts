@@ -15,7 +15,6 @@ export type SettingsTab =
 	| 'playback'
 	| 'hotkeys'
 	| 'scrobbling'
-	| 'devices'
 	| 'data'
 	| 'about';
 
@@ -39,7 +38,6 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 	['playback', null, [['settings.tabs.playback', 'settings.tabs.playback_hint']]],
 	['hotkeys', null, [['settings.tabs.hotkeys', 'settings.tabs.hotkeys_hint']]],
 	['scrobbling', null, [['settings.tabs.scrobbling', 'settings.tabs.scrobbling_hint']]],
-	['devices', null, [['settings.tabs.devices', 'settings.tabs.devices_hint']]],
 	['data', null, [['settings.tabs.data', 'settings.tabs.data_hint']]],
 	['about', null, [['settings.tabs.about', 'settings.tabs.about_hint']]],
 

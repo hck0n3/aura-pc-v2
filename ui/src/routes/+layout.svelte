@@ -41,7 +41,6 @@
 	import TempoPitchDialog from '$lib/components/TempoPitchDialog.svelte';
 	import ShareDialog from '$lib/components/ShareDialog.svelte';
 	import ChannelPicker from '$lib/components/ChannelPicker.svelte';
-	import ListenTogether from '$lib/components/ListenTogether.svelte';
 	import LinkDialog from '$lib/components/LinkDialog.svelte';
 	import ImportDialog from '$lib/components/ImportDialog.svelte';
 	import KaraokeSetupDialog from '$lib/components/KaraokeSetupDialog.svelte';
@@ -350,7 +349,6 @@
 	<SettingsDialog />
 	<TempoPitchDialog bind:open={ui.tempoPitchOpen} />
 	<ChannelPicker />
-	<ListenTogether />
 	<LinkDialog />
 	<ImportDialog />
 	<KaraokeSetupDialog />

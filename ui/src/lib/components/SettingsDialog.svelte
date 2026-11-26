@@ -16,7 +16,6 @@
 		ArrowDown01Icon,
 		Alert02Icon,
 		LinkSquare02Icon,
-		ComputerPhoneSyncIcon,
 		Search01Icon,
 		ArrowRight01Icon
 	} from '@hugeicons/core-free-icons';
@@ -33,13 +32,11 @@
 	import * as api from '$lib/api';
 	import { blocked, karaokeAvailability, karaokeConsent, karaokeModels, karaokeSelection, cancelKaraokeModelDownload, deleteKaraokeModel, playback, prefs, refreshLanguage, setAutoplay, ui, toast, unblockArtist, setKaraokeDevice, applyKaraokeStatus, chooseKaraokeModel, refreshKaraokeModels } from '$lib/player.svelte';
 	import { win } from '$lib/win.svelte';
-	import { lt } from '$lib/lt.svelte';
 	import AppearanceSettings from '$lib/components/AppearanceSettings.svelte';
 	import Changelog from '$lib/components/Changelog.svelte';
 	import ExperimentalBadge from '$lib/components/ExperimentalBadge.svelte';
 	import { KARAOKE_TIERS, tierMB } from '$lib/karaoke-tiers';
 	import ScrobbleSettings from '$lib/components/ScrobbleSettings.svelte';
-	import DevicesSettings from '$lib/components/DevicesSettings.svelte';
 	import {
 		updateState,
 		availableMessage,
@@ -65,7 +62,6 @@
 		{ id: 'playback', label: t('settings.tabs.playback'), hint: t('settings.tabs.playback_hint'), icon: PlayCircleIcon },
 		{ id: 'hotkeys', label: t('settings.tabs.hotkeys'), hint: t('settings.tabs.hotkeys_hint'), icon: KeyboardIcon },
 		{ id: 'scrobbling', label: t('settings.tabs.scrobbling'), hint: t('settings.tabs.scrobbling_hint'), icon: LastFmIcon },
-		{ id: 'devices', label: t('settings.tabs.devices'), hint: t('settings.tabs.devices_hint'), icon: ComputerPhoneSyncIcon },
 		{ id: 'data', label: t('settings.tabs.data'), hint: t('settings.tabs.data_hint'), icon: Database02Icon },
 		{ id: 'about', label: t('settings.tabs.about'), hint: t('settings.tabs.about_hint'), icon: InformationCircleIcon }
 	]);
@@ -121,7 +117,7 @@
 			query = '';
 			// Opened on a section from elsewhere (the lyrics source picker): its tab, scrolled to it
 			// once the tab has rendered. The Last.fm menu and "Edit scrobble" open a whole tab.
-			if (ui.settingsFocus === 'scrobbling' || ui.settingsFocus === 'devices') {
+			if (ui.settingsFocus === 'scrobbling') {
 				tab = ui.settingsFocus;
 				ui.settingsFocus = null;
 				load();
@@ -391,7 +387,6 @@
 	// A room carries one track and one position, so an overlap cannot be synced: the backend
 	// suspends the fade for as long as we are in one (`AppState::apply_crossfade`). Say so here,
 	// or it reads as crossfade quietly breaking.
-	const crossfadeSuspended = $derived(lt.role !== 'none');
 	// Clamped like the player clamps it (`set_crossfade`), so a stored value from anywhere but this
 	// slider cannot show a number the audio will not use.
 	const crossfadeSecs = $derived.by(() => {
@@ -903,8 +898,6 @@
 				<div class={searching ? 'hidden' : 'contents'}>
 				{#if loaded && tab === 'scrobbling'}
 					<ScrobbleSettings {settings} />
-				{:else if tab === 'devices'}
-					<DevicesSettings />
 				{:else if tab === 'themes'}
 					<AppearanceSettings />
 				{:else}
@@ -1021,9 +1014,7 @@
 								{@render row({
 									title: t('settings.playback.crossfade'),
 									badge: t('settings.themes.experimental'),
-									desc: crossfadeSuspended
-										? t('settings.playback.crossfade_lt_paused')
-										: t('settings.playback.crossfade_hint'),
+									desc: t('settings.playback.crossfade_hint'),
 									control: crossfadeSwitch,
 									tall: true
 								})}

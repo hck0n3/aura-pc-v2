@@ -23,22 +23,19 @@
 	import { rowScroller } from '$lib/rows.svelte';
 	import { dragScroll, QUEUE_ROW_MIME } from '$lib/dnd';
 	import { playback, prefs, setAutoplay, openAddToPlaylist } from '$lib/player.svelte';
-	import { lt } from '$lib/lt.svelte';
 	import { appearance } from '$lib/theme.svelte';
 	import { currentLocale, t } from '$lib/i18n.svelte';
 
 	const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 
-	// Guests are add-only in a session: no removing, reordering, clearing or autoplay of their own.
-	// The playing row can't be removed either (backend guards it too).
-	const canEdit = $derived(lt.role !== 'guest');
+	// The playing row can't be removed (backend guards it too).
 
 	// --- drag to reorder ---------------------------------------------------------------------
 	// Upcoming rows only: the playing track and what came before it stay put (the backend clamps to
 	// the same range). `dropAt` is the queue index the dragged row goes *in front of*.
 	let dragFrom = $state<number | null>(null);
 	let dropAt = $state<number | null>(null);
-	const canDrag = (i: number) => canEdit && i > playback.queue.currentIndex;
+	const canDrag = (i: number) => i > playback.queue.currentIndex;
 
 	function onDragStart(e: DragEvent, i: number) {
 		if (!e.dataTransfer) return;
@@ -288,7 +285,7 @@
 					hideRating
 					onplay={() => play(i)}
 					onAdd={() => openAddToPlaylist(item)}
-					onRemove={canEdit && i !== playback.queue.currentIndex
+					onRemove={i !== playback.queue.currentIndex
 						? () => api.removeFromQueue(i)
 						: undefined}
 					removeLabel={t('player.remove_from_queue')}
@@ -324,18 +321,16 @@
 				<p class="truncate text-xs text-muted-foreground tabular-nums">{leftLabel}</p>
 			{/if}
 		</div>
-		{#if canEdit}
-			<!-- Right where its tracks are drawn, rather than three levels into Settings. -->
-			<label
-				class="flex shrink-0 cursor-pointer items-center gap-2 text-xs font-medium text-muted-foreground"
-				title={t('settings.playback.autoplay_hint')}
-			>
-				{t('player.autoplay')}
-				<Switch size="sm" checked={playback.queue.autoplay ?? prefs.autoplay} onCheckedChange={setAutoplay} />
-			</label>
-		{/if}
+		<!-- Right where its tracks are drawn, rather than three levels into Settings. -->
+		<label
+			class="flex shrink-0 cursor-pointer items-center gap-2 text-xs font-medium text-muted-foreground"
+			title={t('settings.playback.autoplay_hint')}
+		>
+			{t('player.autoplay')}
+			<Switch size="sm" checked={playback.queue.autoplay ?? prefs.autoplay} onCheckedChange={setAutoplay} />
+		</label>
 	</div>
-	{#if playback.queue.prevTrack || (canEdit && view.queued)}
+	{#if playback.queue.prevTrack || view.queued}
 		<div class="flex shrink-0 items-center gap-2 px-2 pb-1">
 			<!-- Clicking a song throws the queue away, so the tracks that were actually just played
 			     are in the queue we kept. One line for the whole of it: they are not rows of this
@@ -354,7 +349,7 @@
 					<span class="truncate">{t('player.back_to', { title: playback.queue.prevTrack })}</span>
 				</Button>
 			{/if}
-			{#if canEdit && view.queued}
+			{#if view.queued}
 				<!-- Only what was added by hand: Play next and Add to queue, not the playlist. -->
 				<Button
 					variant="ghost"
@@ -384,7 +379,7 @@
 		{#if view.rows.length}
 			{@render rows(view.rows, wins[0])}
 			<!-- Said once, where the list stops, rather than leaving it to look unfinished. -->
-			{#if canEdit && !left.count && !view.autoplay.length && !prefs.autoplay && (playback.queue.repeat ?? 'off') === 'off'}
+			{#if !left.count && !view.autoplay.length && !prefs.autoplay && (playback.queue.repeat ?? 'off') === 'off'}
 				<p class="px-2 pt-3 pb-1 text-xs text-muted-foreground" in:fade={{ duration: 150 }}>
 					{t('player.queue_ends')}
 				</p>

@@ -22,7 +22,6 @@
 		CameraVideoIcon,
 		CheckmarkCircle01Icon,
 		HotspotOfflineIcon,
-		UserGroup02Icon,
 		Link04Icon,
 		Settings02Icon
 	} from '@hugeicons/core-free-icons';
@@ -33,7 +32,6 @@
 	import * as api from '$lib/api';
 	import { openMiniPlayer, playback, prefs, refreshView, toast, ui } from '$lib/player.svelte';
 	import { win } from '$lib/win.svelte';
-	import { lt } from '$lib/lt.svelte';
 	import { anchorMenu, fitMenu, NO_ANCHOR } from '$lib/menu';
 	import { t } from '$lib/i18n.svelte';
 	import { connectLastfm, disconnectLastfm, lastfm, watchLastfm } from '$lib/lastfm.svelte';
@@ -183,30 +181,6 @@
 			<HugeiconsIcon icon={Link04Icon} class="h-4 w-4" />
 		</button>
 
-		<!-- Opens the same modal as the home hero's button (one dialog, mounted in +layout). -->
-		<button
-			class="flex h-full w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground {lt.role !==
-			'none'
-				? 'text-primary'
-				: ''}"
-			onclick={() => (ui.ltOpen = true)}
-			title={t('nav.listen_together')}
-			aria-label={t('nav.listen_together')}
-		>
-			<span class="relative">
-				<HugeiconsIcon icon={UserGroup02Icon} class="h-4 w-4" />
-				{#if lt.role !== 'none'}
-					<!-- Status dot with a ping behind it: two layers, because animate-ping
-					     scales and fades the element it's on, so a lone dot would blink out. -->
-					<span class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5">
-						<span class="absolute inset-0 animate-ping rounded-full bg-emerald-500 opacity-75"
-						></span>
-						<span class="absolute inset-0 rounded-full bg-emerald-500 ring-[1.5px] ring-background"
-						></span>
-					</span>
-				{/if}
-			</span>
-		</button>
 
 		<button
 			class="flex h-full w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground {connected
