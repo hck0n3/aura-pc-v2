@@ -4,6 +4,8 @@
 
 **Goal:** Que el DSP de JR Music Player PC (EQ de 10 bandas "Aura" con sus presets, EQ paramétrico de 24 bandas, loudness, bass, exciter, tube, compresor multibanda, ancho estéreo, crossfeed / espacial, diálogo, de-esser, limitador) y la elección del dispositivo de salida suenen en Aura con **todo** lo que se reproduce (YouTube, local, descargas, radio), configurable en una pestaña nueva de Ajustes y guardado entre sesiones.
 
+**Mismo sonido en todo:** JR tenía dos motores (C++ para local, Web Audio para YouTube) que no sonaban igual. Aura tiene uno solo: lo que suena por YouTube y por local pasa por el mismo grafo, así que suena idéntico. Ese grafo copia el **motor C++** de JR: las etapas lineales con filtros equivalentes y las no lineales (bass, exciter, válvula) con su fórmula exacta por muestra.
+
 **Architecture:** Un módulo puro en `crates/player` traduce `DspSettings` a un grafo lavfi de ffmpeg; el reproductor lo inserta como un eslabón etiquetado `@dsp` en la cadena `af` de mpv que ya lleva ganancia, reverb y tempo, así que viaja solo a la segunda cubierta del crossfade y sobrevive al gapless. El backend guarda los ajustes como JSON en la tabla de settings y los aplica al arrancar; la UI es una pestaña "Audio" en Svelte con los presets y perfiles de JR.
 
 **Tech Stack:** Rust (crate `player`, libmpv2), Tauri 2, SvelteKit/Svelte 5 en `ui/`, filtros lavfi de ffmpeg (verificados en el `libmpv-2.dll` del release `deps`: equalizer, lowshelf, highshelf, highpass, lowpass, acompressor, acrossover, alimiter, crossfeed, aexciter, asoftclip, extrastereo, deesser, asplit, amix, pan, adelay, aecho, volume).
@@ -66,7 +68,7 @@
   - `pub struct EqBand { f: f64, g: f64, q: f64, kind: BandKind }`, `pub enum BandKind { Peak, LowShelf, HighShelf }` (lowercase)
   - `impl Default for DspSettings` con los valores de JR: `enabled false`, `preamp_db 0`, `eq.mode Aura`, `aura` todo 0, `bands` = rejilla de 24 (20, 31, 50, 80, 100, 160, 200, 315, 440, 500, 800, 1000, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000 Hz; g 0; q 4.318; kind Peak), `deesser false`, `loudness false`, `spatial 0`, `crossfeed false`, `bass {false, 0.28}`, `exciter {false, 0.15}`, `tube {false, 0.25}`, `mb_comp false`, `width {false, 1.0}`, `dialogue {false, 0.35}`, `limiter true`.
   - `pub fn validate(&self) -> Result<(), String>`: rangos de Global Constraints; `bands.len() == 24`; nombre del campo en el error.
-  - `pub fn dsp_graph(d: &DspSettings) -> Option<String>`: `None` si `!d.enabled`; si no, el grafo lavfi (sin envolver en `lavfi=`).
+  - `pub fn dsp_graph(d: &DspSettings, volume_db: f64) -> Option<String>`: `None` si `!d.enabled`; si no, el grafo lavfi (sin envolver en `lavfi=`). `volume_db` solo lo usa la loudness.
   - `pub const AURA_FREQS: [f64; 10] = [31.5, 62.5, 125.0, 250.0, 500.0, 1000.0, 2000.0, 4000.0, 8000.0, 16000.0];`
 
 - [ ] **Step 1: Tests que fallan** (en `dsp.rs`):
@@ -85,12 +87,14 @@
   - EQ Aura: por banda con `|g| > 0.01`; la 0 `lowshelf`, la 9 `highshelf` (`t=s:w=0.6`), el resto `equalizer` `t=q:w=1.414`. Auto-headroom de JR: `volume` de `-max(0, maxBoost - 1.5)` dB delante del EQ cuando haga falta.
   - EQ paramétrico: por banda con `|g| > 0.01`: Peak → `equalizer`; shelves → `lowshelf`/`highshelf` con `t=s:w=min(q, 1)`.
   - de-esser: `deesser=i=0.4:m=0.5:f=0.27` (6.5 kHz a 48 kHz).
-  - loudness: `lowshelf=f=200:t=s:w=0.707:g=6,highshelf=f=5000:t=s:w=0.707:g=3.5` (el punto medio del rango adaptativo de JR).
+  - loudness, adaptativa al volumen como en JR (`cpp:220-233`): `att = clamp((-vol_db - 5)/15, 0, 1)`, `lowshelf=f=200:t=s:w=0.707:g={3+6·att},highshelf=f=5000:t=s:w=0.707:g={2+3·att}`. `vol_db` es el volumen de Aura en dB; por eso `dsp_graph` recibe también el volumen (ver Interfaces) y el reproductor reconstruye `@dsp` cuando cambia el volumen con la loudness encendida.
   - espacial (perfiles 1–3 de `jr_audio_engine.cpp:1373-1391`, D/S/R e ITD): `[in]asplit[d][c];[c]pan=stereo|c0=c1|c1=c0,adelay=delays={itd_muestras}S|{itd_muestras}S,lowpass=f=700,volume={S}[x];[d]volume={D}[dd];[dd][x]amix=inputs=2:normalize=0,aecho=1:1:12|19:{R}|{R}[out]`, con ITD en muestras a 48 kHz.
   - crossfeed: `crossfeed=strength=0.35:range=0.5`.
-  - bass: `bass=g={amount*10}:f=100:w=0.5`.
-  - exciter: `aexciter=amount={amount*10}:freq=6000`.
-  - tube (fórmula de JR, `cpp:930-942`): drive = 1+6a, wet = min(1, 1.5a), dry = 1−wet: `[in]asplit[d][w];[w]volume={drive},asoftclip=type=tanh,volume={wet/drive}[t];[d]volume={dry}[dd];[dd][t]amix=inputs=2:normalize=0[out]`.
+  - Las tres etapas no lineales copian **la fórmula exacta** del motor C++ con `aeval` (expresión por muestra) y filtros de un polo equivalentes (`lowpass`/`highpass` con `p=1`):
+    - bass (`cpp:886-910`): `[in]asplit[d][b];[b]lowpass=f=150:p=1,aeval='val(ch)*abs(val(ch))*6':c=same,lowpass=f=180:p=1,highpass=f=60:p=1,volume={amount}[e];[d][e]amix=inputs=2:normalize=0[out]`.
+    - exciter (`cpp:913-927`, el corte real es 6 kHz): `[in]asplit[d][x];[x]highpass=f=6000:p=1,aeval='0.1*val(ch)+3.5*val(ch)*max(0\,val(ch))':c=same,volume={amount}[e];[d][e]amix=inputs=2:normalize=0[out]`.
+    - tube (`cpp:930-942`): drive = 1+6a, wet = min(1, 1.5a), off = 0.15a, dry = 1−wet: `aeval='{dry}*val(ch)+{wet}*(tanh((val(ch)+{off})*{drive})-tanh({off}*{drive}))/{drive}':c=same`.
+    - Test añadido a la Tarea 2: `nonlinear_stages_match_the_cpp_formulas`: una senoide de 1 kHz a −6 dBFS por cada etapa sola; la salida coincide muestra a muestra (error < 1e-3) con la fórmula de JR evaluada en Rust en el mismo test.
   - compresor multibanda (`cpp:341-350`): `[in]acrossover=split=200 5000[lo][mi][hi];[lo]acompressor=threshold=0.10:ratio=2.5:attack=10:release=150[a];[mi]acompressor=threshold=0.16:ratio=1.8:attack=10:release=150[b];[hi]acompressor=threshold=0.10:ratio=3:attack=10:release=150[c];[a][b][c]amix=inputs=3:normalize=0,volume=1.15[out]`.
   - ancho: `extrastereo=m={amount}`.
   - diálogo: `[in]asplit[o][v];[v]pan=mono|c0=0.5*c0+0.5*c1,highpass=f=300,lowpass=f=3000,volume={amount},pan=stereo|c0=c0|c1=c0[vv];[o][vv]amix=inputs=2:normalize=0[out]`.
