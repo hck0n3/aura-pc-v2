@@ -10,6 +10,7 @@ import { friendlyNetError } from './neterr';
 import { canSelfUpdate, checkBetaUpdate, getSettings, openExternal, releaseNotes } from './api';
 import { isNewer, isPrerelease } from './version';
 import { getVersion } from '@tauri-apps/api/app';
+import { updatesConfigured } from './updatekey';
 
 const RELEASES_URL = 'https://github.com/hck0n3/aura-pc-v2/releases/latest';
 
@@ -113,6 +114,7 @@ export function availableMessage(a: { version: string; rollback: boolean }): str
  *  leaving Settings > About > Check for updates as the only way to find one. */
 export async function checkForUpdatesQuiet() {
 	try {
+		if (!updatesConfigured()) return; // no signing key in this build yet: nothing to ask
 		if (updateState.available) return; // one is already on screen; don't re-fetch behind it
 		if ((await getSettings()).update_banner === 'false') return;
 		await look();
@@ -131,6 +133,7 @@ export async function recheckForUpdates() {
 /** From Settings: return the outcome so the modal can show it inline (a toast renders behind the
  *  dialog). `error` picks the Alert variant. */
 export async function checkForUpdatesInteractive(): Promise<{ message: string; error: boolean }> {
+	if (!updatesConfigured()) return { message: t('settings.about.updates_not_configured'), error: false };
 	updateState.checking = true;
 	try {
 		if (await look()) return { message: availableMessage(updateState.available!), error: false };

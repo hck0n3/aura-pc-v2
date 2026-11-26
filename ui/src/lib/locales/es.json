@@ -566,7 +566,8 @@
 			"update_packaged": "Esta instalación se realizó con un gestor de paquetes. Actualízala del mismo modo.",
 			"rollback_available": "Esta versión se revertirá a {version}, la última versión estable conocida.",
 			"beta": "Versiones beta",
-			"beta_hint": "Recibe nuevas versiones unos días antes que los demás. Estas versiones tienen menos pruebas. Si desactivas esta opción, conservarás tu versión actual hasta que la supere el siguiente lanzamiento habitual."
+			"beta_hint": "Recibe nuevas versiones unos días antes que los demás. Estas versiones tienen menos pruebas. Si desactivas esta opción, conservarás tu versión actual hasta que la supere el siguiente lanzamiento habitual.",
+			"updates_not_configured": "Las actualizaciones todavía no están configuradas en esta versión."
 		},
 		"hotkeys": {
 			"title": "Atajos globales",

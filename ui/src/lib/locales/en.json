@@ -844,7 +844,8 @@
 			"diagnostics_saved": "Saved",
 			"report_issue": "Open the bug form",
 			"report_issue_hint": "Opens GitHub in your browser, with the version and system filled in.",
-			"report_issue_button": "Report"
+			"report_issue_button": "Report",
+			"updates_not_configured": "Updates aren't set up in this build yet."
 		},
 		"scrobbling": {
 			"account_disconnected": "Connect your Last.fm account to scrobble what you play.",
