@@ -84,7 +84,7 @@
 		"history": "Geçmiş",
 		"add_account": "Hesap ekle",
 		"remove_account": "Hesap sil",
-		"remove_account_title": "Limusic'ten sil?",
+		"remove_account_title": "Aura'ten sil?",
 		"remove_account_desc": "{name} yalnızca bu listeden kaldırıldı. Google hesabınız bu eylemden etkilenmedi ve istediğiniz zaman onunla giriş yapabilirsiniz.",
 		"saved_accounts_hint": "Geçmek için kaydedilmiş bir hesabı seçin.",
 		"no_channels": "YouTube seçilebilir bir kanal döndürmedi.",
@@ -352,27 +352,27 @@
 			"language_hint": "Arayüzün görüntüleneceği dili seçin.",
 			"shortcuts_hint": "Klavye kısayollarını {key} ile açın",
 			"autostart": "Başlangıçta çalıştır",
-			"autostart_hint": "Sistem açıldığında Limusic uygulamasını otomatik başlatın.",
+			"autostart_hint": "Sistem açıldığında Aura uygulamasını otomatik başlatın.",
 			"close_to_tray": "Sistem tepsisine küçült",
 			"close_to_tray_hint": "Pencere kapatıldığında arka planda çalışmaya devam etsin.",
 			"update_banner": "Güncelleme bildirimleri",
-			"update_banner_hint": "Yeni bir Limusic sürümü çıktığında bildirim çubuğu gösterilsin.",
+			"update_banner_hint": "Yeni bir Aura sürümü çıktığında bildirim çubuğu gösterilsin.",
 			"proxy": "HTTP/HTTPS Proxy",
 			"proxy_hint": "Ağ isteklerini özel bir vekil sunucu üzerinden yönlendirin.",
 			"proxy_placeholder": "örn. http://127.0.0.1:7890",
 			"stream_clients": "Akış istemcileri",
 			"stream_clients_hint": "Bir istemciyi kapatarak akış çözümlemesinde atlanmasını sağlayın. {var} ortam değişkeni bu ayarı geçersiz kılar.",
 			"system_titlebar": "Sistem başlık çubuğunu kullanın",
-			"system_titlebar_hint": "Masaüstünüz pencere çerçevesini ve butonları çizsin. Limusic kendi araç çubuğunu onun altında saklar.",
+			"system_titlebar_hint": "Masaüstünüz pencere çerçevesini ve butonları çizsin. Aura kendi araç çubuğunu onun altında saklar.",
 			"language_search": "Dilleri ara",
 			"track_notifications": "Şarkı bildirimleri",
-			"track_notifications_hint": "Limusic arka plandayken yeni bir şarkı başladığında bildirim göster.",
+			"track_notifications_hint": "Aura arka plandayken yeni bir şarkı başladığında bildirim göster.",
 			"start_minimized": "Başlangıçta sistem tepsisine başlat",
-			"start_minimized_hint": "Limusic sisteminle birlikte başladığında siz açana kadar tepside kalır. Kendiniz açtığınızda ise pencere her zaman gösterilir.",
-			"track_notifications_focused": "Ayrıca Limusic'i kullanırken bildirimler",
-			"track_notifications_focused_hint": "Ayrıca, Limusic penceresi aktifken bir sonraki şarkı kendiliğinden başladığında bir bildirim göster. Kendi seçtiğin şarkılarda ise böyle bir bildirim gösterilmez.",
+			"start_minimized_hint": "Aura sisteminle birlikte başladığında siz açana kadar tepside kalır. Kendiniz açtığınızda ise pencere her zaman gösterilir.",
+			"track_notifications_focused": "Ayrıca Aura'i kullanırken bildirimler",
+			"track_notifications_focused_hint": "Ayrıca, Aura penceresi aktifken bir sonraki şarkı kendiliğinden başladığında bir bildirim göster. Kendi seçtiğin şarkılarda ise böyle bir bildirim gösterilmez.",
 			"play_on_start": "Açılışta çalmaya devam et",
-			"play_on_start_hint": "Limusic açıldığında son kuyruğunuzu otomatik olarak oynatır."
+			"play_on_start_hint": "Aura açıldığında son kuyruğunuzu otomatik olarak oynatır."
 		},
 		"themes": {
 			"interface_font": "Arayüz yazı tipi",
@@ -424,7 +424,7 @@
 			"accent_artwork_note": "Bir şarkı çalarken vurgu, şarkının kapak resminden gelir. Bunu görmek için “Kapağa göre renkleri ayarla” seçeneğini kapatın.",
 			"preview_hint": "Sürüklerken kaydırma çubukları ve renk seçici burada görünür; parmağınızı bıraktığınızda uygulama buna uyum sağlar.",
 			"matugen": "Duvar kağıdı renk paleti",
-			"matugen_hint": "Matugen, wallust ya da pywall'ın duvar kağıdınızdan oluşturduğu paletten, vurgu renkleri de dahil olmak üzere tüm renkleri alır. Öncelikle kullandığınız araçda Limusic şablonunu ayarlayın.",
+			"matugen_hint": "Matugen, wallust ya da pywall'ın duvar kağıdınızdan oluşturduğu paletten, vurgu renkleri de dahil olmak üzere tüm renkleri alır. Öncelikle kullandığınız araçda Aura şablonunu ayarlayın.",
 			"blur_playlist_header_hint": "Bir çalma listesinin kapak resmini, başlığının arkasında bulanık bir şekilde göster. Tam genişlikte pikselli görünen kapak resimlerini yumuşatır.",
 			"classic_player": "Klasik oynatıcı düzeni",
 			"blur_playlist_header": "Oynatma listesi başlıklarını bulanıklaştır",
@@ -527,7 +527,7 @@
 		"data": {
 			"clear_cache_button": "Önbelleği temizle",
 			"used": "Kullanılan alan",
-			"used_hint": "Limusic herşeyi bu bilgisayarda saklar.",
+			"used_hint": "Aura herşeyi bu bilgisayarda saklar.",
 			"library": "Kütüphane ve ayarlar",
 			"library_hint": "Ayarlarınız, dinleme geçmişi, kaydedilmiş şarkı sözleri ve yerel müzik kütüphanesi.",
 			"audio": "Ses önbelleği",
@@ -539,7 +539,7 @@
 			"web": "Görüntüler ve web önbelleği",
 			"web_hint": "Uygulama penceresi tarafından yüklenen görseller ve diğer dosyalar, sisteminizin web motoru tarafından saklanır.",
 			"other": "Diğer",
-			"other_hint": "Günlükler, yerel dosyalarınızdaki görseller ve Limusic'in şarkıları oynatması için gereken küçük dosyalar."
+			"other_hint": "Günlükler, yerel dosyalarınızdaki görseller ve Aura'in şarkıları oynatması için gereken küçük dosyalar."
 		},
 		"about": {
 			"description": "Tauri ve Svelte ile geliştirilmiş şık, hızlı ve hafif masaüstü müzik çalar.",
@@ -569,7 +569,7 @@
 		},
 		"hotkeys": {
 			"title": "Genel Klavye Kısayolları",
-			"description": "Limusic simge durumuna küçültülmüş veya arka planda çalışıyor olsa bile, özelleştirilebilir klavye kısayollarıyla oynatmayı kontrol et.",
+			"description": "Aura simge durumuna küçültülmüş veya arka planda çalışıyor olsa bile, özelleştirilebilir klavye kısayollarıyla oynatmayı kontrol et.",
 			"enable": "Sistem geneli kısayolları etkinleştir",
 			"enable_hint": "Genel klavye kısayolları devre dışı. Kısayolları sistem genelinde dinlemek için bunları aç.",
 			"off": "Kapalı",
@@ -604,7 +604,7 @@
 			"action_toggle_repeat": "Tekrarı aç/kapat",
 			"action_toggle_repeat_hint": "Tekrar modunu değiştirir: kapalı, tümü, tek.",
 			"action_show_app": "Uygulamayı göster",
-			"action_show_app_hint": "Limusic penceresini ön plana getirir."
+			"action_show_app_hint": "Aura penceresini ön plana getirir."
 		},
 		"scrobbling": {
 			"stat_artists": "Sanatçılar",
@@ -639,7 +639,7 @@
 			"applied_rule": "Kural {n}",
 			"status_paused": "Skroplama kapalı.",
 			"status_short": "Skroplamak için çok kısa.",
-			"account_connecting": "Tarayıcınızda Limusic'i onaylamanızı bekliyoruz.",
+			"account_connecting": "Tarayıcınızda Aura'i onaylamanızı bekliyoruz.",
 			"account_disconnected": "Last.fm hesabınızı bağlayarak dinlediğiniz şarkıları skroplayın.",
 			"edits_empty": "Henüz düzenleme yapılmadı. Herhangi bir şarkının menüsünden düzenleme ekleyebilirsiniz.",
 			"edits_show_all": "Tümünü göster {count}",
@@ -750,7 +750,7 @@
 			"reset_zoom": "Yakınlaştırmayı sıfırla",
 			"show_this_list": "Bu listeyi göster",
 			"refresh_page": "Sayfayı yenile",
-			"quit_app": "Limusic'ten çık",
+			"quit_app": "Aura'ten çık",
 			"like_song": "Şarkıyı beğen veya beğenme"
 		},
 		"tempo_pitch": {
@@ -838,7 +838,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "{user} olarak Skroplanıyor",
 		"lastfm_disconnected": "Last.fm bağlantısı kesildi",
-		"lastfm_approve_in_browser": "Tarayıcınızda Limusic'e izin verin",
+		"lastfm_approve_in_browser": "Tarayıcınızda Aura'e izin verin",
 		"lastfm_connecting": "Last.fm'e bağlanılıyor — iptal etmek için tıklayın",
 		"lastfm_scrobble_to": "Last.fm'e scrobble et",
 		"disconnect": "Bağlantıyı kes",
@@ -1076,7 +1076,7 @@
 	"errors": {
 		"unreachable": "YouTube Music'e erişilemedi. Bağlantınızı kontrol edin.",
 		"offline_title": "Bağlantı yok",
-		"offline_body": "Limusic, YouTube Music'e erişemiyor. İnternet bağlantınızı kontrol ederek tekrar deneyin.",
+		"offline_body": "Aura, YouTube Music'e erişemiyor. İnternet bağlantınızı kontrol ederek tekrar deneyin.",
 		"generic_title": "Bir şeyler yanlış gitti"
 	},
 	"search": {
@@ -1131,7 +1131,7 @@
 		"matched": "{count} eşleşme bulundu",
 		"not_found": "{count} bulunamadı",
 		"keep_browsing_hint": "Bu sayfayı kapatabilirsiniz, çalışmaya devam eder. Kenar çubuğunda ilerleme durumu gösterilir.",
-		"pace_hint": "Limusic, YouTube Music’in normal kullanım olarak algılaması için bilerek yavaş ilerliyor; yaklaşık her iki saniyede bir istek gönderiyor.",
+		"pace_hint": "Aura, YouTube Music’in normal kullanım olarak algılaması için bilerek yavaş ilerliyor; yaklaşık her iki saniyede bir istek gönderiyor.",
 		"waiting": "YouTube Music’in sınırları içinde kalmak için ara verildi. {time} saatinde devam edecek.",
 		"keep_browsing": "Gezinmeye devam et",
 		"to_check": "{count} kontrol edilmesi gereken",
@@ -1179,13 +1179,13 @@
 		"updating": "Güncelleniyor…",
 		"errors": {
 			"nothing_read": "Önce bir çalma listesi seçin.",
-			"cooldown": "YouTube Music, Limusic’ten hızını azaltmasını istedi; bu nedenle içe aktarma işlemleri {time} tarihine kadar askıya alındı. Şu ana kadar bulunan tüm içerikler kaydedildi.",
+			"cooldown": "YouTube Music, Aura’ten hızını azaltmasını istedi; bu nedenle içe aktarma işlemleri {time} tarihine kadar askıya alındı. Şu ana kadar bulunan tüm içerikler kaydedildi.",
 			"not_spotify": "Bu bir Spotify çalma listesi ya da albüm bağlantısı değil.",
 			"private": "Bu çalma listesi gizlidir, bu nedenle bağlantı kullanılarak içe aktarılamaz. Çalma listesini aktarmak için aşağıdan Spotify verilerini talep edin.",
 			"unreadable": "Dosya okunamadı. Spotify'ın size e-posta ile gönderdiği zip dosyasını, içindeki JSON dosyalarından birini veya bir CSV dosyasını kullanın.",
 			"empty": "Listede hiçbir şarkı yok.",
 			"csv_columns": "Bu CSV dosyasında şarkı başlıklarını içeren bir sütun bulunmuyor.",
-			"spotify_changed": "Spotify, çalma listelerini paylaşma şeklini değiştirdi. Limusic’teki bir güncelleme bu sorunu çözecektir.",
+			"spotify_changed": "Spotify, çalma listelerini paylaşma şeklini değiştirdi. Aura’teki bir güncelleme bu sorunu çözecektir.",
 			"busy": "Bir içe aktarma işlemi hâla devam ediyor.",
 			"gone": "Bu içe aktarma artık açık değil.",
 			"not_found": "Youtube Music'te bulunamadı.",
@@ -1307,7 +1307,7 @@
 		"busiest_hour": "En yoğun saat",
 		"share": "Dinlemelerinizin {percent} kadarını oluşturuyor",
 		"when": "Dinlediğiniz zamanlar",
-		"on_device": "Bu cihazda, Limusic'te dinlediklerinizden hesaplanır. Herhangi bir yere bir şey gönderilmez."
+		"on_device": "Bu cihazda, Aura'te dinlediklerinizden hesaplanır. Herhangi bir yere bir şey gönderilmez."
 	},
 	"columns": {
 		"title": "Başlık",
@@ -1328,7 +1328,7 @@
 			"runtime_linux": "ONNX Runtime (resmi Github sürümü) ve ONNX Runtime WebGPU eklentisi (files.pythonhosted.org sitesinden) de indirilir.",
 			"credit": "Ultimate Vocal Remover'dan UVR-MDX-NET-Inst_HQ_3, UVR-MDX-NET-Inst_Main ve UVR_MDXNET_3_9662; Anjok07 ve aufr33 tarafından MIT Lisansıyla geliştirildi.",
 			"credit_link": "Ultimate Vocal Remover",
-			"redownload": "Bir şarkıyı hazırlamak için Limusic, şarkının ses dosyasını yeniden indirir.",
+			"redownload": "Bir şarkıyı hazırlamak için Aura, şarkının ses dosyasını yeniden indirir.",
 			"directml": "Bir grafik kartında karaoke, Microsoft DirectML aracılığıyla çalışır ve bu, kullanım verilerini Microsoft’a gönderebilir."
 		},
 		"button": {
@@ -1360,7 +1360,7 @@
 		},
 		"setup": {
 			"title": "Karaoke kurulumu",
-			"desc": "Limusic, şarkılardaki vokalleri doğrudan bu bilgisayarda çıkarır. İndirmek için bir kalite seçin, daha sonra bunu değiştirebilirsiniz.",
+			"desc": "Aura, şarkılardaki vokalleri doğrudan bu bilgisayarda çıkarır. İndirmek için bir kalite seçin, daha sonra bunu değiştirebilirsiniz.",
 			"local": "Şarkılar bu bilgisayarda hazırlanır ve hiçbirşey dışarıya yüklenmez.",
 			"download": "İndir {size}",
 			"downloaded": "İndirildi",
@@ -1370,9 +1370,9 @@
 		},
 		"unavailable": {
 			"load_failed": "Karaoke bu bilgisayarda başlatılamıyor.",
-			"stopped": "Karaoke beklenmedik şekilde durdu. Tekrar kullanmak için Limusic'i yeniden başlatın.",
-			"not_installed": "Limusic'in bu sürümünde karaoke özelliği yer almıyor.",
-			"corrupt": "Karaoke dosyaları bozuk. Karaokeyi tekrar açmayı deneyin, sorun çözülmezse Limusic'i yeniden yükleyin.",
+			"stopped": "Karaoke beklenmedik şekilde durdu. Tekrar kullanmak için Aura'i yeniden başlatın.",
+			"not_installed": "Aura'in bu sürümünde karaoke özelliği yer almıyor.",
+			"corrupt": "Karaoke dosyaları bozuk. Karaokeyi tekrar açmayı deneyin, sorun çözülmezse Aura'i yeniden yükleyin.",
 			"vc_runtime": "Karaoke için daha güncel bir Microsoft Visual C++ Redistributable (14.44 veya üzeri) gerekiyor.",
 			"proxy": "Proxy etkinken karaoke kullanılamaz."
 		},

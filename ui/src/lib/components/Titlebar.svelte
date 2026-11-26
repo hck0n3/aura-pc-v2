@@ -25,7 +25,7 @@
 		Link04Icon,
 		Settings02Icon
 	} from '@hugeicons/core-free-icons';
-	import LimusicLoader from './LimusicLoader.svelte';
+	import AuraLoader from './AuraLoader.svelte';
 	import LastFmIcon from './LastFmIcon.svelte';
 	import AccountMenu from './AccountMenu.svelte';
 	import { appIcon } from '$lib/appicon.svelte';
@@ -118,7 +118,7 @@
 	<span
 		class="pointer-events-none absolute inset-x-0 hidden text-center text-xs font-medium tracking-wide text-muted-foreground min-[50rem]:block"
 	>
-		Limusic
+		Aura
 	</span>
 
 	<!-- macOS overlay style floats the traffic lights over the top-left of the webview, so the row
@@ -193,7 +193,7 @@
 			<span class="relative">
 				<LastFmIcon class="h-4 w-4 {connecting ? 'animate-pulse opacity-60' : ''}" />
 				{#if connecting}
-					<LimusicLoader class="absolute -bottom-1.5 -right-2 size-4" />
+					<AuraLoader class="absolute -bottom-1.5 -right-2 size-4" />
 				{:else if connected}
 					<!-- bg-background ring so the badge reads over the icon's stroke. -->
 					<HugeiconsIcon

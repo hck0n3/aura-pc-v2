@@ -7,7 +7,7 @@
 			"runtime_linux": "O ONNX Runtime (a partir da versão oficial no GitHub) e o plugin WebGPU do ONNX Runtime (a partir de files.pythonhosted.org) também são descarregados.",
 			"credit": "UVR-MDX-NET-Inst_HQ_3, UVR-MDX-NET-Inst_Main e UVR_MDXNET_3_9662, do Ultimate Vocal Remover, da autoria de Anjok07 e aufr33, sob Licença MIT.",
 			"credit_link": "Ultimate Vocal Remover",
-			"redownload": "Para preparar uma música, o Limusic descarrega o ficheiro de áudio mais uma vez.",
+			"redownload": "Para preparar uma música, o Aura descarrega o ficheiro de áudio mais uma vez.",
 			"directml": "Numa placa gráfica, o karaoke funciona através do Microsoft DirectML, que pode enviar dados de utilização à Microsoft."
 		},
 		"experimental_tooltip": "Ainda está a ser ajustado. O Leve pode deixar passar um pouco das vozes e o Melhor fica lento sem uma placa gráfica. Se uma música não sair bem, comunica o problema.",
@@ -40,7 +40,7 @@
 		},
 		"setup": {
 			"title": "Configurar o karaoke",
-			"desc": "O Limusic remove as vozes das músicas diretamente neste computador. Escolhe uma qualidade para descarregar uma vez; podes alterá-la mais tarde.",
+			"desc": "O Aura remove as vozes das músicas diretamente neste computador. Escolhe uma qualidade para descarregar uma vez; podes alterá-la mais tarde.",
 			"local": "As músicas são preparadas neste computador e nada é enviado.",
 			"cache": "As músicas preparadas ficam guardadas no disco, pelo que são reproduzidas imediatamente na próxima vez.",
 			"download": "Descarregar {size}",
@@ -49,12 +49,12 @@
 			"progress": "{done} de {total} MB"
 		},
 		"unavailable": {
-			"not_installed": "O karaoke não está incluído nesta versão do Limusic.",
-			"corrupt": "Os ficheiros do karaoke estão danificados. Tenta ativar o karaoke novamente; se isso não resolver o problema, reinstala o Limusic.",
+			"not_installed": "O karaoke não está incluído nesta versão do Aura.",
+			"corrupt": "Os ficheiros do karaoke estão danificados. Tenta ativar o karaoke novamente; se isso não resolver o problema, reinstala o Aura.",
 			"vc_runtime": "O karaoke precisa de uma versão mais recente do Microsoft Visual C++ Redistributable (14.44 ou mais recente).",
 			"load_failed": "Não foi possível iniciar o karaoke neste computador.",
 			"proxy": "O karaoke não está disponível enquanto estiver configurado um proxy.",
-			"stopped": "O karaoke parou inesperadamente. Reinicia o Limusic para o poderes utilizar novamente."
+			"stopped": "O karaoke parou inesperadamente. Reinicia o Aura para o poderes utilizar novamente."
 		},
 		"error": {
 			"incomplete_download": "O áudio da música não terminou de ser descarregado. A tentar novamente daqui a pouco.",
@@ -227,7 +227,7 @@
 	"errors": {
 		"unreachable": "Não é possível contactar o YouTube Music. Verifica a tua ligação.",
 		"offline_title": "Sem ligação",
-		"offline_body": "O Limusic não consegue contactar o YouTube Music. Verifica a tua ligação à Internet e tenta novamente.",
+		"offline_body": "O Aura não consegue contactar o YouTube Music. Verifica a tua ligação à Internet e tenta novamente.",
 		"generic_title": "Ocorreu um erro"
 	},
 	"nav": {
@@ -246,7 +246,7 @@
 		"sign_in_hint": "Inicia sessão com a tua conta Google para aceder à tua biblioteca e listas de reprodução do YouTube Music.",
 		"add_account": "Adicionar conta",
 		"remove_account": "Remover conta",
-		"remove_account_title": "Remover do Limusic?",
+		"remove_account_title": "Remover do Aura?",
 		"remove_account_desc": "{name} é apenas removida desta lista. A conta Google em si não é afetada e podes voltar a iniciar sessão com ela quando quiseres.",
 		"saved_accounts_hint": "Escolhe uma conta guardada para mudar para ela.",
 		"history": "Histórico",
@@ -444,7 +444,7 @@
 		"nothing_in_range": "Não foi reproduzido nada neste período.",
 		"empty_title": "As tuas estatísticas começam aqui",
 		"empty": "Reproduz algumas músicas e esta página enche-se com o que ouves, quando e durante quanto tempo.",
-		"on_device": "Contabilizado neste dispositivo a partir do que reproduzes no Limusic. Nada é enviado para lado nenhum.",
+		"on_device": "Contabilizado neste dispositivo a partir do que reproduzes no Aura. Nada é enviado para lado nenhum.",
 		"clear": "Limpar histórico de audição",
 		"clear_title": "Limpar o histórico de audição?",
 		"clear_desc": "Isto esquece todas as reproduções contabilizadas neste dispositivo, por isso as estatísticas recomeçam e o «Em repetição» fica vazio. O teu histórico do YouTube Music não é afetado.",
@@ -585,21 +585,21 @@
 			"language_search": "Pesquisar idiomas",
 			"shortcuts_hint": "Abre os atalhos de teclado com {key}",
 			"play_on_start": "Retomar a reprodução ao abrir",
-			"play_on_start_hint": "Começa a reproduzir a tua última fila quando o Limusic abre.",
+			"play_on_start_hint": "Começa a reproduzir a tua última fila quando o Aura abre.",
 			"autostart": "Iniciar com o sistema",
-			"autostart_hint": "Inicia automaticamente o Limusic quando o sistema arranca.",
+			"autostart_hint": "Inicia automaticamente o Aura quando o sistema arranca.",
 			"close_to_tray": "Fechar para a área de notificação",
-			"close_to_tray_hint": "Mantém o Limusic a funcionar em segundo plano quando fechas a janela.",
+			"close_to_tray_hint": "Mantém o Aura a funcionar em segundo plano quando fechas a janela.",
 			"track_notifications": "Notificações de música",
-			"track_notifications_hint": "Mostra uma notificação quando começa uma nova música enquanto o Limusic está em segundo plano.",
-			"track_notifications_focused": "Também enquanto usas o Limusic",
-			"track_notifications_focused_hint": "Mostra também uma notificação quando a música seguinte começa sozinha enquanto o Limusic é a janela ativa. As músicas que escolhes tu nunca mostram notificação.",
+			"track_notifications_hint": "Mostra uma notificação quando começa uma nova música enquanto o Aura está em segundo plano.",
+			"track_notifications_focused": "Também enquanto usas o Aura",
+			"track_notifications_focused_hint": "Mostra também uma notificação quando a música seguinte começa sozinha enquanto o Aura é a janela ativa. As músicas que escolhes tu nunca mostram notificação.",
 			"start_minimized": "Iniciar na área de notificação",
-			"start_minimized_hint": "Quando o Limusic arranca com o sistema, fica na área de notificação até o abrires. Se o abrires tu, a janela aparece sempre.",
+			"start_minimized_hint": "Quando o Aura arranca com o sistema, fica na área de notificação até o abrires. Se o abrires tu, a janela aparece sempre.",
 			"system_titlebar": "Usar a barra de título do sistema",
-			"system_titlebar_hint": "Deixa o teu ambiente de trabalho desenhar a moldura da janela e os respetivos botões. O Limusic mantém a sua própria barra de ferramentas por baixo.",
+			"system_titlebar_hint": "Deixa o teu ambiente de trabalho desenhar a moldura da janela e os respetivos botões. O Aura mantém a sua própria barra de ferramentas por baixo.",
 			"update_banner": "Notificações de atualizações",
-			"update_banner_hint": "Mostra uma faixa quando está disponível uma nova versão do Limusic.",
+			"update_banner_hint": "Mostra uma faixa quando está disponível uma nova versão do Aura.",
 			"proxy": "Proxy HTTP/HTTPS",
 			"proxy_hint": "Encaminha todos os pedidos de rede através de um servidor proxy personalizado.",
 			"proxy_placeholder": "http://host:port (vazio = nenhum)",
@@ -674,7 +674,7 @@
 			"artwork_accent": "Adaptar as cores à capa",
 			"artwork_accent_hint": "Recolore a aplicação a partir da capa da faixa em reprodução: cor de destaque, superfícies e contornos, com transição entre faixas. Desativado, mantém as cores do tema selecionado.",
 			"matugen": "Paleta do papel de parede",
-			"matugen_hint": "Retira todas as cores, incluindo a de destaque, da paleta que o Matugen, o wallust ou o pywal criam a partir do teu papel de parede. Configura primeiro o modelo do Limusic nessa ferramenta.",
+			"matugen_hint": "Retira todas as cores, incluindo a de destaque, da paleta que o Matugen, o wallust ou o pywal criam a partir do teu papel de parede. Configura primeiro o modelo do Aura nessa ferramenta.",
 			"reset_theme_hint": "Descarta as substituições de cor, arredondamento e tipo de letra. Mantém a predefinição.",
 			"interface_font_label": "Tipo de letra da interface",
 			"interface_font_short_hint": "Tudo exceto os títulos.",
@@ -759,7 +759,7 @@
 		},
 		"hotkeys": {
 			"title": "Atalhos globais",
-			"description": "Controla a reprodução com atalhos de teclado personalizáveis, mesmo quando o Limusic está minimizado ou a funcionar em segundo plano.",
+			"description": "Controla a reprodução com atalhos de teclado personalizáveis, mesmo quando o Aura está minimizado ou a funcionar em segundo plano.",
 			"enable": "Ativar atalhos globais",
 			"enable_hint": "Os atalhos globais estão desativados. Ativa-os para escutar atalhos em todo o sistema.",
 			"off": "Desativados",
@@ -794,12 +794,12 @@
 			"action_toggle_repeat": "Alternar repetição",
 			"action_toggle_repeat_hint": "Percorre os modos de repetição: desligada, tudo, uma.",
 			"action_show_app": "Mostrar aplicação",
-			"action_show_app_hint": "Traz a janela do Limusic para a frente."
+			"action_show_app_hint": "Traz a janela do Aura para a frente."
 		},
 		"data": {
 			"clear_cache_button": "Limpar cache",
 			"used": "Espaço utilizado",
-			"used_hint": "Tudo o que o Limusic guarda neste computador.",
+			"used_hint": "Tudo o que o Aura guarda neste computador.",
 			"library": "Biblioteca e definições",
 			"library_hint": "As tuas definições, o histórico de audição, as letras guardadas e a biblioteca de música local.",
 			"audio": "Cache de áudio",
@@ -811,7 +811,7 @@
 			"web": "Imagens e cache web",
 			"web_hint": "Capas e outros ficheiros que a janela da aplicação carregou, guardados pelo motor web do teu sistema.",
 			"other": "Outros",
-			"other_hint": "Registos, capas dos teus ficheiros locais e pequenos ficheiros de que o Limusic precisa para reproduzir músicas."
+			"other_hint": "Registos, capas dos teus ficheiros locais e pequenos ficheiros de que o Aura precisa para reproduzir músicas."
 		},
 		"about": {
 			"description": "Um leitor de música para computador bonito, rápido e leve, criado com Tauri e Svelte.",
@@ -841,7 +841,7 @@
 		},
 		"scrobbling": {
 			"account_disconnected": "Liga a tua conta do Last.fm para registares o que reproduzes.",
-			"account_connecting": "À espera de que aproves o Limusic no teu navegador.",
+			"account_connecting": "À espera de que aproves o Aura no teu navegador.",
 			"connect": "Ligar",
 			"open_profile": "Abrir o teu perfil do Last.fm",
 			"since": "A registar desde {date}",
@@ -983,7 +983,7 @@
 			"zoom_in": "Aumentar o zoom",
 			"zoom_out": "Diminuir o zoom",
 			"reset_zoom": "Repor o zoom",
-			"quit_app": "Sair do Limusic",
+			"quit_app": "Sair do Aura",
 			"show_this_list": "Mostrar esta lista"
 		},
 		"tempo_pitch": {
@@ -1071,7 +1071,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "A registar como {user}",
 		"lastfm_disconnected": "Last.fm desligado",
-		"lastfm_approve_in_browser": "Aprova o Limusic no teu navegador",
+		"lastfm_approve_in_browser": "Aprova o Aura no teu navegador",
 		"lastfm_connecting": "A ligar ao Last.fm — clica para cancelar",
 		"lastfm_scrobble_to": "Registar no Last.fm",
 		"lastfm_settings": "Definições de scrobbling",
@@ -1366,7 +1366,7 @@
 		"to_check": "{count} por verificar",
 		"not_found": "{count} não encontradas",
 		"keep_browsing_hint": "Podes fechar isto, continua. A barra lateral mostra o progresso.",
-		"pace_hint": "O Limusic avança devagar de propósito, cerca de uma música a cada dois segundos, para que o YouTube Music veja um uso normal.",
+		"pace_hint": "O Aura avança devagar de propósito, cerca de uma música a cada dois segundos, para que o YouTube Music veja um uso normal.",
 		"waiting": "A fazer uma pausa para ficar bem dentro dos limites do YouTube Music. Continua às {time}.",
 		"keep_browsing": "Continuar a navegar",
 		"stop": "Parar",
@@ -1429,15 +1429,15 @@
 			"empty": "Não há músicas nisso.",
 			"unreadable": "Não foi possível ler esse ficheiro. Utiliza o zip que o Spotify te enviou, um dos ficheiros JSON que tem dentro ou um CSV.",
 			"csv_columns": "Esse CSV não tem nenhuma coluna com títulos de músicas.",
-			"spotify_changed": "O Spotify alterou a forma como partilha listas de reprodução. Uma atualização do Limusic resolverá isto.",
+			"spotify_changed": "O Spotify alterou a forma como partilha listas de reprodução. Uma atualização do Aura resolverá isto.",
 			"busy": "Já está uma importação em curso.",
 			"nothing_read": "Escolhe primeiro uma lista de reprodução.",
 			"gone": "Essa importação já não está aberta.",
 			"not_found": "Não foi possível encontrar isso no YouTube Music.",
-			"cooldown": "O YouTube Music pediu ao Limusic para abrandar, por isso as importações estão em pausa até às {time}. Tudo o que foi encontrado até agora está guardado."
+			"cooldown": "O YouTube Music pediu ao Aura para abrandar, por isso as importações estão em pausa até às {time}. Tudo o que foi encontrado até agora está guardado."
 		},
 		"keep_updated": "Manter atualizada com o Spotify",
-		"keep_updated_desc": "O Limusic verifica a lista de reprodução do Spotify ao arrancar e a cada poucas horas, e adiciona, remove e reordena as músicas para corresponder.",
+		"keep_updated_desc": "O Aura verifica a lista de reprodução do Spotify ao arrancar e a cada poucas horas, e adiciona, remove e reordena as músicas para corresponder.",
 		"auto_update_done": "{name} atualizada a partir do Spotify: {added} adicionadas, {removed} removidas"
 	}
 }

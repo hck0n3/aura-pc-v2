@@ -106,7 +106,7 @@
 		"sign_in_hint": "Melde dich mit deinem Google-Konto an, um auf deine YouTube Music-Bibliothek und Playlists zuzugreifen.",
 		"add_account": "Konto hinzufügen",
 		"remove_account": "Konto entfernen",
-		"remove_account_title": "Aus Limusic entfernen?",
+		"remove_account_title": "Aus Aura entfernen?",
 		"remove_account_desc": "„{name}“ wird nur aus dieser Liste entfernt. Das Google-Konto selbst bleibt unberührt und du kannst dich jederzeit wieder anmelden.",
 		"saved_accounts_hint": "Wähle ein gespeichertes Konto aus, um dorthin zu wechseln.",
 		"history": "Verlauf",
@@ -373,13 +373,13 @@
 			"language_hint": "Wähle die Anzeigesprache für die Benutzeroberfläche aus.",
 			"shortcuts_hint": "Tastenkombinationen mit {key} aufrufen",
 			"autostart": "Beim Systemstart ausführen",
-			"autostart_hint": "Limusic beim Hochfahren des Computers automatisch starten.",
+			"autostart_hint": "Aura beim Hochfahren des Computers automatisch starten.",
 			"close_to_tray": "In den Infobereich minimieren",
-			"close_to_tray_hint": "Limusic beim Schließen des Fensters im Hintergrund weiterlaufen lassen.",
+			"close_to_tray_hint": "Aura beim Schließen des Fensters im Hintergrund weiterlaufen lassen.",
 			"system_titlebar": "System-Titelleiste verwenden",
-			"system_titlebar_hint": "Den nativen Fensterrahmen des Betriebssystems verwenden. Limusic platziert seine Werkzeugleiste darunter.",
+			"system_titlebar_hint": "Den nativen Fensterrahmen des Betriebssystems verwenden. Aura platziert seine Werkzeugleiste darunter.",
 			"update_banner": "Update-Benachrichtigungen",
-			"update_banner_hint": "Ein Banner anzeigen, sobald eine neuere Version von Limusic verfügbar ist.",
+			"update_banner_hint": "Ein Banner anzeigen, sobald eine neuere Version von Aura verfügbar ist.",
 			"proxy": "HTTP/HTTPS-Proxy",
 			"proxy_hint": "Alle Netzwerkanfragen über einen benutzerdefinierten Proxy-Server leiten.",
 			"proxy_placeholder": "http://host:port (leer = kein Proxy)",
@@ -387,13 +387,13 @@
 			"stream_clients_hint": "Einen Client deaktivieren, um ihn beim Abrufen von Streams zu überspringen. Wird durch die Umgebungsvariable {var} überschrieben.",
 			"language_search": "Sprachen durchsuchen",
 			"track_notifications": "Titelbenachrichtigungen",
-			"track_notifications_hint": "Eine Benachrichtigung anzeigen, wenn ein neuer Titel startet und Limusic im Hintergrund läuft.",
+			"track_notifications_hint": "Eine Benachrichtigung anzeigen, wenn ein neuer Titel startet und Aura im Hintergrund läuft.",
 			"start_minimized": "Minimiert im Infobereich starten",
-			"start_minimized_hint": "Beim automatischen Systemstart bleibt Limusic im Tray minimiert. Manuelles Öffnen zeigt stets das Fenster an.",
+			"start_minimized_hint": "Beim automatischen Systemstart bleibt Aura im Tray minimiert. Manuelles Öffnen zeigt stets das Fenster an.",
 			"play_on_start": "Wiedergabe beim Öffnen fortsetzen",
-			"play_on_start_hint": "Spiel die letzte gehörte Wiedergabeliste wenn Limusic geöffnet wird.",
-			"track_notifications_focused": "Während über Limusic gehört wird",
-			"track_notifications_focused_hint": "Zeige auch eine Benachrichtigung, wenn das nächste Lied von selbst startet und Limusic das aktive Fenster ist. Selbstgewählte Lieder zeigen nie eine."
+			"play_on_start_hint": "Spiel die letzte gehörte Wiedergabeliste wenn Aura geöffnet wird.",
+			"track_notifications_focused": "Während über Aura gehört wird",
+			"track_notifications_focused_hint": "Zeige auch eine Benachrichtigung, wenn das nächste Lied von selbst startet und Aura das aktive Fenster ist. Selbstgewählte Lieder zeigen nie eine."
 		},
 		"themes": {
 			"interface_font": "Schriftart der Benutzeroberfläche",
@@ -441,7 +441,7 @@
 			"now_playing_pill": "Aktuelle-Wiedergabe-Knopf",
 			"now_playing_pill_hint": "Fügt einen Knopf hinzu, der zum aktiven Lied zurückspringt, wenn es in einer Playlist oder Wiedergabeliste außer Sicht ist.",
 			"matugen": "Matugen",
-			"matugen_hint": "Nimmt jede Farbe mit Akzenten von der Palette, die Matugen aus deinem Desktop-Hintergrund macht. Richte erst die Limusic Vorlage in Matugen ein.",
+			"matugen_hint": "Nimmt jede Farbe mit Akzenten von der Palette, die Matugen aus deinem Desktop-Hintergrund macht. Richte erst die Aura Vorlage in Matugen ein.",
 			"mode": "Hell oder Dunkel",
 			"mode_hint": "Folgt den Einstellungen deines Computers und wechselt mit ihnen.",
 			"mode_light": "Hell",
@@ -536,7 +536,7 @@
 		},
 		"hotkeys": {
 			"title": "Globale Hotkeys",
-			"description": "Steuere die Wiedergabe über frei wählbare Tastenkombinationen – selbst wenn Limusic minimiert ist oder im Hintergrund läuft.",
+			"description": "Steuere die Wiedergabe über frei wählbare Tastenkombinationen – selbst wenn Aura minimiert ist oder im Hintergrund läuft.",
 			"enable": "Globale Hotkeys aktivieren",
 			"enable_hint": "Globale Hotkeys sind derzeit ausgeschaltet. Aktiviere sie, um Tastenkürzel systemweit zu nutzen.",
 			"off": "Aus",
@@ -571,11 +571,11 @@
 			"action_toggle_repeat": "Wiederholmodus umschalten",
 			"action_toggle_repeat_hint": "Wiederholmodus durchschalten: Aus, Alle, Einzeln.",
 			"action_show_app": "App in den Vordergrund",
-			"action_show_app_hint": "Das Limusic-Fenster in den Vordergrund holen."
+			"action_show_app_hint": "Das Aura-Fenster in den Vordergrund holen."
 		},
 		"scrobbling": {
 			"account_disconnected": "Verbinde dein Last.fm-Konto, um deine gespielten Titel zu scrobbeln.",
-			"account_connecting": "Warte darauf, dass du Limusic in deinem Browser autorisierst.",
+			"account_connecting": "Warte darauf, dass du Aura in deinem Browser autorisierst.",
 			"connect": "Verbinden",
 			"open_profile": "Dein Last.fm-Profil öffnen",
 			"since": "Scrobbelt seit {date}",
@@ -705,7 +705,7 @@
 			"zoom_out": "Verkleinern",
 			"reset_zoom": "Zoom zurücksetzen",
 			"show_this_list": "Diese Liste anzeigen",
-			"quit_app": "Limusic beenden"
+			"quit_app": "Aura beenden"
 		},
 		"tempo_pitch": {
 			"title": "Tempo- und Tonhöhensteuerung",
@@ -732,7 +732,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "Scrobbeln als {user}",
 		"lastfm_disconnected": "Last.fm getrennt",
-		"lastfm_approve_in_browser": "Limusic im Browser autorisieren",
+		"lastfm_approve_in_browser": "Aura im Browser autorisieren",
 		"lastfm_connecting": "Verbindung zu Last.fm wird hergestellt – Klick zum Abbrechen",
 		"lastfm_scrobble_to": "Zu Last.fm scrobbeln",
 		"disconnect": "Trennen",
@@ -953,7 +953,7 @@
 	"errors": {
 		"unreachable": "YouTube Music kann nicht erreicht werden. Bitte überprüfe deine Verbindung.",
 		"offline_title": "Keine Verbindung",
-		"offline_body": "Limusic kann YouTube Music nicht erreichen. Überprüfe deine Internetverbindung und versuche es erneut.",
+		"offline_body": "Aura kann YouTube Music nicht erreichen. Überprüfe deine Internetverbindung und versuche es erneut.",
 		"generic_title": "Etwas ist schiefgelaufen"
 	},
 	"import": {
@@ -989,7 +989,7 @@
 		"to_check": "{count} zu prüfen",
 		"not_found": "{count} nicht gefunden",
 		"keep_browsing_hint": "Du kannst dies schließen, der Vorgang läuft weiter. Die Seitenleiste zeigt den Fortschritt.",
-		"pace_hint": "Limusic arbeitet absichtlich langsam (ca. ein Song alle zwei Sekunden), damit YouTube Music eine normale Nutzung registriert.",
+		"pace_hint": "Aura arbeitet absichtlich langsam (ca. ein Song alle zwei Sekunden), damit YouTube Music eine normale Nutzung registriert.",
 		"waiting": "Kurze Pause, um innerhalb der Limits von YouTube Music zu bleiben. Weiter geht es um {time}.",
 		"keep_browsing": "Weiter stöbern",
 		"stop": "Anhalten",
@@ -1050,7 +1050,7 @@
 			"empty": "Darin befinden sich keine Songs.",
 			"unreadable": "Diese Datei konnte nicht gelesen werden. Nutze die ZIP-Datei von Spotify, eine JSON-Datei daraus oder eine CSV.",
 			"csv_columns": "Diese CSV-Datei enthält keine Spalte für Songtitel.",
-			"spotify_changed": "Spotify hat das Teilen von Playlists geändert. Ein Update von Limusic wird dies beheben.",
+			"spotify_changed": "Spotify hat das Teilen von Playlists geändert. Ein Update von Aura wird dies beheben.",
 			"busy": "Ein Import läuft bereits.",
 			"nothing_read": "Wähle zuerst eine Playlist aus.",
 			"gone": "Dieser Import ist nicht mehr geöffnet.",
@@ -1109,7 +1109,7 @@
 		"nothing_in_range": "In dieser Zeit nichts gehört.",
 		"empty_title": "Deine Statistik beginnt hier",
 		"empty": "Hör ein wenig und diese Seite füllt sich rasant mit dem was, wann und wie lange du hörst.",
-		"on_device": "Auf diesem Gerät, nur in Limusic gezählt. Deine Daten bleiben bei uns.",
+		"on_device": "Auf diesem Gerät, nur in Aura gezählt. Deine Daten bleiben bei uns.",
 		"clear": "Hörverlauf löschen",
 		"clear_title": "Hörverlauf wirklich löschen?",
 		"clear_desc": "Dies löscht jede Wiedergabe, die auf diesem Gerät gezählt wurde, deine Statistik setzt sich zurück und \"Auf Dauerschleife\" setzt sich zurück. Dein YouTube Music Verlauf bleibt unberührt.",
@@ -1185,7 +1185,7 @@
 			"runtime_linux": "ONNX Runtime (aus dem offiziellen GitHub-Release) und die ONNX Runtime WebGPU-Erweiterung (aus files.pythonhosted.org) werden auch heruntergeladen.",
 			"credit": "UVR-MDX-NET-Inst_HQ_3, UVR-MDX-NET-Inst_Main und UVR_MDXNET_3_9662, aus Ultimate Vocal Remover von Anjok07 und aufr33, MIT License.",
 			"credit_link": "Ultimate Vocal Remover",
-			"redownload": "Um ein Lied vorzubereiten wird Limusic die Audio noch einmal herunterladen.",
+			"redownload": "Um ein Lied vorzubereiten wird Aura die Audio noch einmal herunterladen.",
 			"directml": "Auf einer Grafikkarte läuft Karaoke über Microsoft DirectMl, welches Nutzungsdaten an Microsoft senden könnte."
 		},
 		"experimental_tooltip": "Noch nicht perfektioniert. Bei \"Leicht\" kann ein bisschen Gesang bleiben, und ohne Grafikkarte läuft \"Best\" sehr langsam. Wenn ein Lied danach falsch klingt, bitte melde es.",

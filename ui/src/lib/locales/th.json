@@ -113,7 +113,7 @@
 	"errors": {
 		"unreachable": "เชื่อมต่อ YouTube Music ไม่ได้ โปรดตรวจสอบการเชื่อมต่อของคุณ",
 		"offline_title": "ไม่มีการเชื่อมต่อ",
-		"offline_body": "Limusic เชื่อมต่อ YouTube Music ไม่ได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองอีกครั้ง",
+		"offline_body": "Aura เชื่อมต่อ YouTube Music ไม่ได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองอีกครั้ง",
 		"generic_title": "เกิดข้อผิดพลาดบางอย่าง"
 	},
 	"nav": {
@@ -132,7 +132,7 @@
 		"sign_in_hint": "ลงชื่อเข้าใช้ด้วยบัญชี Google ของคุณเพื่อเข้าถึงคลังเพลงและเพลย์ลิสต์ใน YouTube Music",
 		"add_account": "เพิ่มบัญชี",
 		"remove_account": "นำบัญชีออก",
-		"remove_account_title": "นำออกจาก Limusic?",
+		"remove_account_title": "นำออกจาก Aura?",
 		"remove_account_desc": "{name} จะถูกนำออกจากรายการนี้เท่านั้น บัญชี Google จะไม่ได้รับผลกระทบ และคุณลงชื่อเข้าใช้ด้วยบัญชีนี้ใหม่ได้ทุกเมื่อ",
 		"saved_accounts_hint": "เลือกบัญชีที่บันทึกไว้เพื่อสลับไปใช้",
 		"history": "ประวัติ",
@@ -378,19 +378,19 @@
 			"language_search": "ค้นหาภาษา",
 			"shortcuts_hint": "เปิดปุ่มลัดคีย์บอร์ดด้วย {key}",
 			"autostart": "เปิดเมื่อเริ่มระบบ",
-			"autostart_hint": "เริ่ม Limusic โดยอัตโนมัติเมื่อระบบของคุณบูต",
+			"autostart_hint": "เริ่ม Aura โดยอัตโนมัติเมื่อระบบของคุณบูต",
 			"close_to_tray": "ปิดไปที่ถาดระบบ",
-			"close_to_tray_hint": "ให้ Limusic ทำงานอยู่เบื้องหลังเมื่อปิดหน้าต่าง",
+			"close_to_tray_hint": "ให้ Aura ทำงานอยู่เบื้องหลังเมื่อปิดหน้าต่าง",
 			"track_notifications": "การแจ้งเตือนเพลง",
-			"track_notifications_hint": "แสดงการแจ้งเตือนเมื่อเพลงใหม่เริ่มเล่นขณะที่ Limusic อยู่เบื้องหลัง",
-			"track_notifications_focused": "แจ้งเตือนขณะใช้ Limusic ด้วย",
-			"track_notifications_focused_hint": "แสดงการแจ้งเตือนด้วยเมื่อเพลงถัดไปเริ่มเล่นเองขณะที่ Limusic เป็นหน้าต่างที่ใช้งานอยู่ เพลงที่คุณเลือกเองจะไม่แสดงการแจ้งเตือน",
+			"track_notifications_hint": "แสดงการแจ้งเตือนเมื่อเพลงใหม่เริ่มเล่นขณะที่ Aura อยู่เบื้องหลัง",
+			"track_notifications_focused": "แจ้งเตือนขณะใช้ Aura ด้วย",
+			"track_notifications_focused_hint": "แสดงการแจ้งเตือนด้วยเมื่อเพลงถัดไปเริ่มเล่นเองขณะที่ Aura เป็นหน้าต่างที่ใช้งานอยู่ เพลงที่คุณเลือกเองจะไม่แสดงการแจ้งเตือน",
 			"start_minimized": "เปิดไปที่ถาดระบบเมื่อเริ่มระบบ",
-			"start_minimized_hint": "เมื่อ Limusic เริ่มพร้อมระบบ จะอยู่ในถาดระบบจนกว่าคุณจะเปิด หากคุณเปิดเอง หน้าต่างจะแสดงเสมอ",
+			"start_minimized_hint": "เมื่อ Aura เริ่มพร้อมระบบ จะอยู่ในถาดระบบจนกว่าคุณจะเปิด หากคุณเปิดเอง หน้าต่างจะแสดงเสมอ",
 			"system_titlebar": "ใช้แถบชื่อเรื่องของระบบ",
-			"system_titlebar_hint": "ให้เดสก์ท็อปของคุณวาดกรอบหน้าต่างและปุ่มต่าง ๆ Limusic ยังคงแถบเครื่องมือของตัวเองไว้ด้านล่าง",
+			"system_titlebar_hint": "ให้เดสก์ท็อปของคุณวาดกรอบหน้าต่างและปุ่มต่าง ๆ Aura ยังคงแถบเครื่องมือของตัวเองไว้ด้านล่าง",
 			"update_banner": "การแจ้งเตือนอัปเดต",
-			"update_banner_hint": "แสดงแบนเนอร์เมื่อมี Limusic เวอร์ชันใหม่",
+			"update_banner_hint": "แสดงแบนเนอร์เมื่อมี Aura เวอร์ชันใหม่",
 			"proxy": "พร็อกซี HTTP/HTTPS",
 			"proxy_hint": "ส่งคำขอเครือข่ายทั้งหมดผ่านเซิร์ฟเวอร์พร็อกซีที่กำหนดเอง",
 			"proxy_placeholder": "http://host:port (เว้นว่าง = ไม่ใช้)",
@@ -499,7 +499,7 @@
 		},
 		"hotkeys": {
 			"title": "ปุ่มลัดส่วนกลาง",
-			"description": "ควบคุมการเล่นด้วยปุ่มลัดคีย์บอร์ดที่ปรับแต่งได้ แม้ Limusic จะถูกย่อหรือทำงานอยู่เบื้องหลัง",
+			"description": "ควบคุมการเล่นด้วยปุ่มลัดคีย์บอร์ดที่ปรับแต่งได้ แม้ Aura จะถูกย่อหรือทำงานอยู่เบื้องหลัง",
 			"enable": "เปิดใช้ปุ่มลัดส่วนกลาง",
 			"enable_hint": "ปุ่มลัดส่วนกลางถูกปิดอยู่ เปิดเพื่อรับฟังปุ่มลัดทั่วทั้งระบบ",
 			"off": "ปิด",
@@ -534,7 +534,7 @@
 			"action_toggle_repeat": "สลับการเล่นซ้ำ",
 			"action_toggle_repeat_hint": "วนโหมดเล่นซ้ำ: ปิด ทั้งหมด เพลงเดียว",
 			"action_show_app": "แสดงแอปพลิเคชัน",
-			"action_show_app_hint": "นำหน้าต่าง Limusic มาไว้ด้านหน้า"
+			"action_show_app_hint": "นำหน้าต่าง Aura มาไว้ด้านหน้า"
 		},
 		"data": {
 			"clear_cache_button": "ล้างแคชตอนนี้"
@@ -567,7 +567,7 @@
 		},
 		"scrobbling": {
 			"account_disconnected": "เชื่อมต่อบัญชี Last.fm ของคุณเพื่อ scrobble สิ่งที่คุณเล่น",
-			"account_connecting": "กำลังรอให้คุณอนุมัติ Limusic ในเบราว์เซอร์",
+			"account_connecting": "กำลังรอให้คุณอนุมัติ Aura ในเบราว์เซอร์",
 			"connect": "เชื่อมต่อ",
 			"open_profile": "เปิดโปรไฟล์ Last.fm ของคุณ",
 			"since": "Scrobble ตั้งแต่ {date}",
@@ -696,7 +696,7 @@
 			"zoom_in": "ซูมเข้า",
 			"zoom_out": "ซูมออก",
 			"reset_zoom": "รีเซ็ตการซูม",
-			"quit_app": "ออกจาก Limusic",
+			"quit_app": "ออกจาก Aura",
 			"show_this_list": "แสดงรายการนี้"
 		},
 		"tempo_pitch": {
@@ -724,7 +724,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "กำลัง scrobble ในนาม {user}",
 		"lastfm_disconnected": "ตัดการเชื่อมต่อ Last.fm แล้ว",
-		"lastfm_approve_in_browser": "อนุมัติ Limusic ในเบราว์เซอร์ของคุณ",
+		"lastfm_approve_in_browser": "อนุมัติ Aura ในเบราว์เซอร์ของคุณ",
 		"lastfm_connecting": "กำลังเชื่อมต่อ Last.fm — คลิกเพื่อยกเลิก",
 		"lastfm_scrobble_to": "Scrobble ไปยัง Last.fm",
 		"lastfm_settings": "การตั้งค่า Scrobbling",
@@ -997,7 +997,7 @@
 		"to_check": "ต้องตรวจสอบ {count}",
 		"not_found": "ไม่พบ {count}",
 		"keep_browsing_hint": "คุณปิดหน้านี้ได้ มันจะทำงานต่อ แถบด้านข้างจะแสดงความคืบหน้า",
-		"pace_hint": "Limusic ตั้งใจทำงานช้า ๆ ประมาณหนึ่งเพลงทุกสองวินาที เพื่อให้ YouTube Music เห็นว่าเป็นการใช้งานปกติ",
+		"pace_hint": "Aura ตั้งใจทำงานช้า ๆ ประมาณหนึ่งเพลงทุกสองวินาที เพื่อให้ YouTube Music เห็นว่าเป็นการใช้งานปกติ",
 		"waiting": "พักสักครู่เพื่อให้อยู่ในขีดจำกัดของ YouTube Music จะทำงานต่อเมื่อ {time}",
 		"keep_browsing": "เรียกดูต่อ",
 		"stop": "หยุด",
@@ -1060,12 +1060,12 @@
 			"empty": "ไม่มีเพลงในนั้น",
 			"unreadable": "อ่านไฟล์นั้นไม่ได้ ใช้ไฟล์ zip ที่ Spotify ส่งอีเมลให้ ไฟล์ JSON ไฟล์ใดไฟล์หนึ่งข้างใน หรือ CSV",
 			"csv_columns": "CSV นั้นไม่มีคอลัมน์ชื่อเพลง",
-			"spotify_changed": "Spotify เปลี่ยนวิธีแชร์เพลย์ลิสต์ การอัปเดต Limusic จะแก้ปัญหานี้",
+			"spotify_changed": "Spotify เปลี่ยนวิธีแชร์เพลย์ลิสต์ การอัปเดต Aura จะแก้ปัญหานี้",
 			"busy": "มีการนำเข้ากำลังทำงานอยู่แล้ว",
 			"nothing_read": "เลือกเพลย์ลิสต์ก่อน",
 			"gone": "การนำเข้านั้นไม่ได้เปิดอยู่อีกต่อไป",
 			"not_found": "ไม่พบรายการนั้นบน YouTube Music",
-			"cooldown": "YouTube Music ขอให้ Limusic ช้าลง การนำเข้าจึงหยุดพักจนถึง {time} ทุกอย่างที่พบจนถึงตอนนี้ถูกบันทึกไว้แล้ว"
+			"cooldown": "YouTube Music ขอให้ Aura ช้าลง การนำเข้าจึงหยุดพักจนถึง {time} ทุกอย่างที่พบจนถึงตอนนี้ถูกบันทึกไว้แล้ว"
 		}
 	}
 }

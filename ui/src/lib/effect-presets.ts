@@ -2,7 +2,7 @@ import type { Reverb } from './api';
 
 export type EffectSettings = { speed: number; semitones: number; reverb: Reverb };
 export type EffectPreset = EffectSettings & { name: string };
-export const EFFECT_PRESETS_KEY = 'limusic:effect-presets';
+export const EFFECT_PRESETS_KEY = 'aura:effect-presets';
 export const PRESET_NAME_MAX = 80;
 
 export const DEFAULT_REVERB: Reverb = {

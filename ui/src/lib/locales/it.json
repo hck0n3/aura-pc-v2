@@ -84,7 +84,7 @@
 		"history": "Cronologia",
 		"add_account": "Aggiungi account",
 		"remove_account": "Rimuovi account",
-		"remove_account_title": "Rimuovere da Limusic?",
+		"remove_account_title": "Rimuovere da Aura?",
 		"remove_account_desc": "{name} verrà rimosso solo da questo elenco. L'account Google non subirà modifiche e potrai accedere di nuovo con lo stesso account in qualsiasi momento.",
 		"saved_accounts_hint": "Seleziona un account salvato per cambiare account.",
 		"no_channels": "YouTube non ha restituito alcun canale selezionabile."
@@ -317,11 +317,11 @@
 			"language_hint": "Seleziona la lingua di visualizzazione dell'interfaccia.",
 			"shortcuts_hint": "Apri le scorciatoie da tastiera con {key}",
 			"autostart": "Avvia all'avvio del sistema",
-			"autostart_hint": "Avvia automaticamente Limusic all'accensione del sistema.",
+			"autostart_hint": "Avvia automaticamente Aura all'accensione del sistema.",
 			"close_to_tray": "Riduci nell'area di notifica alla chiusura",
-			"close_to_tray_hint": "Mantieni Limusic in esecuzione in background quando chiudi la finestra.",
+			"close_to_tray_hint": "Mantieni Aura in esecuzione in background quando chiudi la finestra.",
 			"update_banner": "Notifiche degli aggiornamenti",
-			"update_banner_hint": "Mostra un banner quando è disponibile una nuova versione di Limusic.",
+			"update_banner_hint": "Mostra un banner quando è disponibile una nuova versione di Aura.",
 			"proxy": "Proxy HTTP/HTTPS",
 			"proxy_hint": "Reindirizza tutte le richieste di rete attraverso un server proxy personalizzato.",
 			"proxy_placeholder": "http://host:porta (vuoto = nessuno)",
@@ -329,13 +329,13 @@
 			"stream_clients_hint": "Disattiva un client per ignorarlo durante la risoluzione degli stream. Sovrascritto dalla variabile d'ambiente {var}.",
 			"language_search": "Cerca lingue",
 			"track_notifications": "Notifiche dei brani",
-			"track_notifications_hint": "Mostra una notifica quando inizia un nuovo brano mentre Limusic è in background.",
+			"track_notifications_hint": "Mostra una notifica quando inizia un nuovo brano mentre Aura è in background.",
 			"start_minimized": "Avvia ridotto nell'area di notifica",
-			"start_minimized_hint": "Quando Limusic si avvia con il sistema, rimane nell'area di notifica finché non lo apri. Aprendolo manualmente verrà sempre mostrata la finestra.",
+			"start_minimized_hint": "Quando Aura si avvia con il sistema, rimane nell'area di notifica finché non lo apri. Aprendolo manualmente verrà sempre mostrata la finestra.",
 			"system_titlebar": "Usa la barra del titolo di sistema",
-			"system_titlebar_hint": "Consenti al desktop di disegnare la cornice della finestra e i relativi pulsanti. Limusic manterrà la propria barra degli strumenti sottostante.",
-			"track_notifications_focused": "Anche durante l'uso di Limusic",
-			"track_notifications_focused_hint": "Mostra una notifica anche quando il brano successivo parte da solo mentre Limusic è la finestra attiva. I brani avviati manualmente non mostrano mai alcuna notifica."
+			"system_titlebar_hint": "Consenti al desktop di disegnare la cornice della finestra e i relativi pulsanti. Aura manterrà la propria barra degli strumenti sottostante.",
+			"track_notifications_focused": "Anche durante l'uso di Aura",
+			"track_notifications_focused_hint": "Mostra una notifica anche quando il brano successivo parte da solo mentre Aura è la finestra attiva. I brani avviati manualmente non mostrano mai alcuna notifica."
 		},
 		"themes": {
 			"interface_font": "Carattere interfaccia",
@@ -468,7 +468,7 @@
 		},
 		"hotkeys": {
 			"title": "Scorciatoie globali",
-			"description": "Controlla la riproduzione con scorciatoie da tastiera personalizzabili anche quando Limusic è ridotto a icona o in esecuzione in background.",
+			"description": "Controlla la riproduzione con scorciatoie da tastiera personalizzabili anche quando Aura è ridotto a icona o in esecuzione in background.",
 			"enable": "Attiva scorciatoie globali",
 			"enable_hint": "Le scorciatoie globali sono disattivate. Attivale per abilitare le scorciatoie a livello di sistema.",
 			"off": "Disattivato",
@@ -503,11 +503,11 @@
 			"action_toggle_repeat": "Cambia modalità di ripetizione",
 			"action_toggle_repeat_hint": "Alterna tra: disattivata, ripeti tutto, ripeti brano.",
 			"action_show_app": "Mostra applicazione",
-			"action_show_app_hint": "Porta la finestra di Limusic in primo piano."
+			"action_show_app_hint": "Porta la finestra di Aura in primo piano."
 		},
 		"scrobbling": {
 			"account_disconnected": "Connetti il tuo account Last.fm per inviare lo scrobble dei brani che ascolti.",
-			"account_connecting": "In attesa dell'autorizzazione di Limusic nel tuo browser.",
+			"account_connecting": "In attesa dell'autorizzazione di Aura nel tuo browser.",
 			"connect": "Connetti",
 			"open_profile": "Apri profilo Last.fm",
 			"since": "Scrobbling attivo dal {date}",
@@ -637,7 +637,7 @@
 			"reset_zoom": "Ripristina zoom",
 			"show_this_list": "Mostra questo elenco",
 			"refresh_page": "Ricarica pagina",
-			"quit_app": "Esci da Limusic"
+			"quit_app": "Esci da Aura"
 		},
 		"tempo_pitch": {
 			"title": "Controlli di tempo e tonalità",
@@ -664,7 +664,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "Scrobbling attivo come {user}",
 		"lastfm_disconnected": "Last.fm disconnesso",
-		"lastfm_approve_in_browser": "Autorizza Limusic nel tuo browser",
+		"lastfm_approve_in_browser": "Autorizza Aura nel tuo browser",
 		"lastfm_connecting": "Connessione a Last.fm in corso — fai clic per annullare",
 		"lastfm_scrobble_to": "Invia scrobble a Last.fm",
 		"disconnect": "Disconnetti",
@@ -913,7 +913,7 @@
 	"errors": {
 		"unreachable": "Impossibile raggiungere YouTube Music. Controlla la tua connessione.",
 		"offline_title": "Nessuna connessione",
-		"offline_body": "Limusic non riesce a raggiungere YouTube Music. Controlla la tua connessione Internet e riprova.",
+		"offline_body": "Aura non riesce a raggiungere YouTube Music. Controlla la tua connessione Internet e riprova.",
 		"generic_title": "Si è verificato un errore"
 	},
 	"comments": {
@@ -995,7 +995,7 @@
 		"to_check": "{count} da verificare",
 		"not_found": "{count} non trovati",
 		"keep_browsing_hint": "Puoi chiudere questa schermata, l'importazione continuerà. La barra laterale ne mostrerà l'avanzamento.",
-		"pace_hint": "Limusic procede lentamente di proposito (circa un brano ogni due secondi), per simulare un normale utilizzo di YouTube Music.",
+		"pace_hint": "Aura procede lentamente di proposito (circa un brano ogni due secondi), per simulare un normale utilizzo di YouTube Music.",
 		"waiting": "Pausa temporanea per rispettare i limiti di YouTube Music. L'operazione riprenderà alle {time}.",
 		"keep_browsing": "Continua la navigazione",
 		"stop": "Interrompi",
@@ -1058,7 +1058,7 @@
 			"empty": "Non è presente alcun brano all'interno.",
 			"unreadable": "Impossibile leggere il file. Usa il file ZIP inviato da Spotify, uno dei file JSON al suo interno o un CSV.",
 			"csv_columns": "Questo file CSV non contiene alcuna colonna con i titoli dei brani.",
-			"spotify_changed": "Spotify ha modificato le modalità di condivisione delle playlist. Un aggiornamento di Limusic risolverà il problema.",
+			"spotify_changed": "Spotify ha modificato le modalità di condivisione delle playlist. Un aggiornamento di Aura risolverà il problema.",
 			"busy": "C'è già un'importazione in corso.",
 			"nothing_read": "Seleziona prima una playlist.",
 			"gone": "Questa importazione non è più aperta.",
@@ -1074,7 +1074,7 @@
 			"runtime_linux": "Vengono scaricati anche ONNX Runtime (dalla release ufficiale su GitHub) e il plugin WebGPU di ONNX Runtime (da files.pythonhosted.org).",
 			"credit": "UVR-MDX-NET-Inst\\_HQ\\_3, UVR-MDX-NET-Inst\\_Main e UVR\\_MDXNET\\_3\\_9662, provenienti da Ultimate Vocal Remover di Anjok07 e aufr33, distribuito con licenza MIT.",
 			"credit_link": "Rimozione vocale definitiva",
-			"redownload": "Per preparare un brano, Limusic ne scarica nuovamente l'audio.",
+			"redownload": "Per preparare un brano, Aura ne scarica nuovamente l'audio.",
 			"directml": "Su una scheda grafica, la modalità karaoke viene eseguita tramite Microsoft DirectML, che potrebbe inviare dati di utilizzo a Microsoft."
 		},
 		"experimental_tooltip": "Ancora in fase di ottimizzazione. La modalità Light potrebbe lasciare qualche traccia della voce originale, mentre la modalità Best è lenta se non si dispone di una scheda grafica. Se il risultato dell'elaborazione di un brano non è corretto, segnalacelo.",
@@ -1107,7 +1107,7 @@
 		},
 		"setup": {
 			"title": "Configura la modalità karaoke",
-			"desc": "Limusic rimuove la voce dai brani direttamente sul tuo computer. Scegli la qualità da scaricare: potrai modificarla in qualsiasi momento.",
+			"desc": "Aura rimuove la voce dai brani direttamente sul tuo computer. Scegli la qualità da scaricare: potrai modificarla in qualsiasi momento.",
 			"local": "L'elaborazione dei brani avviene direttamente sul tuo computer: nessun file viene caricato online.",
 			"cache": "I brani elaborati vengono salvati sul disco, così la prossima volta saranno pronti per la riproduzione immediata.",
 			"download": "Scarica {size}",
@@ -1116,12 +1116,12 @@
 			"progress": "{done} di {total} MB"
 		},
 		"unavailable": {
-			"not_installed": "La modalità karaoke non è disponibile in questa versione di Limusic.",
-			"corrupt": "I file della modalità karaoke sono danneggiati. Prova a riattivarla; se il problema persiste, reinstalla Limusic.",
+			"not_installed": "La modalità karaoke non è disponibile in questa versione di Aura.",
+			"corrupt": "I file della modalità karaoke sono danneggiati. Prova a riattivarla; se il problema persiste, reinstalla Aura.",
 			"vc_runtime": "La modalità karaoke richiede una versione più recente di Microsoft Visual C++ Redistributable (14.44 o successiva).",
 			"load_failed": "Impossibile avviare la modalità karaoke su questo computer.",
 			"proxy": "La modalità karaoke non è disponibile quando è configurato un proxy.",
-			"stopped": "La modalità karaoke si è interrotta inaspettatamente. Riavvia Limusic per utilizzarla di nuovo."
+			"stopped": "La modalità karaoke si è interrotta inaspettatamente. Riavvia Aura per utilizzarla di nuovo."
 		},
 		"error": {
 			"incomplete_download": "Il download dell'audio del brano non è andato a buon fine. Nuovo tentativo tra poco."

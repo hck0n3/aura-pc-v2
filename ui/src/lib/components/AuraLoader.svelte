@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { t } from '$lib/i18n.svelte';
 	import { cn } from '$lib/utils';
-	import { NOTE } from './LogoMark.svelte';
+	import { DISC } from './LogoMark.svelte';
 
-	// The Android app's loader, from the logo: the rind as an arc that turns, growing and shrinking,
-	// round a note whose outline traces itself, fills, then fades and starts again. One colour,
-	// `currentColor` (the accent unless the caller says otherwise).
+	// The loader, from the logo: an arc that turns, growing and shrinking, round the record, whose
+	// outline traces itself, fills, then fades and starts again. One colour, `currentColor` (the
+	// accent unless the caller says otherwise).
 	//
 	// Paint only, no transform: the arc turns by its dash offset, so it never makes a layer, and a
 	// scroller painted after it keeps its scrollbar on WebKitGTK (docs/UI-PERFORMANCE.md, #343).
@@ -19,8 +19,8 @@
 	class={cn('size-12 shrink-0 text-primary', className)}
 >
 	<circle class="rind" cx="100" cy="100" r="80" />
-	<!-- The note sits in the rind at two thirds of its size, centred on its own middle. -->
-	<path class="note" d={NOTE} pathLength="1" transform="translate(100 100) scale(.66) translate(-106.5 -83)" />
+	<!-- The record sits inside the arc at half its size, centred. -->
+	<path class="note" d={DISC} fill-rule="evenodd" pathLength="1" transform="translate(100 100) scale(.5) translate(-100 -100)" />
 </svg>
 
 <style>
@@ -51,7 +51,7 @@
 	.note {
 		fill: currentColor;
 		stroke: currentColor;
-		stroke-width: 9;
+		stroke-width: 6;
 		stroke-linejoin: round;
 		stroke-dasharray: 1 1;
 		animation: note-trace 1.8s ease-in-out infinite;

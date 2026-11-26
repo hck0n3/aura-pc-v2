@@ -111,7 +111,7 @@
 	"errors": {
 		"unreachable": "YouTube Musicに接続できません。通信環境を確認してください。",
 		"offline_title": "接続されていません",
-		"offline_body": "LimusicからYouTube Musicに接続できません。インターネット接続を確認してから、もう一度お試しください。",
+		"offline_body": "AuraからYouTube Musicに接続できません。インターネット接続を確認してから、もう一度お試しください。",
 		"generic_title": "問題が発生しました"
 	},
 	"nav": {
@@ -130,7 +130,7 @@
 		"sign_in_hint": "Googleアカウントでログインすると、YouTube Musicのライブラリやプレイリストを利用できます。",
 		"add_account": "アカウントを追加",
 		"remove_account": "アカウントを削除",
-		"remove_account_title": "Limusicから削除しますか？",
+		"remove_account_title": "Auraから削除しますか？",
 		"remove_account_desc": "{name} はこの一覧からのみ削除されます。Googleアカウント自体には影響せず、いつでも再度ログインできます。",
 		"saved_accounts_hint": "保存されたアカウントを選択して切り替えます。",
 		"history": "履歴",
@@ -337,7 +337,7 @@
 			"hotkeys_hint": "システム全体で使える再生コントロールのショートカット。",
 			"data": "データとストレージ",
 			"data_hint": "ネットワークとキャッシュファイル。",
-			"about": "Limusicについて",
+			"about": "Auraについて",
 			"about_hint": "バージョン、アップデート情報、更新履歴。",
 			"scrobbling": "Scrobble",
 			"scrobbling_hint": "Last.fmへの送信内容と、再生をカウントする条件の設定。"
@@ -366,17 +366,17 @@
 			"language_search": "言語を検索",
 			"shortcuts_hint": "{key} でキーボードショートカットを開く",
 			"autostart": "システム起動時に自動実行",
-			"autostart_hint": "パソコンの起動時にLimusicを自動的に開始します。",
+			"autostart_hint": "パソコンの起動時にAuraを自動的に開始します。",
 			"close_to_tray": "システムトレイに最小化",
-			"close_to_tray_hint": "ウィンドウを閉じた後もバックグラウンドでLimusicを実行し続けます。",
+			"close_to_tray_hint": "ウィンドウを閉じた後もバックグラウンドでAuraを実行し続けます。",
 			"track_notifications": "曲の通知",
-			"track_notifications_hint": "Limusicがバックグラウンドにあるときに新しい曲が始まると通知を表示します。",
+			"track_notifications_hint": "Auraがバックグラウンドにあるときに新しい曲が始まると通知を表示します。",
 			"start_minimized": "システム起動時にトレイに最小化して起動",
 			"start_minimized_hint": "自動起動時、開くまでトレイに格納されます。手動で開いた場合は通常通りウィンドウが表示されます。",
 			"system_titlebar": "システムのタイトルバーを使用",
 			"system_titlebar_hint": "OS標準のウィンドウ枠とボタンを使用します。ツールバーはその下に維持されます。",
 			"update_banner": "アップデート通知",
-			"update_banner_hint": "Limusicの新しいバージョンが利用可能になったときにバナーを表示します。",
+			"update_banner_hint": "Auraの新しいバージョンが利用可能になったときにバナーを表示します。",
 			"proxy": "HTTP/HTTPSプロキシ",
 			"proxy_hint": "すべてのネットワークリクエストを指定したプロキシサーバー経由でルーティングします。",
 			"proxy_placeholder": "http://host:port (空欄 = なし)",
@@ -475,7 +475,7 @@
 		},
 		"hotkeys": {
 			"title": "グローバルホットキー",
-			"description": "Limusicが最小化されている時やバックグラウンドにある時でも、カスタマイズ可能なショートカットキーで再生を操作できます。",
+			"description": "Auraが最小化されている時やバックグラウンドにある時でも、カスタマイズ可能なショートカットキーで再生を操作できます。",
 			"enable": "グローバルホットキーを有効化",
 			"enable_hint": "グローバルホットキーは無効です。オンにするとシステム全体でショートカットが機能します。",
 			"off": "オフ",
@@ -510,7 +510,7 @@
 			"action_toggle_repeat": "リピートの切り替え",
 			"action_toggle_repeat_hint": "リピートモードを切り替えます: オフ、全曲、1曲。",
 			"action_show_app": "アプリを表示",
-			"action_show_app_hint": "Limusicのウィンドウを最前面に表示します。"
+			"action_show_app_hint": "Auraのウィンドウを最前面に表示します。"
 		},
 		"data": {
 			"clear_cache_button": "今すぐキャッシュを消去"
@@ -543,7 +543,7 @@
 		},
 		"scrobbling": {
 			"account_disconnected": "Last.fmアカウントを連携して、再生した曲をScrobbleします。",
-			"account_connecting": "ブラウザでLimusicの連携が承認されるのを待機しています。",
+			"account_connecting": "ブラウザでAuraの連携が承認されるのを待機しています。",
 			"connect": "連携",
 			"open_profile": "Last.fmプロフィールを開く",
 			"since": "{date} からScrobble中",
@@ -689,7 +689,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "{user} としてScrobble中",
 		"lastfm_disconnected": "Last.fm 未接続",
-		"lastfm_approve_in_browser": "ブラウザでLimusicを承認してください",
+		"lastfm_approve_in_browser": "ブラウザでAuraを承認してください",
 		"lastfm_connecting": "Last.fmに接続中 — クリックしてキャンセル",
 		"lastfm_scrobble_to": "Last.fmにScrobble",
 		"disconnect": "連携を解除",
@@ -966,7 +966,7 @@
 			"empty": "曲が含まれていません。",
 			"unreadable": "ファイルを読み込めませんでした。Spotifyから届いたzipファイル、その中のJSONファイル、またはCSVファイルを使用してください。",
 			"csv_columns": "そのCSVファイルには曲名の列がありません。",
-			"spotify_changed": "Spotifyのプレイリスト共有仕様が変更されました。Limusicのアップデートで修正される予定です。",
+			"spotify_changed": "Spotifyのプレイリスト共有仕様が変更されました。Auraのアップデートで修正される予定です。",
 			"busy": "すでにインポートを実行中です。",
 			"nothing_read": "最初にプレイリストを選択してください。",
 			"gone": "そのインポートは開かれていません。",

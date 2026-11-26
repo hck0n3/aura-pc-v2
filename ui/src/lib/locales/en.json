@@ -7,7 +7,7 @@
 			"runtime_linux": "ONNX Runtime (from its official GitHub release) and the ONNX Runtime WebGPU plugin (from files.pythonhosted.org) are downloaded too.",
 			"credit": "UVR-MDX-NET-Inst_HQ_3, UVR-MDX-NET-Inst_Main and UVR_MDXNET_3_9662, from Ultimate Vocal Remover by Anjok07 and aufr33, MIT License.",
 			"credit_link": "Ultimate Vocal Remover",
-			"redownload": "To prepare a song, Limusic downloads its audio once more.",
+			"redownload": "To prepare a song, Aura downloads its audio once more.",
 			"directml": "On a graphics card, karaoke runs through Microsoft DirectML, which may send usage data to Microsoft."
 		},
 		"experimental_tooltip": "Still being tuned. Light can leave a little of the vocals in, and Best is slow without a graphics card. If a song comes out wrong, please report it.",
@@ -40,7 +40,7 @@
 		},
 		"setup": {
 			"title": "Set up karaoke",
-			"desc": "Limusic takes the vocals out of songs right on this computer. Pick a quality to download once, you can change it later.",
+			"desc": "Aura takes the vocals out of songs right on this computer. Pick a quality to download once, you can change it later.",
 			"local": "Songs are prepared on this computer and nothing is uploaded.",
 			"cache": "Prepared songs are kept on disk, so they play straight away next time.",
 			"download": "Download {size}",
@@ -49,12 +49,12 @@
 			"progress": "{done} of {total} MB"
 		},
 		"unavailable": {
-			"not_installed": "Karaoke isn't included in this build of Limusic.",
-			"corrupt": "Karaoke's files are damaged. Try turning karaoke on again; if that doesn't help, reinstall Limusic.",
+			"not_installed": "Karaoke isn't included in this build of Aura.",
+			"corrupt": "Karaoke's files are damaged. Try turning karaoke on again; if that doesn't help, reinstall Aura.",
 			"vc_runtime": "Karaoke needs a newer Microsoft Visual C++ Redistributable (14.44 or later).",
 			"load_failed": "Karaoke couldn't start on this computer.",
 			"proxy": "Karaoke isn't available while a proxy is set.",
-			"stopped": "Karaoke stopped unexpectedly. Restart Limusic to use it again."
+			"stopped": "Karaoke stopped unexpectedly. Restart Aura to use it again."
 		},
 		"error": {
 			"incomplete_download": "The song's audio didn't finish downloading. Trying again shortly.",
@@ -227,7 +227,7 @@
 	"errors": {
 		"unreachable": "Can't reach YouTube Music. Check your connection.",
 		"offline_title": "No connection",
-		"offline_body": "Limusic can't reach YouTube Music. Check your internet connection, then try again.",
+		"offline_body": "Aura can't reach YouTube Music. Check your internet connection, then try again.",
 		"generic_title": "Something went wrong"
 	},
 	"nav": {
@@ -246,7 +246,7 @@
 		"sign_in_hint": "Sign in with your Google account to reach your YouTube Music library and playlists.",
 		"add_account": "Add account",
 		"remove_account": "Remove account",
-		"remove_account_title": "Remove from Limusic?",
+		"remove_account_title": "Remove from Aura?",
 		"remove_account_desc": "{name} is only removed from this list. The Google account itself is not affected, and you can sign in with it again whenever you like.",
 		"saved_accounts_hint": "Pick a saved account to switch to it.",
 		"history": "History",
@@ -444,7 +444,7 @@
 		"nothing_in_range": "Nothing played in this period.",
 		"empty_title": "Your stats start here",
 		"empty": "Play a few songs and this page fills in with what you listen to, when, and for how long.",
-		"on_device": "Counted on this device from what you play in Limusic. Nothing is sent anywhere.",
+		"on_device": "Counted on this device from what you play in Aura. Nothing is sent anywhere.",
 		"clear": "Clear listening history",
 		"clear_title": "Clear listening history?",
 		"clear_desc": "This forgets every play counted on this device, so your stats start over and On Repeat empties. Your YouTube Music history isn't touched.",
@@ -592,21 +592,21 @@
 			"language_search": "Search languages",
 			"shortcuts_hint": "Open the keyboard shortcuts with {key}",
 			"play_on_start": "Resume playback on open",
-			"play_on_start_hint": "Start playing your last queue when Limusic opens.",
+			"play_on_start_hint": "Start playing your last queue when Aura opens.",
 			"autostart": "Launch on startup",
-			"autostart_hint": "Automatically start Limusic when your system boots.",
+			"autostart_hint": "Automatically start Aura when your system boots.",
 			"close_to_tray": "Close to system tray",
-			"close_to_tray_hint": "Keep Limusic running in the background when closing the window.",
+			"close_to_tray_hint": "Keep Aura running in the background when closing the window.",
 			"track_notifications": "Song notifications",
-			"track_notifications_hint": "Show a notification when a new song starts while Limusic is in the background.",
-			"track_notifications_focused": "Also while using Limusic",
-			"track_notifications_focused_hint": "Also show a notification when the next song starts on its own while Limusic is the active window. Songs you pick yourself never show one.",
+			"track_notifications_hint": "Show a notification when a new song starts while Aura is in the background.",
+			"track_notifications_focused": "Also while using Aura",
+			"track_notifications_focused_hint": "Also show a notification when the next song starts on its own while Aura is the active window. Songs you pick yourself never show one.",
 			"start_minimized": "Launch to tray on startup",
-			"start_minimized_hint": "When Limusic starts with your system, it stays in the tray until you open it. Opening it yourself always shows the window.",
+			"start_minimized_hint": "When Aura starts with your system, it stays in the tray until you open it. Opening it yourself always shows the window.",
 			"system_titlebar": "Use system title bar",
-			"system_titlebar_hint": "Let your desktop draw the window frame and its buttons. Limusic keeps its own toolbar below it.",
+			"system_titlebar_hint": "Let your desktop draw the window frame and its buttons. Aura keeps its own toolbar below it.",
 			"update_banner": "Update notifications",
-			"update_banner_hint": "Show a banner when a new version of Limusic is available.",
+			"update_banner_hint": "Show a banner when a new version of Aura is available.",
 			"proxy": "HTTP/HTTPS Proxy",
 			"proxy_hint": "Route all network requests through a custom proxy server.",
 			"proxy_placeholder": "http://host:port (blank = none)",
@@ -683,7 +683,7 @@
 			"artwork_accent": "Adapt colors to artwork",
 			"artwork_accent_hint": "Recolor the app from the playing track's cover: accent, surfaces and borders, fading between tracks. Off keeps the selected theme's own colors.",
 			"matugen": "Wallpaper palette",
-			"matugen_hint": "Take every color, accent included, from the palette Matugen, wallust or pywal makes from your wallpaper. Set up the Limusic template in that tool first.",
+			"matugen_hint": "Take every color, accent included, from the palette Matugen, wallust or pywal makes from your wallpaper. Set up the Aura template in that tool first.",
 			"reset_theme_hint": "Drop the color, roundness and font overrides. Keeps the preset.",
 			"interface_font_label": "Interface font",
 			"interface_font_short_hint": "Everything except headings.",
@@ -766,7 +766,7 @@
 		},
 		"hotkeys": {
 			"title": "Global Hotkeys",
-			"description": "Control playback with customizable keyboard shortcuts even when Limusic is minimized or running in the background.",
+			"description": "Control playback with customizable keyboard shortcuts even when Aura is minimized or running in the background.",
 			"enable": "Enable global hotkeys",
 			"enable_hint": "Global hotkeys are disabled. Turn them on to listen for shortcuts system-wide.",
 			"off": "Off",
@@ -801,12 +801,12 @@
 			"action_toggle_repeat": "Toggle repeat",
 			"action_toggle_repeat_hint": "Cycle repeat mode: off, all, one.",
 			"action_show_app": "Show application",
-			"action_show_app_hint": "Bring the Limusic window to the foreground."
+			"action_show_app_hint": "Bring the Aura window to the foreground."
 		},
 		"data": {
 			"clear_cache_button": "Clear cache",
 			"used": "Space used",
-			"used_hint": "Everything Limusic keeps on this computer.",
+			"used_hint": "Everything Aura keeps on this computer.",
 			"library": "Library and settings",
 			"library_hint": "Your settings, listening history, saved lyrics and local music library.",
 			"audio": "Audio cache",
@@ -818,7 +818,7 @@
 			"web": "Images and web cache",
 			"web_hint": "Artwork and other files the app window has loaded, kept by your system's web engine.",
 			"other": "Other",
-			"other_hint": "Logs, artwork from your local files, and small files Limusic needs to play songs."
+			"other_hint": "Logs, artwork from your local files, and small files Aura needs to play songs."
 		},
 		"about": {
 			"description": "A beautiful, fast, and lightweight desktop music player powered by Tauri and Svelte.",
@@ -848,7 +848,7 @@
 		},
 		"scrobbling": {
 			"account_disconnected": "Connect your Last.fm account to scrobble what you play.",
-			"account_connecting": "Waiting for you to approve Limusic in your browser.",
+			"account_connecting": "Waiting for you to approve Aura in your browser.",
 			"connect": "Connect",
 			"open_profile": "Open your Last.fm profile",
 			"since": "Scrobbling since {date}",
@@ -983,7 +983,7 @@
 			"zoom_in": "Zoom in",
 			"zoom_out": "Zoom out",
 			"reset_zoom": "Reset zoom",
-			"quit_app": "Quit Limusic",
+			"quit_app": "Quit Aura",
 			"show_this_list": "Show this list"
 		},
 		"tempo_pitch": {
@@ -1071,7 +1071,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "Scrobbling as {user}",
 		"lastfm_disconnected": "Last.fm disconnected",
-		"lastfm_approve_in_browser": "Approve Limusic in your browser",
+		"lastfm_approve_in_browser": "Approve Aura in your browser",
 		"lastfm_connecting": "Connecting to Last.fm — click to cancel",
 		"lastfm_scrobble_to": "Scrobble to Last.fm",
 		"lastfm_settings": "Scrobbling settings",
@@ -1366,7 +1366,7 @@
 		"to_check": "{count} to check",
 		"not_found": "{count} not found",
 		"keep_browsing_hint": "You can close this, it keeps going. The sidebar shows how far along it is.",
-		"pace_hint": "Limusic goes slowly on purpose, about one song every two seconds, so YouTube Music sees ordinary use.",
+		"pace_hint": "Aura goes slowly on purpose, about one song every two seconds, so YouTube Music sees ordinary use.",
 		"waiting": "Taking a break to stay well within YouTube Music’s limits. It carries on at {time}.",
 		"keep_browsing": "Keep browsing",
 		"stop": "Stop",
@@ -1421,7 +1421,7 @@
 		"update_done": "Updated from Spotify: {added} added, {removed} removed",
 		"update_none": "Already up to date with Spotify",
 		"keep_updated": "Keep up to date with Spotify",
-		"keep_updated_desc": "Limusic checks the Spotify playlist when it starts and every few hours, and adds, removes and reorders songs to match.",
+		"keep_updated_desc": "Aura checks the Spotify playlist when it starts and every few hours, and adds, removes and reorders songs to match.",
 		"auto_update_done": "{name} updated from Spotify: {added} added, {removed} removed",
 		"nudge_title": "Coming from Spotify?",
 		"nudge_desc": "Bring your playlists and Liked Songs over in a few clicks.",
@@ -1432,12 +1432,12 @@
 			"empty": "There are no songs in that.",
 			"unreadable": "That file couldn’t be read. Use the zip Spotify emailed you, one of the JSON files inside it, or a CSV.",
 			"csv_columns": "That CSV has no column of song titles.",
-			"spotify_changed": "Spotify changed how it shares playlists. A Limusic update will fix this.",
+			"spotify_changed": "Spotify changed how it shares playlists. A Aura update will fix this.",
 			"busy": "An import is already running.",
 			"nothing_read": "Pick a playlist first.",
 			"gone": "That import isn’t open anymore.",
 			"not_found": "Couldn’t find that on YouTube Music.",
-			"cooldown": "YouTube Music asked Limusic to slow down, so imports are paused until {time}. Everything found so far is saved."
+			"cooldown": "YouTube Music asked Aura to slow down, so imports are paused until {time}. Everything found so far is saved."
 		}
 	}
 }

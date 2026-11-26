@@ -113,7 +113,7 @@
 	"errors": {
 		"unreachable": "לא ניתן להתחבר ל-YouTube Music. בדוק את החיבור שלך.",
 		"offline_title": "אין חיבור לאינטרנט",
-		"offline_body": "ל-Limusic אין גישה אל YouTube Music. בדוק את חיבור האינטרנט ונסה שוב.",
+		"offline_body": "ל-Aura אין גישה אל YouTube Music. בדוק את חיבור האינטרנט ונסה שוב.",
 		"generic_title": "משהו השתבש"
 	},
 	"nav": {
@@ -132,7 +132,7 @@
 		"sign_in_hint": "התחבר באמצעות חשבון Google שלך כדי לגשת לספרייה ולפלייליסטים ב-YouTube Music.",
 		"add_account": "הוספת חשבון",
 		"remove_account": "הסרת חשבון",
-		"remove_account_title": "להסיר מ-Limusic?",
+		"remove_account_title": "להסיר מ-Aura?",
 		"remove_account_desc": "{name} יוסר מרשימה זו בלבד. חשבון Google עצמו לא יושפע, ותוכל להתחבר שוב מתי שתרצה.",
 		"saved_accounts_hint": "בחר חשבון שמור כדי לעבור אליו.",
 		"history": "היסטוריה",
@@ -322,7 +322,7 @@
 		"nothing_in_range": "לא הושמע דבר בפרק זמן זה.",
 		"empty_title": "הסטטיסטיקות שלך מתחילות כאן",
 		"empty": "האזן לכמה שירים ודף זה יתמלא במידע על מה ששמעת, מתי ולכמה זמן.",
-		"on_device": "נספר במכשיר זה ממה שאתה משמיע ב-Limusic. שום מידע לא נשלח לשום מקום.",
+		"on_device": "נספר במכשיר זה ממה שאתה משמיע ב-Aura. שום מידע לא נשלח לשום מקום.",
 		"clear": "ניקוי היסטוריית האזנה",
 		"clear_title": "לנקות את היסטוריית ההאזנה?",
 		"clear_desc": "פעולה זו תמחק את כל ההשמעות שנספרו במכשיר זה, כך שהסטטיסטיקות יתחילו מחדש ורשימת 'בהשמעה חוזרת' תתרוקן. היסטוריית ה-YouTube Music שלך לא תיפגע.",
@@ -463,21 +463,21 @@
 			"language_search": "חיפוש שפות",
 			"shortcuts_hint": "פתח את קיצורי המקשים באמצעות {key}",
 			"play_on_start": "המשך השמעה בעת הפתיחה",
-			"play_on_start_hint": "התחל לנגן את התור האחרון בעת פתיחת Limusic.",
+			"play_on_start_hint": "התחל לנגן את התור האחרון בעת פתיחת Aura.",
 			"autostart": "הפעלה בעת עליית המערכת",
-			"autostart_hint": "הפעל את Limusic באופן אוטומטי בעת הפעלת המחשב.",
+			"autostart_hint": "הפעל את Aura באופן אוטומטי בעת הפעלת המחשב.",
 			"close_to_tray": "סגירה למגש המערכת",
-			"close_to_tray_hint": "השאר את Limusic פועל ברקע בעת סגירת החלון.",
+			"close_to_tray_hint": "השאר את Aura פועל ברקע בעת סגירת החלון.",
 			"track_notifications": "התראות שירים",
-			"track_notifications_hint": "הצג התראה כאשר שיר חדש מתחיל ו-Limusic פועל ברקע.",
-			"track_notifications_focused": "גם בעת שימוש פעיל ב-Limusic",
-			"track_notifications_focused_hint": "הצג התראה גם כאשר השיר הבא מתחיל מעצמו בעוד חלון Limusic פעיל. שירים שבחרת ידנית לא יציגו התראה.",
+			"track_notifications_hint": "הצג התראה כאשר שיר חדש מתחיל ו-Aura פועל ברקע.",
+			"track_notifications_focused": "גם בעת שימוש פעיל ב-Aura",
+			"track_notifications_focused_hint": "הצג התראה גם כאשר השיר הבא מתחיל מעצמו בעוד חלון Aura פעיל. שירים שבחרת ידנית לא יציגו התראה.",
 			"start_minimized": "הפעלה ממוזערת למגש המערכת",
-			"start_minimized_hint": "כאשר Limusic מופעל עם המערכת, הוא יישאר במגש עד שתפתח אותו. פתיחה יזומה תציג תמיד את החלון.",
+			"start_minimized_hint": "כאשר Aura מופעל עם המערכת, הוא יישאר במגש עד שתפתח אותו. פתיחה יזומה תציג תמיד את החלון.",
 			"system_titlebar": "השתמש בשורת הכותרת של המערכת",
-			"system_titlebar_hint": "אפשר למערכת ההפעלה לצייר את מסגרת החלון והכפתורים שלו. Limusic ישמור על סרגל הכלים שלו מתחת.",
+			"system_titlebar_hint": "אפשר למערכת ההפעלה לצייר את מסגרת החלון והכפתורים שלו. Aura ישמור על סרגל הכלים שלו מתחת.",
 			"update_banner": "התראות עדכון",
-			"update_banner_hint": "הצג באנר כאשר גרסה חדשה של Limusic זמינה.",
+			"update_banner_hint": "הצג באנר כאשר גרסה חדשה של Aura זמינה.",
 			"proxy": "שרת פרוקסי HTTP/HTTPS",
 			"proxy_hint": "נתב את כל בקשות הרשת דרך שרת פרוקסי מותאם אישית.",
 			"proxy_placeholder": "http://host:port (השאר ריק = ללא)",
@@ -519,7 +519,7 @@
 			"artwork_accent": "התאמת צבעים לעטיפה",
 			"artwork_accent_hint": "צביעה מחדש של האפליקציה לפי עטיפת השיר: הדגשות, משטחים וגבולות, במעבר הדרגתי בין שירים. כיבוי ישמור על צבעי ערכת הנושא.",
 			"matugen": "Matugen",
-			"matugen_hint": "השתמש בכל הצבעים, כולל צבע ההדגשה, מתוך הפלטה ש-Matugen מייצר מטפט שולחן העבודה שלך. הגדר תחילה את תבנית Limusic ב-Matugen.",
+			"matugen_hint": "השתמש בכל הצבעים, כולל צבע ההדגשה, מתוך הפלטה ש-Matugen מייצר מטפט שולחן העבודה שלך. הגדר תחילה את תבנית Aura ב-Matugen.",
 			"reset_theme_hint": "בטל שינויים ידניים בצבעים, עיגול פינות וגופנים. שומר על ערכת הנושא הנבחרת.",
 			"interface_font_label": "גופן ממשק",
 			"interface_font_short_hint": "הכל מלבד כותרות.",
@@ -622,7 +622,7 @@
 		},
 		"hotkeys": {
 			"title": "מקשי קיצור גלובליים",
-			"description": "שלוט בהשמעה באמצעות קיצורי מקשים הניתנים להתאמה אישית, גם כאשר Limusic ממוזער או פועל ברקע.",
+			"description": "שלוט בהשמעה באמצעות קיצורי מקשים הניתנים להתאמה אישית, גם כאשר Aura ממוזער או פועל ברקע.",
 			"enable": "הפעל מקשי קיצור גלובליים",
 			"enable_hint": "מקשי קיצור גלובליים מושבתים. הפעל אותם כדי להאזין לקיצורים בכל חלקי המערכת.",
 			"off": "כבוי",
@@ -657,7 +657,7 @@
 			"action_toggle_repeat": "החלף מצב חזרה",
 			"action_toggle_repeat_hint": "מעבר בין מצבי חזרה: כבוי, הכל, אחד.",
 			"action_show_app": "הצג יישום",
-			"action_show_app_hint": "הבא את חלון Limusic לקדמת המסך."
+			"action_show_app_hint": "הבא את חלון Aura לקדמת המסך."
 		},
 		"data": {
 			"clear_cache_button": "נקה מטמון כעת"
@@ -690,7 +690,7 @@
 		},
 		"scrobbling": {
 			"account_disconnected": "חבר את חשבון ה-Last.fm שלך כדי לבצע סקרובלינג למה שאתה שומע.",
-			"account_connecting": "ממתין לאישורך עבור Limusic בדפדפן.",
+			"account_connecting": "ממתין לאישורך עבור Aura בדפדפן.",
 			"connect": "התחבר",
 			"open_profile": "פתח את פרופיל ה-Last.fm שלך",
 			"since": "מבצע סקרובלינג מאז {date}",
@@ -822,7 +822,7 @@
 			"zoom_in": "הגדל תצוגה",
 			"zoom_out": "הקטן תצוגה",
 			"reset_zoom": "איפוס קנה מידה",
-			"quit_app": "יציאה מ-Limusic",
+			"quit_app": "יציאה מ-Aura",
 			"show_this_list": "הצג רשימה זו"
 		},
 		"tempo_pitch": {
@@ -910,7 +910,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "מבצע סקרובלינג בתור {user}",
 		"lastfm_disconnected": "Last.fm מנותק",
-		"lastfm_approve_in_browser": "אשר את Limusic בדפדפן שלך",
+		"lastfm_approve_in_browser": "אשר את Aura בדפדפן שלך",
 		"lastfm_connecting": "מתחבר אל Last.fm — לחץ לביטול",
 		"lastfm_scrobble_to": "בצע סקרובל אל Last.fm",
 		"lastfm_settings": "הגדרות סקרובלינג",
@@ -1202,7 +1202,7 @@
 		"to_check": "{count} לבדיקה",
 		"not_found": "{count} לא נמצאו",
 		"keep_browsing_hint": "תוכל לסגור חלון זה, הפעולה תימשך ברקע. סרגל הצד מציג את התקדמות התהליך.",
-		"pace_hint": "Limusic פועל באיטיות מכוונת, כשיר אחד בכל שתי שניות, כדי ש-YouTube Music תזהה שימוש רגיל ולא חריג.",
+		"pace_hint": "Aura פועל באיטיות מכוונת, כשיר אחד בכל שתי שניות, כדי ש-YouTube Music תזהה שימוש רגיל ולא חריג.",
 		"waiting": "יוצא להפסקה קצרה כדי להישאר בתוך המגבלות של YouTube Music. התהליך יימשך ב-{time}.",
 		"keep_browsing": "המשך לגלוש",
 		"stop": "עצור",
@@ -1265,12 +1265,12 @@
 			"empty": "אין שירים בפריט זה.",
 			"unreadable": "לא ניתן לקרוא קובץ זה. השתמש בקובץ ה-ZIP שנשלח אליך מ-Spotify, באחד מקובצי ה-JSON שבתוכו, או בקובץ CSV.",
 			"csv_columns": "בקובץ CSV זה אין עמודה של שמות שירים.",
-			"spotify_changed": "Spotify שינתה את אופן שיתוף הפלייליסטים. עדכון של Limusic יתקן זאת בקרוב.",
+			"spotify_changed": "Spotify שינתה את אופן שיתוף הפלייליסטים. עדכון של Aura יתקן זאת בקרוב.",
 			"busy": "ייבוא אחר כבר פועל כעת.",
 			"nothing_read": "בחר פלייליסט תחילה.",
 			"gone": "ייבוא זה אינו פתוח עוד.",
 			"not_found": "לא ניתן למצוא פריט זה ב-YouTube Music.",
-			"cooldown": "YouTube Music ביקשה מ-Limusic להאט את הקצב, לכן פעולות הייבוא מושהות עד {time}. כל מה שנמצא עד כה נשמר."
+			"cooldown": "YouTube Music ביקשה מ-Aura להאט את הקצב, לכן פעולות הייבוא מושהות עד {time}. כל מה שנמצא עד כה נשמר."
 		}
 	}
 }

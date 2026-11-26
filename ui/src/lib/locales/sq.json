@@ -113,7 +113,7 @@
 	"errors": {
 		"unreachable": "Nuk mund të arrihet YouTube Music. Kontrollo lidhjen tënde.",
 		"offline_title": "Nuk ka lidhje me internetin",
-		"offline_body": "Limusic nuk mund të lidhet me YouTube Music. Kontrollo lidhjen e internetit dhe provo sërish.",
+		"offline_body": "Aura nuk mund të lidhet me YouTube Music. Kontrollo lidhjen e internetit dhe provo sërish.",
 		"generic_title": "Diçka shkoi keq"
 	},
 	"nav": {
@@ -132,7 +132,7 @@
 		"sign_in_hint": "Hyr me llogarinë tënde të Google për të hyrë në bibliotekën dhe listat e dëgjimit të YouTube Music.",
 		"add_account": "Shto llogari",
 		"remove_account": "Hiq llogarinë",
-		"remove_account_title": "Të hiqet nga Limusic?",
+		"remove_account_title": "Të hiqet nga Aura?",
 		"remove_account_desc": "{name} do të hiqet vetëm nga kjo listë. Vetë llogaria e Google nuk preket dhe mund të hysh sërish me të kur të duash.",
 		"saved_accounts_hint": "Zgjidh një llogari të ruajtur për të kaluar te ajo.",
 		"history": "Historiku",
@@ -322,7 +322,7 @@
 		"nothing_in_range": "Nuk është luajtur asgjë në këtë periudhë.",
 		"empty_title": "Statistikat e tua nisin këtu",
 		"empty": "Luaj disa këngë dhe kjo faqe do të mbushet me atë që dëgjon, kur dëgjon dhe për sa kohë.",
-		"on_device": "Llogariten në këtë pajisje nga ajo që luan në Limusic. Asgjë nuk dërgohet diku tjetër.",
+		"on_device": "Llogariten në këtë pajisje nga ajo që luan në Aura. Asgjë nuk dërgohet diku tjetër.",
 		"clear": "Pastro historikun e dëgjimit",
 		"clear_title": "Të pastrohet historiku i dëgjimit?",
 		"clear_desc": "Kjo do të harrojë çdo luajtje të numëruar në këtë pajisje, kështu që statistikat nisin nga e para dhe \"Më të dëgjuarat\" zbrazet. Historiku yt në YouTube Music nuk preket.",
@@ -463,26 +463,26 @@
 			"language_search": "Kërko gjuhë",
 			"shortcuts_hint": "Hap shkurtoret e tastierës me {key}",
 			"autostart": "Nis me ndezjen e sistemit",
-			"autostart_hint": "Nis Limusic automatikisht kur niset kompjuteri yt.",
+			"autostart_hint": "Nis Aura automatikisht kur niset kompjuteri yt.",
 			"close_to_tray": "Mbyll në zonën e njoftimeve",
-			"close_to_tray_hint": "Mbaj Limusic duke punuar në sfond kur mbyllet dritarja.",
+			"close_to_tray_hint": "Mbaj Aura duke punuar në sfond kur mbyllet dritarja.",
 			"track_notifications": "Njoftimet e këngëve",
-			"track_notifications_hint": "Shfaq një njoftim kur nis një këngë e re ndërsa Limusic është në sfond.",
-			"track_notifications_focused": "Edhe kur përdoret Limusic",
-			"track_notifications_focused_hint": "Shfaq gjithashtu një njoftim kur kënga tjetër nis vetë ndërsa dritarja e Limusic është aktive. Këngët që zgjedh vetë nuk shfaqin kurrë njoftim.",
+			"track_notifications_hint": "Shfaq një njoftim kur nis një këngë e re ndërsa Aura është në sfond.",
+			"track_notifications_focused": "Edhe kur përdoret Aura",
+			"track_notifications_focused_hint": "Shfaq gjithashtu një njoftim kur kënga tjetër nis vetë ndërsa dritarja e Aura është aktive. Këngët që zgjedh vetë nuk shfaqin kurrë njoftim.",
 			"start_minimized": "Nis i minimizuar në njoftime",
-			"start_minimized_hint": "Kur Limusic niset me sistemin tënd, qëndron në zonën e njoftimeve derisa ta hapësh. Hapja manuale shfaq gjithnjë dritaren.",
+			"start_minimized_hint": "Kur Aura niset me sistemin tënd, qëndron në zonën e njoftimeve derisa ta hapësh. Hapja manuale shfaq gjithnjë dritaren.",
 			"system_titlebar": "Përdor shiritin e titullit të sistemit",
-			"system_titlebar_hint": "Lejo desktopin të vizatojë kornizën e dritares dhe butonat e saj. Limusic mban shiritin e vet të veglave poshtë tij.",
+			"system_titlebar_hint": "Lejo desktopin të vizatojë kornizën e dritares dhe butonat e saj. Aura mban shiritin e vet të veglave poshtë tij.",
 			"update_banner": "Njoftimet për përditësime",
-			"update_banner_hint": "Shfaq një shirit njoftimi kur një version i ri i Limusic është i disponueshëm.",
+			"update_banner_hint": "Shfaq një shirit njoftimi kur një version i ri i Aura është i disponueshëm.",
 			"proxy": "Proxy HTTP/HTTPS",
 			"proxy_hint": "Dërgo të gjitha kërkesat e rrjetit përmes një serveri proxy të personalizuar.",
 			"proxy_placeholder": "http://host:port (bosh = pa proxy)",
 			"stream_clients": "Klientët e transmetimit",
 			"stream_clients_hint": "Çaktivizo një klient për ta kapërcyer gjatë zgjidhjes së transmetimeve. Mbishkruhet nga ndryshorja e mjedisit {var}.",
 			"play_on_start": "Rinis riprodhimin gjatë hapjes",
-			"play_on_start_hint": "Fillo të luash radhën e fundit kur hapet Limusic."
+			"play_on_start_hint": "Fillo të luash radhën e fundit kur hapet Aura."
 		},
 		"themes": {
 			"interface_font": "Shkrimi i ndërfaqes",
@@ -515,7 +515,7 @@
 			"artwork_accent": "Përshtat ngjyrat sipas kopertinës",
 			"artwork_accent_hint": "Rengjyros aplikacionin sipas kopertinës së këngës aktuale: theksimi, sipërfaqet dhe kufijtë, duke u zbehur gradualisht mes këngëve. Joaktive ruan ngjyrat e temës së zgjedhur.",
 			"matugen": "Matugen",
-			"matugen_hint": "Merr çdo ngjyrë, përfshirë theksimin, nga paleta që Matugen krijon nga sfondi yt i tavolinës. Konfiguro fillimisht shabllonin e Limusic në Matugen.",
+			"matugen_hint": "Merr çdo ngjyrë, përfshirë theksimin, nga paleta që Matugen krijon nga sfondi yt i tavolinës. Konfiguro fillimisht shabllonin e Aura në Matugen.",
 			"reset_theme_hint": "Hiq ndryshimet e ngjyrave, rrumbullakësisë dhe shkrimit. Ruan temën e paracaktuar.",
 			"interface_font_label": "Shkrimi i ndërfaqes",
 			"interface_font_short_hint": "Gjithçka përveç titujve kryesorë.",
@@ -598,7 +598,7 @@
 		},
 		"hotkeys": {
 			"title": "Shkurtoret globale",
-			"description": "Kontrollo riprodhimin me kombinime tastiere të personalizuara edhe kur Limusic është i minimizuar ose në sfond.",
+			"description": "Kontrollo riprodhimin me kombinime tastiere të personalizuara edhe kur Aura është i minimizuar ose në sfond.",
 			"enable": "Aktivizo shkurtoret globale",
 			"enable_hint": "Shkurtoret globale janë të çaktivizuara. Aktivizoji për t'i përdorur në të gjithë sistemin.",
 			"off": "Joaktive",
@@ -633,7 +633,7 @@
 			"action_toggle_repeat": "Ndërro modalitetin e përsëritjes",
 			"action_toggle_repeat_hint": "Kalo ciklikisht modalitetet: joaktiv, të gjitha, një.",
 			"action_show_app": "Shfaq aplikacionin",
-			"action_show_app_hint": "Sill dritaren e Limusic në plan të parë."
+			"action_show_app_hint": "Sill dritaren e Aura në plan të parë."
 		},
 		"data": {
 			"clear_cache_button": "Pastro memorien e përkohshme tani"
@@ -666,7 +666,7 @@
 		},
 		"scrobbling": {
 			"account_disconnected": "Lidh llogarinë tënde të Last.fm për të regjistruar këngët që luan.",
-			"account_connecting": "Po pritet miratimi i Limusic në shfletuesin tënd.",
+			"account_connecting": "Po pritet miratimi i Aura në shfletuesin tënd.",
 			"connect": "Lidhu",
 			"open_profile": "Hap profilin tënd në Last.fm",
 			"since": "Po skrobëlohet që nga {date}",
@@ -795,7 +795,7 @@
 			"zoom_in": "Zmadho pamjen",
 			"zoom_out": "Zvogëlo pamjen",
 			"reset_zoom": "Rivendos shkallëzimin",
-			"quit_app": "Dil nga Limusic",
+			"quit_app": "Dil nga Aura",
 			"show_this_list": "Shfaq këtë listë"
 		},
 		"tempo_pitch": {
@@ -883,7 +883,7 @@
 	"integrations": {
 		"lastfm_scrobbling_as": "Po skrobëlohet si {user}",
 		"lastfm_disconnected": "Last.fm u shkëput",
-		"lastfm_approve_in_browser": "Mirato Limusic në shfletuesin tënd",
+		"lastfm_approve_in_browser": "Mirato Aura në shfletuesin tënd",
 		"lastfm_connecting": "Po lidhet me Last.fm — kliko për të anuluar",
 		"lastfm_scrobble_to": "Skroblo në Last.fm",
 		"lastfm_settings": "Cilësimet e skroblimit",
@@ -1171,7 +1171,7 @@
 		"to_check": "{count} për t'u kontrolluar",
 		"not_found": "{count} nuk u gjetën",
 		"keep_browsing_hint": "Mund ta mbyllësh këtë dritare, procesi vazhdon. Shiriti anësor tregon ecurinë.",
-		"pace_hint": "Limusic ecën ngadalë me qëllim, rreth një këngë çdo dy sekonda, që YouTube Music ta shohë si përdorim normal njerëzor.",
+		"pace_hint": "Aura ecën ngadalë me qëllim, rreth një këngë çdo dy sekonda, që YouTube Music ta shohë si përdorim normal njerëzor.",
 		"waiting": "Po bëhet një pushim i shkurtër për të qëndruar brenda kufijve të YouTube Music. Vazhdon në orën {time}.",
 		"keep_browsing": "Vazhdo shfletimin",
 		"stop": "Ndalo",
@@ -1234,7 +1234,7 @@
 			"empty": "Nuk ka këngë brenda saj.",
 			"unreadable": "Ky skedar nuk mund të lexohej. Përdor skedarin zip që të dërgoi Spotify me email, një nga skedarët JSON brenda tij, ose një CSV.",
 			"csv_columns": "Ky CSV nuk ka një kolonë për titujt e këngëve.",
-			"spotify_changed": "Spotify ka ndryshuar mënyrën se si shpërndan listat e dëgjimit. Një përditësim i Limusic do ta rregullojë këtë.",
+			"spotify_changed": "Spotify ka ndryshuar mënyrën se si shpërndan listat e dëgjimit. Një përditësim i Aura do ta rregullojë këtë.",
 			"busy": "Një importim është duke u ekzekutuar tashmë.",
 			"nothing_read": "Zgjidh një listë dëgjimi fillimisht.",
 			"gone": "Ky importim nuk është më i hapur.",

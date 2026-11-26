@@ -26,7 +26,7 @@
 		PauseIcon
 	} from '@hugeicons/core-free-icons';
 	import LogoMark from './LogoMark.svelte';
-	import LimusicLoader from './LimusicLoader.svelte';
+	import AuraLoader from './AuraLoader.svelte';
 	import { playItem } from '$lib/browse';
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button';
@@ -150,7 +150,7 @@
 	)}"
 >
 	<div class="flex items-center justify-center px-2 py-2 {wide('lg:justify-between')}">
-		<span class="hidden font-heading text-lg font-bold tracking-tight {wide('lg:block')}">Limusic</span>
+		<span class="hidden font-heading text-lg font-bold tracking-tight {wide('lg:block')}">Aura</span>
 		<!-- Column when collapsed: the two buttons don't fit side by side in the 64px rail. -->
 		<div class="flex items-center gap-1 {collapsed ? 'flex-col' : ''}">
 			<Button
@@ -349,7 +349,7 @@
 								onclick={() => playRow(pl)}
 							>
 								{#if starting === pl.id}
-									<LimusicLoader class="size-6 text-white" />
+									<AuraLoader class="size-6 text-white" />
 								{:else}
 									<!-- altIcon/showAlt, not a ternary: `icon` is read once at mount. -->
 									<HugeiconsIcon

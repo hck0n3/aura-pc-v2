@@ -19,7 +19,7 @@
 		Timer01Icon,
 		TranslateIcon
 	} from '@hugeicons/core-free-icons';
-	import LimusicLoader from './LimusicLoader.svelte';
+	import AuraLoader from './AuraLoader.svelte';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -285,7 +285,7 @@
 						</span>
 					</span>
 					{#if busy === 'auto'}
-						<LimusicLoader class="size-4" />
+						<AuraLoader class="size-4" />
 					{:else if !pinned}
 						<HugeiconsIcon icon={Tick02Icon} class="h-4 w-4 shrink-0 text-primary" />
 					{/if}
@@ -331,7 +331,7 @@
 							{p.name}
 						</span>
 						{#if busy === p.id}
-							<LimusicLoader class="size-4" />
+							<AuraLoader class="size-4" />
 						{/if}
 						{#if r.status === 'loading'}
 							<span class="flex shrink-0 items-center gap-1.5">
