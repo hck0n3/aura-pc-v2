@@ -325,3 +325,110 @@ fn volume_steps_rebuild_the_chain_only_when_loudness_changes() {
     let rebuilds = FILTER_PROBES.get() - start;
     assert!(rebuilds > 0 && rebuilds <= 20, "{rebuilds} rebuilds for a 40-step drag");
 }
+
+#[test]
+#[ignore]
+fn print_graphs() {
+    let mut harman = on();
+    harman.eq.aura = [4.5, 3.5, 1.0, -0.5, 0.0, 0.0, 1.5, 2.5, 1.0, 0.5];
+    for (name, d) in [("flat", on()), ("harman", harman), ("all", everything_on())] {
+        println!("GRAPH {name} {}", crate::dsp::dsp_graph(&d, 0.0).unwrap());
+    }
+}
+
+/// Largest jump between neighbouring samples of `left`, relative to what a clean sine of
+/// `hz` at `amp` can do (its peak slope per sample). A click or a dropped buffer is many times it.
+fn worst_jump(stereo: &[f64], hz: f64, amp: f64, from: usize, to: usize) -> f64 {
+    let l = left(stereo);
+    let clean = amp * std::f64::consts::TAU * hz / RATE;
+    l[from..to].windows(2).map(|w| (w[1] - w[0]).abs()).fold(0.0, f64::max) / clean
+}
+
+#[test]
+fn moving_an_eq_band_while_playing_does_not_click() {
+    let dir = tempfile::tempdir().unwrap();
+    let p = Player::new(dir.path().to_str().unwrap()).unwrap();
+    let output = dir.path().join("live.pcm");
+    let mpv = p.mpv();
+    mpv.set_property("ao", "pcm").unwrap();
+    mpv.set_property("ao-pcm-file", output.to_str().unwrap()).unwrap();
+    mpv.set_property("ao-pcm-waveheader", false).unwrap();
+    mpv.set_property("audio-format", "s16").unwrap();
+    mpv.set_property("audio-samplerate", RATE as i64).unwrap();
+    mpv.set_property("audio-channels", "stereo").unwrap();
+    // Real time, so the change lands mid-stream as a slider would.
+    mpv.set_property("ao-pcm-untimed", false).ok();
+    mpv.set_property("keep-open", true).unwrap();
+    p.set_volume(100).unwrap();
+    let mut d = DspSettings { limiter: false, ..on() };
+    d.eq.mode = EqMode::Parametric;
+    p.set_dsp(d.clone()).unwrap();
+    p.load("av://lavfi:aevalsrc=0.3*sin(2*PI*1000*t)|0.3*sin(2*PI*1000*t):d=3,arealtime", &HashMap::new(), None, None, false)
+        .unwrap();
+    p.play().unwrap();
+    wait_for("playing", 5.0, || p.mpv().get_property::<f64>("time-pos").unwrap_or(0.0) > 0.8);
+    for g in [3.0, 6.0, 9.0] {
+        d.eq.bands[11].g = g; // 1000 Hz, the tone itself
+        p.set_dsp(d.clone()).unwrap();
+        std::thread::sleep(Duration::from_millis(150));
+    }
+    wait_for("render EOF", 10.0, || p.mpv().get_property::<bool>("eof-reached").unwrap_or(false));
+    p.stop().unwrap();
+    wait_for("unload", 2.0, || p.mpv().get_property::<String>("path").is_err());
+    let out: Vec<f64> = std::fs::read(&output)
+        .unwrap()
+        .chunks_exact(2)
+        .map(|s| i16::from_le_bytes([s[0], s[1]]) as f64 / 32768.0)
+        .collect();
+    let frames = out.len() / 2;
+    // Up to +9 dB on the tone: the slope may grow ~2.8x; a click or gap is far beyond that.
+    let jump = worst_jump(&out, 1000.0, 0.3, 4800, frames - 4800);
+    let gaps = left(&out)[4800..frames - 4800].windows(48).filter(|w| w.iter().all(|s| s.abs() < 1e-4)).count();
+    eprintln!("LIVE worst jump {jump:.2}x, silent 1ms windows {gaps}");
+    assert!(gaps == 0, "audio dropped out for {gaps} ms while the band moved");
+    assert!(jump < 3.5, "the band change clicked: jump {jump:.2}x a clean sine's");
+}
+
+#[test]
+#[ignore]
+fn experiment_af_command_on_a_named_band() {
+    let dir = tempfile::tempdir().unwrap();
+    let p = Player::new(dir.path().to_str().unwrap()).unwrap();
+    let output = dir.path().join("exp.pcm");
+    let mpv = p.mpv();
+    mpv.set_property("ao", "pcm").unwrap();
+    mpv.set_property("ao-pcm-file", output.to_str().unwrap()).unwrap();
+    mpv.set_property("ao-pcm-waveheader", false).unwrap();
+    mpv.set_property("audio-format", "s16").unwrap();
+    mpv.set_property("audio-samplerate", RATE as i64).unwrap();
+    mpv.set_property("audio-channels", "stereo").unwrap();
+    mpv.set_property("keep-open", true).unwrap();
+    mpv.set_property("log-file", dir.path().join("mpv.log").to_str().unwrap()).unwrap();
+    mpv.set_property("msg-level", "all=debug").unwrap();
+    mpv.command("af", &["set", &quoted("@dsp:lavfi=[equalizer@b11=f=1000:t=q:w=4.318:g=0]")]).unwrap();
+    eprintln!("EXP af = {:?}", mpv.get_property::<String>("af"));
+    p.load("av://lavfi:aevalsrc=0.3*sin(2*PI*1000*t)|0.3*sin(2*PI*1000*t):d=3,arealtime", &HashMap::new(), None, None, false).unwrap();
+    p.play().unwrap();
+    wait_for("playing", 5.0, || p.mpv().get_property::<f64>("time-pos").unwrap_or(0.0) > 0.8);
+    for args in [
+        vec!["dsp", "g", "3", "equalizer@b11"],
+        vec!["dsp", "gain", "6.0", "equalizer@b11"],
+        vec!["dsp", "g", "9", "equalizer"],
+    ] {
+        let r = p.mpv().command("af-command", &args);
+        eprintln!("EXP af-command {args:?}: {r:?}");
+        std::thread::sleep(Duration::from_millis(150));
+    }
+    wait_for("render EOF", 10.0, || p.mpv().get_property::<bool>("eof-reached").unwrap_or(false));
+    p.stop().unwrap();
+    wait_for("unload", 2.0, || p.mpv().get_property::<String>("path").is_err());
+    let log = std::fs::read_to_string(dir.path().join("mpv.log")).unwrap_or_default();
+    for line in log.lines().filter(|l| l.contains("af-command") || l.contains("command") && l.contains("filter") || l.contains("b11")).take(20) {
+        eprintln!("EXP log {line}");
+    }
+    let out: Vec<f64> = std::fs::read(&output).unwrap().chunks_exact(2).map(|s| i16::from_le_bytes([s[0], s[1]]) as f64 / 32768.0).collect();
+    let frames = out.len() / 2;
+    let l = left(&out);
+    let rms = |a: &[f64]| (a.iter().map(|v| v * v).sum::<f64>() / a.len() as f64).sqrt();
+    eprintln!("EXP jump {:.2}x, start rms {:.3}, end rms {:.3}", worst_jump(&out, 1000.0, 0.3, 4800, frames - 4800), rms(&l[4800..24000]), rms(&l[frames - 24000..frames - 4800]));
+}
