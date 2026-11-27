@@ -17,7 +17,9 @@ mod video;
 pub use video::{GlDisplay, Thumbnail, VideoRenderer};
 
 mod decode;
+pub mod dsp;
 pub use decode::decode_to_wav;
+pub use dsp::{Amount, BandKind, DspSettings, Eq, EqBand, EqMode};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -32,6 +34,17 @@ pub enum Error {
     Reverb(String),
     #[error("Invalid playback effect values")]
     InvalidParams,
+    /// The DSP's settings were out of range, or mpv refused its graph.
+    #[error("DSP: {0}")]
+    Dsp(String),
+}
+
+/// An audio output as mpv names it (`name`, which [`Player::set_audio_device`] takes) and as the
+/// system describes it.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct AudioDevice {
+    pub name: String,
+    pub description: String,
 }
 
 /// Events pumped from mpv's event thread. context/14 §player surface.
@@ -118,13 +131,15 @@ pub struct Player {
     events: Option<UnboundedReceiver<PlayerEvent>>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 struct AudioFilters {
     // Gain belongs to each track; effects belong to the listening session.
     gain: [Option<f64>; 2],
     speed: f64,
     semitones: i32,
     reverb: Reverb,
+    /// The listener's DSP (`dsp.rs`), between the gain and the reverb.
+    dsp: DspSettings,
 }
 
 /// Session reverb controls. Dry and wet are independent signal levels, not a crossfade.
@@ -422,6 +437,7 @@ impl Player {
                 speed: 1.0,
                 semitones: 0,
                 reverb: Reverb::default(),
+                dsp: DspSettings::default(),
             }),
             speed_bits: AtomicU64::new(1.0_f64.to_bits()),
             a: a.clone(),
@@ -751,7 +767,18 @@ impl Player {
         self.mpv().set_property("volume", perceptual_to_mpv(volume))?;
         // Remembered because a crossfade scales it on both decks, and because the deck that
         // fades in is not the one this was last set on.
+        // The DSP's loudness lift depends on the volume (more as it goes down). Rebuilt only when
+        // the lift itself changes, which is a few times over a whole drag.
+        let af = self.decks.af.lock().unwrap();
+        let link_before = dsp_link(&self.decks, &af.dsp);
         self.decks.volume.store(volume, Ordering::Relaxed);
+        if af.dsp.enabled && af.dsp.loudness && dsp_link(&self.decks, &af.dsp) != link_before {
+            for deck in 0..2 {
+                if let Err(e) = apply_filters(&self.decks, deck, &af) {
+                    tracing::warn!(error = %e, "loudness did not follow the volume");
+                }
+            }
+        }
         Ok(())
     }
 
@@ -826,14 +853,14 @@ impl Player {
 
     /// Tempo, 0.5–2.0. Rubber Band time-stretches without shifting pitch whenever speed != 1.
     pub fn set_speed(&self, speed: f64) -> Result<(), Error> {
-        let af = *self.decks.af.lock().unwrap();
+        let af = self.decks.af.lock().unwrap().clone();
         self.set_playback_params(speed, af.semitones, af.reverb)
     }
 
     /// Pitch shift in semitones, −12..=12 (one octave either way), via the rubberband filter.
     /// Independent of [`Self::set_speed`]: the same Rubber Band filter handles both controls.
     pub fn set_pitch(&self, semitones: i32) -> Result<(), Error> {
-        let af = *self.decks.af.lock().unwrap();
+        let af = self.decks.af.lock().unwrap().clone();
         self.set_playback_params(af.speed, semitones, af.reverb)
     }
 
@@ -862,8 +889,8 @@ impl Player {
         if reverb.enabled && reverb.wet != 0 {
             ensure_reverb_asset(&self.decks, reverb.preset)?;
         }
-        let previous = *af;
-        let wanted = AudioFilters { speed, semitones, reverb, ..previous };
+        let previous = af.clone();
+        let wanted = AudioFilters { speed, semitones, reverb, ..previous.clone() };
         for deck in 0..2 {
             // Audible Reverb embeds a fixed tempo in lavfi; other speed updates retain stretch state.
             let result = if previous.semitones == semitones
@@ -910,6 +937,76 @@ impl Player {
         let af = self.decks.af.lock().unwrap();
         (af.speed, af.semitones, af.reverb)
     }
+
+    /// The listener's DSP, on both decks. Out-of-range settings are refused before mpv sees them;
+    /// a graph mpv refuses leaves both decks on the chain they had.
+    pub fn set_dsp(&self, dsp: DspSettings) -> Result<(), Error> {
+        dsp.validate().map_err(Error::Dsp)?;
+        let mut af = self.decks.af.lock().unwrap();
+        let previous = af.clone();
+        let wanted = AudioFilters { dsp, ..previous.clone() };
+        for deck in 0..2 {
+            if let Err(e) = apply_filters(&self.decks, deck, &wanted) {
+                for rollback in 0..2 {
+                    let _ = apply_filters(&self.decks, rollback, &previous);
+                }
+                // The chain also carries reverb and tempo, whose errors would name them: when the
+                // DSP's own graph is what mpv refuses, say so.
+                if let Some(link) = dsp_link(&self.decks, &wanted.dsp) {
+                    if let Err(dsp_error) = validate_lavfi(&link) {
+                        return Err(Error::Dsp(dsp_error.to_string()));
+                    }
+                }
+                return Err(e);
+            }
+        }
+        *af = wanted;
+        Ok(())
+    }
+
+    pub fn dsp(&self) -> DspSettings {
+        self.decks.af.lock().unwrap().dsp.clone()
+    }
+
+    /// The outputs mpv can play on, `auto` (the system's default) first.
+    pub fn audio_devices(&self) -> Vec<AudioDevice> {
+        let mut out = vec![AudioDevice { name: "auto".into(), description: String::new() }];
+        let Some(list) =
+            self.mpv().get_property::<MpvNode>("audio-device-list").ok().and_then(MpvNode::array)
+        else {
+            return out;
+        };
+        for node in list {
+            let Some(map) = node.map() else { continue };
+            let mut device = AudioDevice { name: String::new(), description: String::new() };
+            for (key, value) in map {
+                match key.as_str() {
+                    "name" => device.name = value.str().unwrap_or_default().to_owned(),
+                    "description" => {
+                        device.description = value.str().unwrap_or_default().to_owned()
+                    }
+                    _ => {}
+                }
+            }
+            if !device.name.is_empty() && device.name != "auto" {
+                out.push(device);
+            }
+        }
+        out
+    }
+
+    /// Play on `name` (from [`Self::audio_devices`]), on both decks. Empty, or a device that is
+    /// not there any more (headphones unplugged since it was saved), is the system's default.
+    pub fn set_audio_device(&self, name: &str) -> Result<(), Error> {
+        let known = !name.is_empty() && self.audio_devices().iter().any(|d| d.name == name);
+        let name = if known { name } else { "auto" };
+        for deck in 0..2 {
+            if let Some(mpv) = self.decks.mpv(deck) {
+                mpv.set_property("audio-device", name)?;
+            }
+        }
+        Ok(())
+    }
 }
 
 fn reverb_path(decks: &Decks, preset: u8) -> std::path::PathBuf {
@@ -935,6 +1032,12 @@ fn ensure_reverb_asset(decks: &Decks, preset: u8) -> Result<std::path::PathBuf, 
 fn apply_filters(decks: &Decks, deck: usize, af: &AudioFilters) -> Result<(), Error> {
     let Some(mpv) = decks.mpv(deck) else { return Ok(()) };
     let mut chain = af_chain(af.gain[deck], 0, 1.0);
+    if let Some(link) = dsp_link(decks, &af.dsp) {
+        if !chain.is_empty() {
+            chain.push(',');
+        }
+        chain.push_str(&link);
+    }
     if af.reverb.enabled {
         if !chain.is_empty() {
             chain.push(',');
@@ -984,6 +1087,8 @@ fn apply_filters(decks: &Decks, deck: usize, af: &AudioFilters) -> Result<(), Er
             Error::Reverb(e.to_string())
         } else if af.semitones != 0 || af.speed != 1.0 {
             Error::NoPitchFilter
+        } else if af.dsp.enabled {
+            Error::Dsp(e.to_string())
         } else {
             Error::Mpv(e)
         }
@@ -992,10 +1097,19 @@ fn apply_filters(decks: &Decks, deck: usize, af: &AudioFilters) -> Result<(), Er
     Ok(())
 }
 
+/// The DSP's link in the `af` chain (`@dsp:lavfi=…`), or `None` while it is off.
+fn dsp_link(decks: &Decks, dsp: &DspSettings) -> Option<String> {
+    let graph = dsp::dsp_graph(dsp, volume_db(decks.volume.load(Ordering::Relaxed)))?;
+    #[cfg(test)]
+    let graph = if NO_DSP_FILTER.get() { "nosuchdspfilter".to_owned() } else { graph };
+    Some(format!("@dsp:lavfi=graph=%{}%{graph}", graph.len()))
+}
+
 fn set_filter_chain(mpv: &Mpv, chain: &str) -> Result<(), libmpv2::Error> {
     // `af set` initializes the graph and reports failure; writing the `af` property does not.
     // Cold decks only store the chain; probe effect graphs before accepting them.
-    let needs_probe = chain.contains("@reverb") || chain.contains(pitch_filter());
+    let needs_probe =
+        chain.contains("@reverb") || chain.contains("@dsp") || chain.contains(pitch_filter());
     if needs_probe && mpv.get_property::<MpvNode>("audio-out-params").is_err() {
         validate_lavfi(chain)?;
     }
@@ -1140,6 +1254,8 @@ std::thread_local! {
     /// Test seam: force a missing filter so [`Player::set_pitch`] exercises chain rollback.
     /// Thread-local so parallel playback tests keep their real filters. Absent from the app.
     static NO_RUBBERBAND: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    /// Swaps the DSP graph for a filter that does not exist (`a_rejected_dsp_keeps_playing_…`).
+    static NO_DSP_FILTER: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// Count validation players independently of parallel playback tests.
     static FILTER_PROBES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
 }
@@ -1369,7 +1485,8 @@ const FADE_STEP: Duration = Duration::from_millis(50);
 /// Properties a fresh deck has to inherit from the one playing. mpv keeps these per instance, so
 /// a preload that skipped them would stream past the user's proxy, without their headers, at 1x,
 /// with no loudness gain and no pitch shift.
-const INHERITED: [&str; 5] = ["user-agent", "http-header-fields", "http-proxy", "speed", "af"];
+const INHERITED: [&str; 6] =
+    ["user-agent", "http-header-fields", "http-proxy", "speed", "af", "audio-device"];
 
 /// Load `url` on the idle deck, paused and silent, ready for [`start_crossfade`] to bring it up.
 fn preload(decks: &Decks, mpv: &Arc<Mpv>, url: &str) -> Result<(), Error> {
@@ -1636,6 +1753,15 @@ fn loadfile_has_index(mpv: &Mpv) -> bool {
 /// (the old linear-in-dB curve put 50% at −20 dB, this one at −21). Steps are 0.9 dB at the
 /// quiet end and 0.3 dB near the top, which is the right way round: fine control is wanted
 /// where a dB is loud, and the bottom of the slider needs to reach somewhere quiet.
+/// The volume slider's percent as the level it plays at, in dB (see [`perceptual_to_mpv`]: mpv
+/// cubes its `volume`, so 60·log10(v/100)).
+fn volume_db(percent: i64) -> f64 {
+    if percent <= 0 {
+        return -60.0;
+    }
+    -60.0 * (1.0 - percent.min(100) as f64 / 100.0).powf(1.5)
+}
+
 fn perceptual_to_mpv(percent: i64) -> f64 {
     if percent <= 0 {
         return 0.0;
@@ -1643,6 +1769,8 @@ fn perceptual_to_mpv(percent: i64) -> f64 {
     100.0 * 10f64.powf(-(1.0 - percent.min(100) as f64 / 100.0).powf(1.5))
 }
 
+#[cfg(test)]
+mod dsp_tests;
 #[cfg(test)]
 mod transition_tests;
 

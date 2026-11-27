@@ -506,6 +506,18 @@ export { DEFAULT_REVERB } from './effect-presets';
 /** Session-only tempo, pitch, and independent reverb controls. */
 export const setPlaybackParams = (speed: number, semitones: number, reverb: Reverb) =>
 	invoke<void>('set_playback_params', { speed, semitones, reverb });
+/** The DSP (`crates/player/src/dsp.rs`), on everything that plays. Saved by the backend. */
+export const getDsp = () => invoke<import('./dsp').DspSettings>('get_dsp');
+/** Rejects with the reason (out of range, or mpv refused the graph); nothing changes then. */
+export const setDsp = (dsp: import('./dsp').DspSettings) => invoke<void>('set_dsp', { dsp });
+export const onDspChanged = (cb: (dsp: import('./dsp').DspSettings) => void): Promise<UnlistenFn> =>
+	listen<import('./dsp').DspSettings>('dsp-changed', (e) => cb(e.payload));
+export interface AudioDevice {
+	name: string;
+	description: string;
+}
+/** Outputs mpv can play on, `auto` (the system default) first. The choice is the `audio_device` setting. */
+export const audioDevices = () => invoke<AudioDevice[]>('audio_devices');
 export const onPlaybackParams = (cb: (p: { speed: number; semitones: number; reverb: Reverb }) => void) =>
 	listen<{ speed: number; semitones: number; reverb: Reverb }>('playback-params', (e) => cb(e.payload));
 export const getQueue = () => invoke<QueueState>('get_queue');

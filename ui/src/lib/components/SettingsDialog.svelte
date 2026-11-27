@@ -17,7 +17,8 @@
 		Alert02Icon,
 		LinkSquare02Icon,
 		Search01Icon,
-		ArrowRight01Icon
+		ArrowRight01Icon,
+		AudioWave01Icon
 	} from '@hugeicons/core-free-icons';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -33,6 +34,7 @@
 	import { blocked, karaokeAvailability, karaokeConsent, karaokeModels, karaokeSelection, cancelKaraokeModelDownload, deleteKaraokeModel, playback, prefs, refreshLanguage, setAutoplay, ui, toast, unblockArtist, setKaraokeDevice, applyKaraokeStatus, chooseKaraokeModel, refreshKaraokeModels } from '$lib/player.svelte';
 	import { win } from '$lib/win.svelte';
 	import AppearanceSettings from '$lib/components/AppearanceSettings.svelte';
+	import AudioSettings from '$lib/components/AudioSettings.svelte';
 	import Changelog from '$lib/components/Changelog.svelte';
 	import ExperimentalBadge from '$lib/components/ExperimentalBadge.svelte';
 	import { KARAOKE_TIERS, tierMB } from '$lib/karaoke-tiers';
@@ -60,6 +62,7 @@
 		{ id: 'general', label: t('settings.tabs.general'), hint: t('settings.tabs.general_hint'), icon: Settings02Icon },
 		{ id: 'themes', label: t('settings.tabs.themes'), hint: t('settings.tabs.themes_hint'), icon: PaintBoardIcon },
 		{ id: 'playback', label: t('settings.tabs.playback'), hint: t('settings.tabs.playback_hint'), icon: PlayCircleIcon },
+		{ id: 'audio', label: t('settings.tabs.audio'), hint: t('settings.tabs.audio_hint'), icon: AudioWave01Icon },
 		{ id: 'hotkeys', label: t('settings.tabs.hotkeys'), hint: t('settings.tabs.hotkeys_hint'), icon: KeyboardIcon },
 		{ id: 'scrobbling', label: t('settings.tabs.scrobbling'), hint: t('settings.tabs.scrobbling_hint'), icon: LastFmIcon },
 		{ id: 'data', label: t('settings.tabs.data'), hint: t('settings.tabs.data_hint'), icon: Database02Icon },
@@ -776,7 +779,7 @@
 				query = '';
 			}
 		}}
-		class="gap-0 overflow-hidden p-0 {tab === 'scrobbling' || tab === 'themes' ? 'sm:max-w-5xl' : tab === 'hotkeys' ? 'sm:max-w-4xl' : 'sm:max-w-3xl'}"
+		class="gap-0 overflow-hidden p-0 {tab === 'scrobbling' || tab === 'themes' || tab === 'audio' ? 'sm:max-w-5xl' : tab === 'hotkeys' ? 'sm:max-w-4xl' : 'sm:max-w-3xl'}"
 	>
 		<Dialog.Description class="sr-only">{t('settings.title')}</Dialog.Description>
 
@@ -1166,6 +1169,8 @@
 								{@render row({ title: t('settings.general.stream_clients'), below: clientList })}
 							</div>
 						</section>
+					{:else if tab === 'audio'}
+						<AudioSettings {settings} />
 					{:else if tab === 'hotkeys'}
 						<GlobalHotkeysSettings />
 					{:else if tab === 'data'}

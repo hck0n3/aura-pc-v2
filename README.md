@@ -19,6 +19,11 @@ Aura © 2026 hck0n3. Basado en Limusic — GPL-3.0
 - Radio y automix para que la cola no se acabe
 - Videos musicales, radio en vivo y podcasts
 - Tempo, tono y reverb, con presets
+- DSP en todo lo que suena (YouTube, local y descargas): ecualizador Aura de 10 bandas con 18
+  preajustes y paramétrico de 24 bandas con importación de AutoEQ, loudness, bass, exciter,
+  válvula, compresor multibanda, ancho estéreo, audio espacial, crossfeed, realce de diálogo,
+  de-esser y limitador
+- Elección del dispositivo de salida
 - También tus archivos locales
 
 **Letras**

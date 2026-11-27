@@ -228,6 +228,23 @@ pub async fn playback_clock(state: St<'_>) -> Result<Option<serde_json::Value>, 
     Ok(state.playback_clock())
 }
 
+/// The outputs the player can use, `auto` (the system default) first.
+#[tauri::command]
+pub fn audio_devices(state: St<'_>) -> Vec<player::AudioDevice> {
+    state.player.audio_devices()
+}
+
+/// The DSP (`player::dsp`): what plays now, and saved for the next launch.
+#[tauri::command]
+pub fn get_dsp(state: St<'_>) -> player::DspSettings {
+    state.dsp()
+}
+
+#[tauri::command]
+pub async fn set_dsp(state: St<'_>, dsp: player::DspSettings) -> Result<(), String> {
+    state.set_dsp(dsp).await
+}
+
 /// Session-only tempo (0.5–2.0), pitch (−12..=12 semitones), and reverb controls.
 #[tauri::command]
 pub async fn set_playback_params(
@@ -279,7 +296,9 @@ pub async fn get_queue(state: St<'_>) -> Result<serde_json::Value, String> {
 /// `visitor_data`) and internal blobs (`queue_json`, `queue_index`, `queue_position`) never cross
 /// into the webview: they'd otherwise ship the login credential to the renderer on every open, and
 /// the webview can't overwrite them either.
-const UI_SETTINGS: [&str; 32] = [
+const UI_SETTINGS: [&str; 34] = [
+    "dsp_profiles",
+    "audio_device",
     "volume",
     "proxy",
     "quality",
@@ -501,6 +520,11 @@ pub async fn set_setting(
     }
     // Retune the track that's playing. Unlike crossfade below, this one has to apply to what the
     // user is hearing right now: the switch exists so they can A/B the same loud section (#298).
+    if key == "audio_device" {
+        if let Err(e) = state.player.set_audio_device(&value) {
+            tracing::warn!(error = %e, "output device not applied");
+        }
+    }
     if key == "normalize_volume" {
         state.reapply_gain().await;
     }

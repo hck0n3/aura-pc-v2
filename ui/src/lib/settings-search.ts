@@ -13,6 +13,7 @@ export type SettingsTab =
 	| 'general'
 	| 'themes'
 	| 'playback'
+	| 'audio'
 	| 'hotkeys'
 	| 'scrobbling'
 	| 'data'
@@ -36,6 +37,7 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 	['general', null, [['settings.tabs.general', 'settings.tabs.general_hint']]],
 	['themes', null, [['settings.tabs.themes', 'settings.tabs.themes_hint']]],
 	['playback', null, [['settings.tabs.playback', 'settings.tabs.playback_hint']]],
+	['audio', null, [['settings.tabs.audio', 'settings.tabs.audio_hint']]],
 	['hotkeys', null, [['settings.tabs.hotkeys', 'settings.tabs.hotkeys_hint']]],
 	['scrobbling', null, [['settings.tabs.scrobbling', 'settings.tabs.scrobbling_hint']]],
 	['data', null, [['settings.tabs.data', 'settings.tabs.data_hint']]],
@@ -172,6 +174,37 @@ const TABLE: [SettingsTab, K | null, Row[]][] = [
 	['playback', 'settings.sections.advanced', [['settings.general.stream_clients']]],
 
 	['hotkeys', null, [['settings.hotkeys.enable', 'settings.hotkeys.description']]],
+
+	[
+		'audio',
+		'settings.audio.section_general',
+		[['settings.audio.enabled', 'settings.audio.enabled_hint'], ['settings.audio.preamp', 'settings.audio.preamp_hint'], ['settings.audio.device', 'settings.audio.device_hint']]
+	],
+	[
+		'audio',
+		'settings.audio.section_eq',
+		[['settings.audio.eq_mode', 'settings.audio.eq_mode_hint'], ['settings.audio.preset', 'settings.audio.preset_hint'], ['settings.audio.autoeq', 'settings.audio.autoeq_hint']]
+	],
+	[
+		'audio',
+		'settings.audio.section_processing',
+		[
+			['settings.audio.loudness', 'settings.audio.loudness_hint'],
+			['settings.audio.bass', 'settings.audio.bass_hint'],
+			['settings.audio.width', 'settings.audio.width_hint'],
+			['settings.audio.exciter', 'settings.audio.exciter_hint'],
+			['settings.audio.tube', 'settings.audio.tube_hint'],
+			['settings.audio.dialogue', 'settings.audio.dialogue_hint'],
+			['settings.audio.mb_comp', 'settings.audio.mb_comp_hint'],
+			['settings.audio.spatial', 'settings.audio.spatial_hint'],
+			['settings.audio.crossfeed', 'settings.audio.crossfeed_hint']
+		]
+	],
+	[
+		'audio',
+		'settings.audio.section_mastering',
+		[['settings.audio.limiter', 'settings.audio.limiter_hint'], ['settings.audio.deesser', 'settings.audio.deesser_hint']]
+	],
 
 	[
 		'scrobbling',
