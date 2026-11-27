@@ -5,6 +5,12 @@
     "resources": {
       "libmpv-2.dll": "libmpv-2.dll",
       "vcruntime": "vcruntime"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "offlineInstaller",
+        "silent": true
+      }
     }
   }
 }
